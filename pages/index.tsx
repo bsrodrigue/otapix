@@ -11,7 +11,7 @@ const Home: NextPage = () => {
           display: "flex",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: "1em",
+          gap: "4em",
           width: "100%",
         }}
         className="wrapper"

@@ -5,7 +5,7 @@ export default function PackCard() {
   return (
     <div className={style.packcard_container}>
       <img
-        className={style.packcard_cover}
+        className={`${style.packcard_cover} material-shadow`}
         src="/img/packcard-cover.jpg"
         alt="Pack cover"
       />
@@ -27,12 +27,14 @@ export default function PackCard() {
               ))}
             </div>
           </div>
-          <div className={style.packcard_level}>S</div>
+          <div className={`${style.packcard_level} material-shadow`}>S</div>
         </div>
         <div className={style.packcard_actions}>
-          <button className={style.packcard_action}>Play</button>
-          <button className={style.packcard_action}>Add to collection</button>
-          <button className={style.packcard_action}>Rate</button>
+          <button className={`${style.packcard_action} button`}>Play</button>
+          <button className={`${style.packcard_action} button`}>
+            Add to collection
+          </button>
+          <button className={`${style.packcard_action} button`}>Rate</button>
         </div>
       </div>
     </div>
