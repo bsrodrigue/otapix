@@ -5,6 +5,7 @@
     color: white;
     background-color: var(--primary-color);
     padding: 2em 0;
+    margin-bottom: 5em;
 }
 
 .header_content {
