@@ -1,0 +1,42 @@
+/* Header */
+
+.header {
+    position: relative;
+    color: white;
+    background-color: var(--primary-color);
+    padding: 2em 0;
+}
+
+.header_content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auth_links {
+    display: flex;
+    gap: 1em;
+}
+
+.search_form {
+    width: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    top: 70%;
+}
+
+.search_form_input {
+    width: 80%;
+    height: 4em;
+    border-radius: 3em;
+    border: none;
+    padding: 0 2em;
+}
+
+
+/* .search_form_input::placeholder {} */
+
+.search_form_input:focus {
+    outline: none;
+}
