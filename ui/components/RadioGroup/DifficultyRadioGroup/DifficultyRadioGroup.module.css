@@ -1,0 +1,7 @@
+/* DifficultyRadioGroup */
+
+.difficulty_radio_group {
+    width: 100%;
+    display: flex;
+    gap: 1em;
+}

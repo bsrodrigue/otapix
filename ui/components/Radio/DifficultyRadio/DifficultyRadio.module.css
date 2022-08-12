@@ -1,1 +1,32 @@
 /* DifficultySelect */
+
+.difficulty_radio_container {
+    padding: 0.2em 1.3em;
+    border-radius: 0.3em;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.33);
+    background-color: rgba(255, 255, 255, 0.33);
+}
+
+.difficulty_radio_container:hover {
+    cursor: pointer;
+    background-color: var(--primary-color);
+}
+
+.checked {
+    position: relative;
+    color: white;
+    background-color: var(--primary-color);
+}
+
+.checked::after {
+    border-radius: 0.3em;
+    border: 0.1em white solid;
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
