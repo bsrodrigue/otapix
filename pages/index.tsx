@@ -1,12 +1,12 @@
 import type { NextPage } from "next";
 import { Header, PackCard } from "../ui/components";
-import DifficultySelect from '../ui/components/Select/DifficultySelect/DifficultySelect';
+import DifficultyRadio from '../ui/components/Radio/DifficultyRadio/DifficultyRadio';
 
 const Home: NextPage = () => {
   return (
     <>
       <Header />
-      <DifficultySelect />
+      <DifficultyRadio />
       <div
         style={{
           display: "flex",
