@@ -41,6 +41,10 @@ a {
 
 /* III - Colors */
 
+.primary-color {
+    color: var(--primary-color);
+}
+
 
 /* IV - Buttons */
 
@@ -55,4 +59,14 @@ a {
 .material-shadow {
     /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); */
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+
+/* VI - Pages */
+
+.login-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
