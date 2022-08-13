@@ -3,6 +3,7 @@
 .header {
     position: relative;
     color: white;
+    font-weight: bold;
     background-color: var(--primary-color);
     padding: 2em 0;
     margin-bottom: 5em;
@@ -14,6 +15,10 @@
     align-items: center;
 }
 
+.header_logo {
+    font-size: 2em;
+}
+
 .auth_links {
     display: flex;
     gap: 1em;
@@ -22,17 +27,42 @@
 .search_form {
     width: 100%;
     position: absolute;
+    top: 70%;
     display: flex;
     justify-content: center;
-    top: 70%;
+}
+
+.search_form_content {
+    position: relative;
+    width: 80%;
+}
+
+.search_form_button {
+    aspect-ratio: 1/1;
+    height: 2em;
+    position: absolute;
+    right: 1em;
+    top: 20%;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search_form_button:hover {
+    cursor: pointer;
+    background-color: black;
 }
 
 .search_form_input {
-    width: 80%;
+    width: 100%;
     height: 4em;
     border-radius: 3em;
     border: none;
-    padding: 0 2em;
+    padding: 0 4em 0 2em;
+    font-weight: bold;
+    color: var(--background-color);
 }
 
 

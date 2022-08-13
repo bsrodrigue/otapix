@@ -1,5 +1,6 @@
 import style from "./PackCard.module.css";
 import { BsFillStarFill } from "react-icons/bs";
+import Image from "next/image";
 
 export default function PackCard() {
   return (

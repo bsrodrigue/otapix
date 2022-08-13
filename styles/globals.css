@@ -16,14 +16,15 @@
 
 /* I - Layout */
 
+html,
 body {
-    background-color: #100720;
+    overflow-x: hidden;
 }
 
 .wrapper {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 5em;
+    padding: 0 1.2em;
 }
 
 
@@ -40,6 +41,10 @@ a {
 
 
 /* III - Colors */
+
+body {
+    background-color: #100720;
+}
 
 .primary-color {
     color: var(--primary-color);

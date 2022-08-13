@@ -2,7 +2,7 @@
 
 .authform_container {
     background-color: white;
-    width: clamp(300px, 100vw, 600px);
+    width: clamp(300px, 80vw, 600px);
     padding: 4em 3em;
     border-radius: 1em;
 }

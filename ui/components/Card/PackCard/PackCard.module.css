@@ -9,10 +9,10 @@
 }
 
 .packcard_cover {
-    width: 20em;
     object-fit: cover;
     flex: 1;
-    border-radius: 10em 0 10em 0;
+    width: 20em;
+    border-radius: 0.8em 0.8em 10em 0;
 }
 
 .packcard_content {

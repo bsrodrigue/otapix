@@ -1,4 +1,5 @@
 import style from './Header.module.css';
+import { BsSearch } from 'react-icons/bs';
 
 export default function Header() {
 
@@ -6,8 +7,7 @@ export default function Header() {
         <header className={style.header}>
             <div className='wrapper'>
                 <div className={style.header_content}>
-                    <a href="">Otapix</a>
-
+                    <a className={style.header_logo} href="">Otapix</a>
                     <div className={style.auth_links}>
                         <a href="">Login</a>
                         <a href="">Register</a>
@@ -16,7 +16,12 @@ export default function Header() {
             </div>
 
             <div className={style.search_form}>
-                <input className={style.search_form_input} type="text" name="search" id="" placeholder='Search for an otapix pack...' />
+                <div className={style.search_form_content}>
+                    <input className={style.search_form_input} type="text" name="search" id="" placeholder='Search for an otapix pack...' />
+                    <div className={`${style.search_form_button} material-shadow`}>
+                        <BsSearch />
+                    </div>
+                </div>
             </div>
         </header>
     )
