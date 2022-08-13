@@ -4,27 +4,25 @@ import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
 
 const formFields: Array<FormField> = [
     {
-        label: "Nom d'utilisateur",
-        placeholder: "Entrez votre nom d'utilisateur",
-        type: "text",
-        name: "username",
+        label: "Nouveau mot de passe",
+        placeholder: "Entrez votre nouveau mot de passe",
+        type: "password",
+        name: "password1",
     },
     {
-        label: "Mot de passe",
-        placeholder: "Entrez votre mot de passe",
+        label: "Confirmation",
+        placeholder: "Entrez a nouveau votre mot de passe",
         type: "password",
-        name: "password",
+        name: "password2",
     },
 
 ]
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
     return (
         <div className="auth-page">
-            <AuthForm title="Connexion"
-                comment="Bon retour sur Otapix"
-                subComment="Veuillez renseigner les informations de votre compte pour vous connecter"
-                message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
+            <AuthForm title="Reinitialisation de mot de passe"
+                subComment="Remplissez les champs ci-dessous pour remplacer votre mot de passe"
                 alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
             >
                 {

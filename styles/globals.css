@@ -69,9 +69,14 @@ body {
 
 /* VI - Pages */
 
-.login-page {
-    height: 100vh;
+.auth-page {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (min-width: 480px) {
+    .auth-page {
+        height: 100vh;
+    }
 }

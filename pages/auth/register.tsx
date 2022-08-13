@@ -10,22 +10,26 @@ const formFields: Array<FormField> = [
         name: "username",
     },
     {
+        label: "Adresse mail",
+        placeholder: "Entrez votre adresse mail",
+        type: "email",
+        name: "email",
+    },
+    {
         label: "Mot de passe",
         placeholder: "Entrez votre mot de passe",
         type: "password",
         name: "password",
     },
-
 ]
 
-export default function LoginPage() {
+export default function RegisterPage() {
     return (
         <div className="auth-page">
-            <AuthForm title="Connexion"
-                comment="Bon retour sur Otapix"
-                subComment="Veuillez renseigner les informations de votre compte pour vous connecter"
-                message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
-                alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
+            <AuthForm title="Inscription"
+                comment="Bienvenue sur Otapix"
+                subComment="Veuillez remplir les champs ci-dessous pour creer un compte"
+                alternative={["Vous avez deja un compte?", "Connectez-vous!", "/auth/login"]}
             >
                 {
                     formFields.map((field: FormField, key: number) => (

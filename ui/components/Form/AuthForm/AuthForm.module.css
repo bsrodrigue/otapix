@@ -2,7 +2,7 @@
 
 .authform_container {
     background-color: white;
-    width: clamp(300px, 100vw, 600px);
+    width: clamp(300px, 100vw, 500px);
     padding: 4em 2em;
     border-radius: 1em;
     display: flex;
@@ -23,34 +23,17 @@
     font-size: 2.8em;
 }
 
+.authform_header small {
+    color: gray;
+}
+
 .authform_fields {
     gap: 1em;
 }
 
-.authform_fields,
-.authform_field_container {
+.authform_fields {
     display: flex;
     flex-direction: column;
-}
-
-.authform_label {
-    font-weight: bold;
-}
-
-.authform_field {
-    border: none;
-    border-radius: 0.5em;
-    padding: 1em 2em;
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.authform_field:focus {
-    outline: none;
-}
-
-.authform_field::placeholder {
-    color: rgba(255, 255, 255, 0.479);
 }
 
 .authform_footer {
@@ -58,6 +41,10 @@
     display: flex;
     flex-direction: column;
     gap: 1.5em;
+}
+
+.authform_message {
+    font-style: italic;
 }
 
 .authform_submit {

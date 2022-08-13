@@ -18,13 +18,12 @@ const formFields: Array<FormField> = [
 
 ]
 
-export default function LoginPage() {
+export default function ChangePasswordPage() {
     return (
         <div className="auth-page">
             <AuthForm title="Connexion"
                 comment="Bon retour sur Otapix"
                 subComment="Veuillez renseigner les informations de votre compte pour vous connecter"
-                message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
                 alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
             >
                 {
