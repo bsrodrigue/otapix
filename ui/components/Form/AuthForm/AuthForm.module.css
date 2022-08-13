@@ -2,9 +2,12 @@
 
 .authform_container {
     background-color: white;
-    width: clamp(300px, 80vw, 600px);
-    padding: 4em 3em;
+    width: clamp(300px, 100vw, 600px);
+    padding: 4em 2em;
     border-radius: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .authform_header {
@@ -20,6 +23,10 @@
     font-size: 2.8em;
 }
 
+.authform_fields {
+    gap: 1em;
+}
+
 .authform_fields,
 .authform_field_container {
     display: flex;
@@ -32,5 +39,53 @@
 
 .authform_field {
     border: none;
+    border-radius: 0.5em;
+    padding: 1em 2em;
     background-color: var(--primary-color);
+    color: white;
+}
+
+.authform_field:focus {
+    outline: none;
+}
+
+.authform_field::placeholder {
+    color: rgba(255, 255, 255, 0.479);
+}
+
+.authform_footer {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+
+.authform_submit {
+    border: none;
+    border-radius: 0.5em;
+    padding: 1em;
+    background-color: white;
+    font-weight: bold;
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+.authform_submit:hover {
+    cursor: pointer;
+    color: white;
+    background-color: black;
+}
+
+.authform_alternative {
+    text-align: center;
+}
+
+.authform_alternative span {
+    font-weight: bold;
+}
+
+@media screen and (max-width: 480px) {
+    .authform_container {
+        height: 100%;
+        border-radius: 0px;
+    }
 }

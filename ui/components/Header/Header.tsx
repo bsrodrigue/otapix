@@ -1,5 +1,6 @@
 import style from './Header.module.css';
 import { BsSearch } from 'react-icons/bs';
+import Link from 'next/link';
 
 export default function Header() {
 
@@ -7,10 +8,12 @@ export default function Header() {
         <header className={style.header}>
             <div className='wrapper'>
                 <div className={style.header_content}>
-                    <a className={style.header_logo} href="">Otapix</a>
+                    <Link href="/">
+                        <a className={style.header_logo}>Otapix</a>
+                    </Link>
                     <div className={style.auth_links}>
-                        <a href="">Login</a>
-                        <a href="">Register</a>
+                        <Link href="/auth/login">Login</Link>
+                        <Link href="/auth/register">Register</Link>
                     </div>
                 </div>
             </div>
