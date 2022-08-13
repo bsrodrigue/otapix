@@ -1,5 +1,6 @@
 import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
+import { CircularDropzone } from "../../ui/components/Dropzone/CircularDropzone";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
 
 const formFields: Array<FormField> = [
@@ -23,6 +24,7 @@ const formFields: Array<FormField> = [
     },
 ]
 
+
 export default function RegisterPage() {
     return (
         <div className="auth-page">
@@ -31,6 +33,9 @@ export default function RegisterPage() {
                 subComment="Veuillez remplir les champs ci-dessous pour creer un compte"
                 alternative={["Vous avez deja un compte?", "Connectez-vous!", "/auth/login"]}
             >
+                <CircularDropzone
+                    label="Photo de profil"
+                    name="avatar" />
                 {
                     formFields.map((field: FormField, key: number) => (
                         <AuthFormField key={key} {...field} />

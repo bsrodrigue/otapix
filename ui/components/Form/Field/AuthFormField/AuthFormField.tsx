@@ -8,6 +8,7 @@ export interface AuthFormFieldProps {
     className?: string;
 }
 
+
 export default function AuthFormField({ label, placeholder, type, name, className }: AuthFormFieldProps) {
     return (
         <div className={style.authform_field_container}>
