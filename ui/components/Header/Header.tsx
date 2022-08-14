@@ -58,10 +58,15 @@ export default function Header() {
                                         </div>
 
                                         <div className={style.modal_actions}>
-                                            <a className={` ${style.modal_action}`} href="">Tableau de bord</a>
-                                            <a onClick={() => {
-                                                signOut(auth);
-                                            }} className={` ${style.modal_action}`} href="">Deconnexion</a>
+                                            <Link href="/profile/dashboard">
+                                                <a className={` ${style.modal_action}`}>Tableau de bord</a>
+                                            </Link>
+                                            <Link href="">
+                                                <a onClick={() => {
+                                                    signOut(auth);
+                                                }} className={` ${style.modal_action}`}
+                                                >Deconnexion</a>
+                                            </Link>
                                         </div>
                                     </Modal>
                                 </>
