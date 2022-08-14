@@ -1,9 +1,14 @@
 import style from './Header.module.css';
 import { BsSearch } from 'react-icons/bs';
 import Link from 'next/link';
+import Modal from 'react-modal';
 import { useAuth } from '../../../hooks/index';
+import { useState } from 'react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../../config/firebase/auth';
 
 export default function Header() {
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     const { user } = useAuth();
 
     return (
@@ -16,9 +21,52 @@ export default function Header() {
                     <div className={style.auth_links}>
                         {
                             user ? (
-                                <img className={`${style.avatar} material-shadow`} src={user.photoURL}>
-                                </img>
+                                <>
+                                    <img
+                                        className={`${style.avatar} material-shadow`}
+                                        src={user.photoURL}
+                                        onClick={(e: any) => {
+                                            e.preventDefault();
+                                            setModalIsOpen(!modalIsOpen);
+                                        }}
+                                    />
+                                    <Modal
+                                        isOpen={modalIsOpen}
+                                        onRequestClose={() => setModalIsOpen(false)}
+                                        ariaHideApp={false}
+                                        style={{
+                                            content: {
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                padding: '3em 1.5em',
+                                                borderRadius: '2em',
+                                                border: 'none',
+                                                boxShadow: '0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)',
+                                                textAlign: 'center',
+                                            }
+                                        }}
+                                    >
+                                        <div>
+                                            <img
+                                                className={`${style.avatar} ${style.modal_avatar}`}
+                                                src={user.photoURL}
+                                            />
+                                            <p className={style.modal_username}>{user.displayName}</p>
+                                            <small>{user.email}</small>
+                                        </div>
+
+                                        <div className={style.modal_actions}>
+                                            <a className={` ${style.modal_action}`} href="">Tableau de bord</a>
+                                            <a onClick={() => {
+                                                signOut(auth);
+                                            }} className={` ${style.modal_action}`} href="">Deconnexion</a>
+                                        </div>
+                                    </Modal>
+                                </>
                             ) : (
+                                user !== undefined &&
                                 <>
                                     <Link href="/auth/login">Login</Link>
                                     <Link href="/auth/register">Register</Link>
