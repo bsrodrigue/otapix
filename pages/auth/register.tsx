@@ -1,3 +1,9 @@
+import { updateProfile } from "firebase/auth";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { getUserProfiles, signUp, uploadProfilePicture } from "../../api/firebase";
 import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
 import { CircularDropzone } from "../../ui/components/Dropzone/CircularDropzone";
@@ -26,19 +32,53 @@ const formFields: Array<FormField> = [
 
 
 export default function RegisterPage() {
+    const { register, handleSubmit } = useForm();
+    const [isLoading, setIsLoading] = useState(false);
+    const avatarRegister = register("avatar");
+    const router = useRouter();
+
     return (
         <div className="auth-page">
-            <AuthForm title="Inscription"
+            <AuthForm
+                id="register-form"
+                title="Inscription"
                 comment="Bienvenue sur Otapix"
+                isLoading={isLoading}
                 subComment="Veuillez remplir les champs ci-dessous pour creer un compte"
                 alternative={["Vous avez deja un compte?", "Connectez-vous!", "/auth/login"]}
+                onSubmit={handleSubmit(async (data: FieldValues) => {
+                    const avatar = data.avatar[0];
+                    const username = data.username;
+                    const { email, password } = data;
+                    try {
+                        setIsLoading(true);
+                        const { user } = await signUp({ email, password });
+                        await Promise.all([
+                            updateProfile(user, { displayName: username, }),
+                            uploadProfilePicture(avatar, user),
+                        ])
+                        toast("Bienvenue!");
+                        router.push("/");
+                    } catch (error) {
+                        toast("Error while signup");
+                        console.log(error);
+                    } finally {
+                        setIsLoading(false);
+                        const result = await getUserProfiles();
+                    }
+                })}
             >
                 <CircularDropzone
                     label="Photo de profil"
-                    name="avatar" />
+                    {...avatarRegister}
+                />
                 {
                     formFields.map((field: FormField, key: number) => (
-                        <AuthFormField key={key} {...field} />
+                        <AuthFormField
+                            key={key}
+                            register={register}
+                            {...field}
+                        />
                     ))
                 }
             </AuthForm >

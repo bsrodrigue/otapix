@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useState } from 'react';
+import { useAuth } from "../hooks";
 import { Header, PackCard } from "../ui/components";
 import DifficultyRadioGroup from '../ui/components/RadioGroup/DifficultyRadioGroup/DifficultyRadioGroup';
 

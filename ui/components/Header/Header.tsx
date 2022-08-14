@@ -1,8 +1,10 @@
 import style from './Header.module.css';
 import { BsSearch } from 'react-icons/bs';
 import Link from 'next/link';
+import { useAuth } from '../../../hooks/index';
 
 export default function Header() {
+    const { user } = useAuth();
 
     return (
         <header className={style.header}>
@@ -12,8 +14,17 @@ export default function Header() {
                         <a className={style.header_logo}>Otapix</a>
                     </Link>
                     <div className={style.auth_links}>
-                        <Link href="/auth/login">Login</Link>
-                        <Link href="/auth/register">Register</Link>
+                        {
+                            user ? (
+                                <img className={`${style.avatar} material-shadow`} src={user.photoURL}>
+                                </img>
+                            ) : (
+                                <>
+                                    <Link href="/auth/login">Login</Link>
+                                    <Link href="/auth/register">Register</Link>
+                                </>
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -26,6 +37,6 @@ export default function Header() {
                     </div>
                 </div>
             </div>
-        </header>
+        </header >
     )
 }

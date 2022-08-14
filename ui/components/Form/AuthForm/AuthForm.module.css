@@ -50,7 +50,8 @@
 .authform_submit {
     border: none;
     border-radius: 0.5em;
-    padding: 1em;
+    padding: 0 1em;
+    height: 60px;
     background-color: white;
     font-weight: bold;
     filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
@@ -59,6 +60,21 @@
 .authform_submit:hover {
     cursor: pointer;
     color: white;
+    background-color: black;
+}
+
+.authform_submit:focus {
+    outline: none;
+}
+
+.authform_submit * {
+    height: 80%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.loading {
     background-color: black;
 }
 
