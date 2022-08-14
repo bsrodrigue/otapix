@@ -8,6 +8,7 @@ interface CircularDropzoneProps {
     onChange?: any;
     onBlur?: any;
     ref?: any;
+    value?: any;
 }
 
 const CircularDropzone = React.forwardRef(({ name, label, onChange, ...rest }: CircularDropzoneProps, ref: any) => {
