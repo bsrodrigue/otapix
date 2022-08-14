@@ -26,7 +26,7 @@ export function Accordion({ title }: AccordionProps) {
                     </div>
 
                 </div>
-                <div className={`${style.accordion_content} ${isClosed && style.closed}`}>
+                <div className={`${style.accordion_content} ${isClosed && style.accordion_closed}`}>
                     <div className={style.accordion_item}>
                         <p>Nouveau pack</p>
                     </div>

@@ -8,9 +8,7 @@
     font-weight: bold;
     overflow-y: scroll;
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
 }
 
 .container::-webkit-scrollbar {
@@ -70,4 +68,8 @@
 
 .closed {
     width: 0;
+}
+
+.accordion_closed {
+    height: 0;
 }

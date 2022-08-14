@@ -60,7 +60,7 @@ body {
 }
 
 .floating_menu_button {
-    position: absolute;
+    position: fixed;
     bottom: 1em;
     right: 1em;
     background-color: var(--primary-color);
@@ -105,4 +105,17 @@ body {
     .auth-page {
         height: 100vh;
     }
+}
+
+
+/* 0 - Overrides */
+
+input,
+button {
+    border: none;
+}
+
+input:focus,
+button:focus {
+    outline: none;
 }

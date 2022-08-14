@@ -1,9 +1,38 @@
 /* Pack Editor */
 
 .container {
-    width: 100%;
+    margin: 0 auto;
+    width: clamp(600px, 80%, 1200px);
     padding: 1em;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    color: white;
+    font-weight: bold;
+}
+
+.container p {
+    text-align: left;
+    margin: 1em 0;
+}
+
+.title_input {
+    padding: 0.5em 1em;
+    font-size: 3em;
+    color: white;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.185);
+}
+
+.title_input::placeholder {
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.377);
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        width: 100%;
+    }
+    .title_input {
+        font-size: 1em;
+    }
 }

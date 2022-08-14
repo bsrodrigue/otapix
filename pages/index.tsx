@@ -8,7 +8,7 @@ import DifficultyRadioGroup from '../ui/components/RadioGroup/DifficultyRadioGro
 const DIFFICULTIES = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
 
 const Home: NextPage = () => {
-  const [checkedDifficulty, setCheckedDifficulty] = useState<string>("S");
+  const [checkedDifficulty, setCheckedDifficulty] = useState<string>(DIFFICULTIES[0]);
   return (
     <>
       <Head>
