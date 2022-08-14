@@ -61,7 +61,7 @@ export default function RegisterPage() {
                         router.push("/");
                     } catch (error) {
                         toast("Error while signup");
-                        console.log(error);
+                        console.error(error);
                     } finally {
                         setIsLoading(false);
                         const result = await getUserProfiles();

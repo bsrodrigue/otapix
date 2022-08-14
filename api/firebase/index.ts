@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, updateProfile, User } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
 import { collection, DocumentData, getDocs, QueryDocumentSnapshot } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth } from "../../config/firebase/auth";
@@ -14,6 +14,11 @@ export interface RegisterRequestParams {
 
 export async function signUp({ email, password }: RegisterRequestParams) {
     const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+    return userCredentials;
+}
+
+export async function signIn({ email, password }: RegisterRequestParams) {
+    const userCredentials = await signInWithEmailAndPassword(auth, email, password);
     return userCredentials;
 }
 

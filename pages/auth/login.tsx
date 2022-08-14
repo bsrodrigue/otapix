@@ -1,13 +1,18 @@
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { signIn } from "../../api/firebase";
 import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
 
 const formFields: Array<FormField> = [
     {
-        label: "Nom d'utilisateur",
-        placeholder: "Entrez votre nom d'utilisateur",
-        type: "text",
-        name: "username",
+        label: "Adresse mail",
+        placeholder: "Entrez votre adresse mail",
+        type: "mail",
+        name: "email",
     },
     {
         label: "Mot de passe",
@@ -19,20 +24,44 @@ const formFields: Array<FormField> = [
 ]
 
 export default function LoginPage() {
+    const { register, handleSubmit } = useForm();
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
     return (
         <div className="auth-page">
-            <AuthForm title="Connexion"
+            <AuthForm
+                id="login-form"
+                title="Connexion"
                 comment="Bon retour sur Otapix"
+                isLoading={isLoading}
                 subComment="Veuillez renseigner les informations de votre compte pour vous connecter"
                 message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
                 alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
+                onSubmit={handleSubmit(async (data: FieldValues) => {
+                    try {
+                        const { email, password } = data;
+                        setIsLoading(true);
+                        await signIn({ email, password });
+                        toast("Bienvenue!");
+                        router.push("/");
+                    } catch (error) {
+                        toast("Error while signup");
+                        console.error(error);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                })}
             >
                 {
                     formFields.map((field: FormField, key: number) => (
-                        <AuthFormField key={key} {...field} />
+                        <AuthFormField
+                            key={key}
+                            register={register}
+                            {...field} />
                     ))
                 }
             </AuthForm >
-        </div>
+        </div >
     );
 }
