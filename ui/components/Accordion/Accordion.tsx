@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { BsPlusCircleFill } from "react-icons/bs";
-import { PuzzlePack } from "../../../types";
-
+import { PuzzlePack, UsePackIndexState } from "../../../types";
 import style from './Accordion.module.css';
 
-export interface AccordionProps {
+export interface AccordionProps extends UsePackIndexState {
     packs?: Array<PuzzlePack>;
 }
 
-export default function Accordion({ packs }: AccordionProps) {
+export default function Accordion({
+    packs,
+    currentPackIndex,
+    setCurrentPackIndex
+}: AccordionProps) {
     const [isClosed, setIsClosed] = useState(false);
 
     return (
@@ -32,7 +35,13 @@ export default function Accordion({ packs }: AccordionProps) {
                     {
                         packs?.map((pack, key) => {
                             return (
-                                <div key={key} className={style.accordion_item}>
+                                <div
+                                    key={key}
+                                    className={`${style.accordion_item} ${currentPackIndex === key && style.selected}`}
+                                    onClick={() => {
+                                        setCurrentPackIndex?.(key);
+                                    }}
+                                >
                                     <p>{pack.title}</p>
                                 </div>
                             );

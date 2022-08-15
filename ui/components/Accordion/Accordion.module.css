@@ -41,6 +41,15 @@
     padding: 1em;
 }
 
+.accordion_item:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.596);
+}
+
+.selected {
+    background-color: black;
+}
+
 .accordion_closed {
     height: 0;
 }

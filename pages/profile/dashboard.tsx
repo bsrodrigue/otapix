@@ -8,13 +8,12 @@ export default function DashboardPage() {
     const [isOpen, setIsOpen] = useState(true);
     const [currentPackIndex, setCurrentPackIndex] = useState(0);
 
-
-
     return (<div className="dashboard-page">
         <DashboardSidePanel
             isOpen={isOpen}
-            setIsOpen={setIsOpen}
             packs={mockPuzzlePacks}
+            currentPackIndex={currentPackIndex}
+            setCurrentPackIndex={setCurrentPackIndex}
         />
         <PackEditor
             currentPack={mockPuzzlePacks[currentPackIndex]}

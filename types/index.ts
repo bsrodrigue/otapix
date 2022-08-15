@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { Difficulty } from "../enums";
 
 export interface HasID {
@@ -38,4 +39,9 @@ export interface PuzzlePack extends IdentifiableCreation, HasCover, HasTitle {
     // rating: number;
     // playCount: number;
     puzzles: Array<Puzzle>;
+}
+
+export interface UsePackIndexState {
+    currentPackIndex?: number;
+    setCurrentPackIndex?: Dispatch<SetStateAction<number>>;
 }
