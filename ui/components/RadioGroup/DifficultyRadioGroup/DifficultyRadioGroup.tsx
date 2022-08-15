@@ -1,13 +1,12 @@
+import { UseDifficultyState } from '../../../../types';
 import DifficultyRadio from '../../Radio/DifficultyRadio/DifficultyRadio';
 import style from './DifficultyRadioGroup.module.css';
 
-interface DifficultyRadioGroupProps {
+interface DifficultyRadioGroupProps extends UseDifficultyState {
     difficulties: string[];
-    checkedDifficulty: string;
-    setCheckedDifficulty: Function;
 }
 
-export default function DifficultyRadioGroup({ difficulties, checkedDifficulty, setCheckedDifficulty }: DifficultyRadioGroupProps) {
+export default function DifficultyRadioGroup({ difficulties, ...rest }: DifficultyRadioGroupProps) {
     return (
         <div className={style.difficulty_radio_group}>
             {
@@ -15,10 +14,10 @@ export default function DifficultyRadioGroup({ difficulties, checkedDifficulty, 
                     <DifficultyRadio
                         key={key}
                         difficulty={difficulty}
-                        checkedDifficulty={checkedDifficulty}
-                        setCheckedDifficulty={setCheckedDifficulty} />
+                        {...rest}
+                    />
                 ))
             }
         </div>
-        )
+    )
 }

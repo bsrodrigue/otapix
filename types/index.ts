@@ -42,6 +42,16 @@ export interface PuzzlePack extends IdentifiableCreation, HasCover, HasTitle {
 }
 
 export interface UsePackIndexState {
-    currentPackIndex?: number;
-    setCurrentPackIndex?: Dispatch<SetStateAction<number>>;
+    currentPackIndex: number;
+    setCurrentPackIndex: Dispatch<SetStateAction<number>>;
+}
+
+export interface UsePackArrayState {
+    packs: Array<PuzzlePack>;
+    setPacks: Dispatch<SetStateAction<Array<PuzzlePack>>>;
+}
+
+export interface UseDifficultyState {
+    checkedDifficulty: string;
+    setCheckedDifficulty: Dispatch<SetStateAction<Difficulty>>;
 }

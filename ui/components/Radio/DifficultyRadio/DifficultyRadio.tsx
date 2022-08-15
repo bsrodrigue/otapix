@@ -1,12 +1,15 @@
+import { UseDifficultyState } from '../../../../types';
 import style from './DifficultyRadio.module.css';
 
-interface DifficultyRadioProps {
+interface DifficultyRadioProps extends UseDifficultyState {
     difficulty: string;
-    checkedDifficulty: string;
-    setCheckedDifficulty: Function;
 }
 
-export default function DifficultyRadio({ difficulty, checkedDifficulty, setCheckedDifficulty }: DifficultyRadioProps) {
+export default function DifficultyRadio({
+    difficulty,
+    checkedDifficulty,
+    setCheckedDifficulty
+}: DifficultyRadioProps) {
     const isChecked = difficulty === checkedDifficulty;
 
     function onClickLabel(e: any) {
