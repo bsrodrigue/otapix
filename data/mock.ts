@@ -4,7 +4,7 @@ import { PuzzlePack } from "../types";
 export const mockPuzzlePacks: Array<PuzzlePack> = [
     {
         id: 1,
-        cover: '',
+        cover: '/img/mock-packs/pack1.jpg',
         title: 'Pack Seven deadly sins',
         author: 'maelstrom',
         difficulty: Difficulty.E,
@@ -20,7 +20,7 @@ export const mockPuzzlePacks: Array<PuzzlePack> = [
     },
     {
         id: 2,
-        cover: '',
+        cover: '/img/mock-packs/pack2.png',
         title: 'Pack Dragonball Super',
         author: 'burning_coder',
         difficulty: Difficulty.C,
@@ -36,7 +36,7 @@ export const mockPuzzlePacks: Array<PuzzlePack> = [
     },
     {
         id: 3,
-        cover: '',
+        cover: '/img/mock-packs/pack3.jpeg',
         title: 'Pack Jujutsu Kaisen',
         author: 'ulrich_the_goat',
         difficulty: Difficulty.S,

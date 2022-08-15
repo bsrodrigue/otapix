@@ -9,16 +9,24 @@ interface CircularDropzoneProps {
     onBlur?: any;
     ref?: any;
     value?: any;
+    src?: string;
 }
 
-const CircularDropzone = React.forwardRef(({ name, label, onChange, ...rest }: CircularDropzoneProps, ref: any) => {
+const CircularDropzone = React.forwardRef(({
+    name,
+    label,
+    onChange,
+    src,
+    ...rest
+}: CircularDropzoneProps, ref: any) => {
     const [inputElement, setInputElement] = useState<HTMLInputElement>();
     const imageRef = useRef<any>();
 
     useEffect(() => {
         const element = document?.querySelector?.(`#dropzone-${name}`) as HTMLInputElement;
-        document && element && setInputElement(element);
-    }, [name]);
+        setInputElement(element);
+        element.value = '';
+    }, [name, src]);
 
     return (
         <label className={style.circular_dropzone} htmlFor={`dropzone-${name}`}>
@@ -26,6 +34,7 @@ const CircularDropzone = React.forwardRef(({ name, label, onChange, ...rest }: C
             <img
                 ref={imageRef}
                 className={style.image_preview}
+                src={src}
             />
             <input
                 id={`dropzone-${name}`}

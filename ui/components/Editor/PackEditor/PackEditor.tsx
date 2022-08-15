@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Difficulty } from '../../../../enums';
 import { PuzzlePack } from '../../../../types';
 import { RectangularDropzone } from '../../Dropzone/RectangularDropzone';
 import { DifficultyRadioGroup } from '../../RadioGroup/DifficultyRadioGroup';
 import style from './PackEditor.module.css';
-import { useEffect } from 'react';
 
 interface PackEditorProps {
     currentPack: PuzzlePack;
@@ -15,7 +14,7 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
     const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
 
     useEffect(() => {
-        currentPack?.difficulty && setCheckedDifficulty(currentPack?.difficulty);
+        setCheckedDifficulty(currentPack.difficulty);
     }, [currentPack]);
 
     return (
@@ -23,7 +22,8 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
             <p>Couverture</p>
             <RectangularDropzone
                 label='Telecharger une image'
-                value={currentPack?.cover}
+                name='pack-cover'
+                src={currentPack.cover}
             />
             <p>Titre</p>
             <input
