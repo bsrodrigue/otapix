@@ -7,7 +7,7 @@ import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSideP
 
 export default function DashboardPage() {
     const [isOpen, setIsOpen] = useState(true);
-    const [currentPackIndex, setCurrentPackIndex] = useState(1);
+    const [currentPackIndex, setCurrentPackIndex] = useState(0);
     const [packs, setPacks] = useState<Array<PuzzlePack>>(mockPuzzlePacks);
 
     return (<div className="dashboard-page">

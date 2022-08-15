@@ -11,11 +11,100 @@ export const mockPuzzlePacks: Array<PuzzlePack> = [
         puzzles: [
             {
                 id: 1,
-                word: 'Meliodas',
+                word: 'Nobara',
                 universe: 'Nanatsu no Taizai',
                 order: 1,
-                pictures: ["", "", "", ""]
-            }
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 2,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 2,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 3,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 3,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 4,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 4,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 1,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 1,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 2,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 2,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 3,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 3,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
+            {
+                id: 4,
+                word: 'Nobara',
+                universe: 'Nanatsu no Taizai',
+                order: 4,
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
+            },
         ]
     },
     {
@@ -30,7 +119,12 @@ export const mockPuzzlePacks: Array<PuzzlePack> = [
                 word: 'Vegeta',
                 universe: 'Dragon Ball',
                 order: 1,
-                pictures: ["", "", "", ""]
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
             }
         ]
     },
@@ -46,7 +140,12 @@ export const mockPuzzlePacks: Array<PuzzlePack> = [
                 word: 'Nanami',
                 universe: 'Jujuts Kaisen',
                 order: 1,
-                pictures: ["", "", "", ""]
+                pictures: [
+                    "/img/mock-packs/p1.jpg",
+                    "/img/mock-packs/p2.jpg",
+                    "/img/mock-packs/p3.jpg",
+                    "/img/mock-packs/p4.jpg",
+                ]
             }
         ]
     },

@@ -16,6 +16,7 @@
 }
 
 .title_input {
+    width: 100%;
     padding: 0.5em 1em;
     font-size: 3em;
     color: white;
@@ -26,6 +27,76 @@
 .title_input::placeholder {
     font-weight: bold;
     color: rgba(255, 255, 255, 0.377);
+}
+
+.puzzle_grid_container {
+    background-color: rgba(255, 255, 255, 0.075);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.puzzle_grid {
+    padding: 2em 0.5em;
+    height: 20em;
+    overflow-y: scroll;
+}
+
+.puzzle_grid,
+.puzzle_card_pictures {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1em;
+    color: black;
+}
+
+.action {
+    padding: 0.5em;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    background-color: var(--primary-color);
+    width: 100%;
+}
+
+.action:hover {
+    background-color: black;
+}
+
+.puzzle_card {
+    aspect-ratio: 1/1;
+    background-color: white;
+    border-radius: 1em;
+    display: flex;
+    padding: 0.5em;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.puzzle_card_pictures {
+    /* gap: 0.5em; */
+}
+
+.puzzle_card_pictures img {
+    border-radius: 1em;
+    aspect-ratio: 1/1;
+    width: 100%;
+}
+
+.puzzle_card_title {
+    margin: 0 !important;
+}
+
+.puzzle_editor button {
+    margin-top: 1em;
+}
+
+.puzzle_editor_picture_fields {
+    margin: 1em 0;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1em;
 }
 
 @media screen and (max-width: 480px) {

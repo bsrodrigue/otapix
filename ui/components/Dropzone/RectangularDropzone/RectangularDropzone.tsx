@@ -10,6 +10,7 @@ interface CircularDropzoneProps {
     ref?: any;
     value?: any;
     src?: string;
+    isSquare?: boolean;
 }
 
 const CircularDropzone = React.forwardRef(({
@@ -17,6 +18,7 @@ const CircularDropzone = React.forwardRef(({
     label,
     onChange,
     src,
+    isSquare,
     ...rest
 }: CircularDropzoneProps, ref: any) => {
     const [inputElement, setInputElement] = useState<HTMLInputElement>();
@@ -29,11 +31,11 @@ const CircularDropzone = React.forwardRef(({
     }, [name, src]);
 
     return (
-        <label className={style.circular_dropzone} htmlFor={`dropzone-${name}`}>
+        <label className={`${style.circular_dropzone} ${isSquare && style.is_square}`} htmlFor={`dropzone-${name}`}>
             {label}
             <img
                 ref={imageRef}
-                className={style.image_preview}
+                className={`${style.image_preview} ${isSquare && style.is_square}`}
                 src={src}
             />
             <input
