@@ -43,7 +43,7 @@
 
 .accordion_item:hover {
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.596);
+    background-color: rgb(0, 0, 0);
 }
 
 .selected {
