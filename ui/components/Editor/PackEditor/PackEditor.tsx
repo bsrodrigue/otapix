@@ -75,7 +75,6 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
                 )
             }
 
-
             <p>Liste de puzzle</p>
             <div id='puzzle-grid-container' className={style.puzzle_grid_container}>
                 <div className={style.puzzle_grid}>
@@ -98,9 +97,13 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
                     }
                 </div>
                 <div className={style.puzzle_grid_actions}>
-                    <button onClick={() => { setPuzzleEditorIsOpen(true) }} className={`${style.action} success`}>Ajouter un puzzle</button>
+                    <button onClick={() => { setPuzzleEditorIsOpen(true) }} className={`${style.action} ${style.success}`}>Ajouter un puzzle</button>
                 </div>
             </div>
+
+
+
+            <button style={{ marginTop: '1em' }} className={`${style.action}`}>Sauvegarder le pack</button>
         </div>
     );
 }
