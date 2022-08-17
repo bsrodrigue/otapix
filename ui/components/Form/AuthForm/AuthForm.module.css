@@ -88,7 +88,7 @@
 
 @media screen and (max-width: 480px) {
     .authform_container {
-        height: 100%;
+        min-height: 100vh;
         border-radius: 0px;
     }
 }

@@ -1,0 +1,22 @@
+/* Floating Action Button */
+
+.fab {
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+    background-color: var(--primary-color);
+    color: white;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5em;
+    font-size: 1.5em;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.fab:hover {
+    cursor: pointer;
+    background-color: black;
+}
