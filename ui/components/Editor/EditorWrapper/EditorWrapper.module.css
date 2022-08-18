@@ -1,0 +1,46 @@
+/* Editor Wrapper */
+
+.container {
+    margin: 0 auto;
+    width: clamp(600px, 80%, 1200px);
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-weight: bold;
+}
+
+.container p {
+    text-align: left;
+    margin: 0.5em 0 1em 0;
+}
+
+.container small {
+    color: rgba(255, 255, 255, 0.438);
+}
+
+.container input[type=text] {
+    width: 100%;
+    padding: 0.5em 1em;
+    font-size: 3em;
+    color: white;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.185);
+}
+
+.container input[type=text]::placeholder {
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.377);
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        width: 100%;
+    }
+    .title_input {
+        font-size: 1em;
+    }
+    .container input[type=text] {
+        font-size: 1em;
+    }
+}

@@ -1,0 +1,34 @@
+.puzzle_card {
+  position: relative;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 1/1;
+    background-color: white;
+    border-radius: 0.8em;
+    padding: 0.5em;
+    align-items: center;
+    justify-content: center;
+}
+
+.puzzle_card_pictures {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.5em;
+}
+
+.puzzle_card_pictures img {
+    border-radius: 0.8em;
+    aspect-ratio: 1/1;
+    width: 100%;
+}
+
+.puzzle_card_title {
+  position: absolute;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  font-size: 0.8em;
+  text-overflow: ellipsis;
+    color: white;
+  background-color: var(--primary-color);
+}
+

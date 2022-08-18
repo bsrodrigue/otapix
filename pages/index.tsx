@@ -1,14 +1,13 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useState } from 'react';
+import { Difficulty } from "../enums";
 import { useAuth } from "../hooks";
 import { Header, PackCard } from "../ui/components";
 import DifficultyRadioGroup from '../ui/components/RadioGroup/DifficultyRadioGroup/DifficultyRadioGroup';
 
-const DIFFICULTIES = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
-
-const Home: NextPage = () => {
-  const [checkedDifficulty, setCheckedDifficulty] = useState<string>(DIFFICULTIES[0]);
+export default function Home() {
+  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(Difficulty.F);
   return (
     <>
       <Head>
@@ -20,7 +19,6 @@ const Home: NextPage = () => {
         <h1 style={{ color: 'white' }}>Difficulty</h1>
         <small style={{ color: "white" }}>Select the difficulty of packages you want</small>
         <DifficultyRadioGroup
-          difficulties={DIFFICULTIES}
           checkedDifficulty={checkedDifficulty}
           setCheckedDifficulty={setCheckedDifficulty} />
       </div>
@@ -42,5 +40,3 @@ const Home: NextPage = () => {
     </>
   );
 };
-
-export default Home;
