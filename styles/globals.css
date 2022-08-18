@@ -5,6 +5,7 @@
 :root {
     --primary-color: #D61C4E;
     --background-color: #100720;
+    --primary-font: 'Quicksand', sans-serif;
 }
 
 * {
@@ -31,8 +32,9 @@ body {
 
 /* II - Typography */
 
-body {
-    font-family: 'Quicksand', sans-serif;
+body,
+button {
+    font-family: var(--primary-font);
 }
 
 a {

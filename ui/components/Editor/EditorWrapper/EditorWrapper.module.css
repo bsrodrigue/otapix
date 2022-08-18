@@ -12,7 +12,11 @@
 
 .container p {
     text-align: left;
-    margin: 1em 0;
+    margin: 0.5em 0 1em 0;
+}
+
+.container small {
+    color: rgba(255, 255, 255, 0.438);
 }
 
 .container input[type=text] {
@@ -29,44 +33,6 @@
     color: rgba(255, 255, 255, 0.377);
 }
 
-.puzzle_grid_container {
-    background-color: rgba(255, 255, 255, 0.075);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.puzzle_grid {
-    padding: 2em 0.5em;
-    height: 20em;
-    overflow-y: scroll;
-}
-
-.puzzle_grid,
-.puzzle_card_pictures {
-    display: grid;
-    grid-template-columns: auto auto;
-    gap: 1em;
-    color: black;
-}
-
-.action {
-    padding: 0.5em;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: white;
-    background-color: var(--primary-color);
-    width: 100%;
-}
-
-.action:hover {
-    background-color: black;
-}
-
-.action.success {
-    background-color: #59CE8F;
-}
-
 @media screen and (max-width: 480px) {
     .container {
         width: 100%;
@@ -74,8 +40,7 @@
     .title_input {
         font-size: 1em;
     }
-
-.container input[type=text] {
-    font-size: 1.2em;
-}
+    .container input[type=text] {
+        font-size: 1em;
+    }
 }

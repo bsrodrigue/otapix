@@ -55,3 +55,7 @@ export interface UseDifficultyState {
     checkedDifficulty: string;
     setCheckedDifficulty: Dispatch<SetStateAction<Difficulty>>;
 }
+
+export interface Styled {
+    style?: any;
+}
