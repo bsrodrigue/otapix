@@ -1,1 +1,10 @@
 /* Puzzle Grid */
+
+.container{
+  height: 20em;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  overflow: hidden;
+  overflow-y: scroll;
+  background-color: var(--primary-color);
+}
