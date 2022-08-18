@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Difficulty } from '../../../../enums';
 import { PuzzlePack } from '../../../../types';
 import { RectangularDropzone } from '../../Dropzone/RectangularDropzone';
@@ -38,13 +38,18 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
       <DifficultyRadioGroup
         checkedDifficulty={checkedDifficulty}
         setCheckedDifficulty={setCheckedDifficulty} />
-      {puzzleEditorIsOpen && <PuzzleEditor isOpen={puzzleEditorIsOpen} />}
-      <p>Liste de puzzle</p>
-      <PuzzleGrid puzzles={currentPack.puzzles} />
-
-      <div className={style.puzzle_grid_actions}>
-        <button onClick={() => { setPuzzleEditorIsOpen(true) }} className={`${style.action} ${style.success}`}>Ajouter un puzzle</button>
-      </div>
+      {puzzleEditorIsOpen
+        ?
+        (<PuzzleEditor isOpen={puzzleEditorIsOpen} setIsOpen={setPuzzleEditorIsOpen} />)
+        :
+        (
+          <>
+            <p>Liste de puzzle</p>
+            <PuzzleGrid puzzles={currentPack.puzzles} />
+            <button onClick={() => { setPuzzleEditorIsOpen(true) }} className={`${style.action} ${style.success}`}>Ajouter un puzzle</button>
+          </>
+        )
+      }
       <button style={{ marginTop: '1em' }} className={`${style.action}`}>Sauvegarder le pack</button>
     </>
   );

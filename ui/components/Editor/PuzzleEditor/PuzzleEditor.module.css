@@ -1,11 +1,5 @@
 /* Puzzle Editor */
-
-.editor button {
-    margin-top: 1em;
-}
-
 .picture_fields {
-    margin: 1em 0;
     display: grid;
     grid-template-columns: auto auto;
     gap: 1em;
