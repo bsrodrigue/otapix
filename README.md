@@ -1,34 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Welcome
 
-## Getting Started
+Otapix is a small web platform built with [Next.js](https://nextjs.org) and [Firebase](https://firebase.google.com) to allow users to create, manage and share otapix packs. An otapix pack is a collection of word or name guessing riddles, inspired from the famous [4Pics1Word](https://en.wikipedia.org/wiki/4_Pics_1_Word) mobile game but with a more geeky and weeb-ish flavour. Keep in mind that the platform is just for managing and finding packs. The actual game is played on another website or client.
 
-First, run the development server:
+The goal is to provide geeks and anime fans with tools to create their own puzzles, share them and have fun together.
 
+
+---
+⭐️ If you enjoy this project and want to show some support, please give us a star! ⭐️
+
+🚀 Quickstart 
+---
+Clone the project where you want move inside before running:
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🕹️ Official game clients
+---
+- [Otapic](https://otapic.netlify.app) - Github: https://github.com/bsrodrigue/four-pics
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+🕹️ Non-official game clients
+---
+- Contribute ;')
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
