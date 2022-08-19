@@ -31,45 +31,39 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
   });
 
   useEffect(() => {
-    setCheckedDifficulty(currentPack.difficulty);
-    setPack(currentPack);
+    if (currentPack) {
+      setCheckedDifficulty(currentPack.difficulty);
+      setPack(currentPack);
+    }
   }, [currentPack]);
 
   useEffect(() => {
-    setValue("difficulty", checkedDifficulty);
+    checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
   return (
     <EditorWrapper>
       <FormProvider {...methods}>
         <form
-          id="pack-editor-form"
           onSubmit={handleSubmit(async (data) => {
             console.log(data);
-            // if (user) {
-            //   const document = {
-            //     title: data.title,
-            //     author: user.uid,
-            //     difficulty: data.difficulty,
-            //   };
-            //   createPack({
-            //     pack: document,
-            //     cover: data.cover[0],
-            //   });
-            // }
-            // const payLoad = {
-            //   title: data?.title,
-            //   cover: data?.cover,
-            //   difficulty: data?.difficulty,
-            //   puzzles: data?.puzzles,
-            // };
-            // payLoad && createPuzzlePack(payLoad);
+            if (user) {
+              const document = {
+                title: data.title,
+                author: user.uid,
+                difficulty: data.difficulty,
+              };
+              createPack({
+                pack: document,
+                cover: data.cover[0],
+                puzzles: data.puzzles,
+              });
+            }
           })}
         >
           <p>Couverture</p>
           <RectangularDropzone
             label="Telecharger une image"
-            src={pack?.cover}
             {...register("cover")}
           />
 
@@ -77,7 +71,6 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
           <input
             type="text"
             placeholder="Trouvez un titre pour votre pack..."
-            value={pack?.title}
             {...register("title")}
           />
 
@@ -88,14 +81,7 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
             setCheckedDifficulty={setCheckedDifficulty}
           />
 
-          {puzzleEditorIsOpen ? (
-            <PuzzleEditor
-              isOpen={puzzleEditorIsOpen}
-              setIsOpen={setPuzzleEditorIsOpen}
-              setPack={setPack}
-              // {...register}
-            />
-          ) : (
+          {!puzzleEditorIsOpen && (
             <>
               <p>Liste des énigmes</p>
               <PuzzleGrid puzzles={values.puzzles} />
@@ -123,6 +109,13 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
             />
           )}
         </form>
+        {puzzleEditorIsOpen && (
+          <PuzzleEditor
+            isOpen={puzzleEditorIsOpen}
+            setIsOpen={setPuzzleEditorIsOpen}
+            setPack={setPack}
+          />
+        )}
       </FormProvider>
     </EditorWrapper>
   );

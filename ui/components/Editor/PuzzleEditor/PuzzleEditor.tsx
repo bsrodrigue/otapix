@@ -40,6 +40,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
           />
           <div style={{ display: "flex", marginTop: "1em" }}>
             <Button
+              type="button"
               onClick={() => {
                 setIsOpen?.(false);
                 document
@@ -50,6 +51,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
               Annuler
             </Button>
             <Button
+              type="button"
               style={{ backgroundColor: "white", color: "black" }}
               onClick={async () => {
                 const pictures: Array<string> = [];
@@ -68,9 +70,6 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
 
                 setValue("puzzles", [...values.puzzles, newPuzzle]);
                 setIsOpen?.(false);
-                document
-                  .getElementById("puzzle-grid-container")
-                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Confirmer
