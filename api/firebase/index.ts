@@ -1,10 +1,11 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
-import { collection, doc, DocumentData, getDocs, QueryDocumentSnapshot, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentData, getDocs, QueryDocumentSnapshot, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth } from "../../config/firebase/auth";
 import { db } from "../../config/firebase/firestore";
 import { storage } from "../../config/firebase/storage";
-import { HasID, PuzzlePack } from "../../types";
+import { Difficulty } from "../../enums";
+import { HasAuthor, HasID, HasTitle, Puzzle, PuzzlePack } from "../../types";
 
 const USER_PROFILES = "user_profiles";
 
@@ -27,6 +28,17 @@ export async function uploadFile(path: string, file: Blob) {
   const fileRef = ref(storage, path);
   const snapShop = await uploadBytes(fileRef, file);
   const downloadURL = await getDownloadURL(snapShop.ref);
+  return downloadURL;
+}
+
+export async function uploadPackCover(title: string, file: Blob) {
+  const path = `pack_data/${title}/cover`
+  const downloadURL = await uploadFile(path, file);
+  return downloadURL;
+}
+
+export async function uploadPuzzlePicture(path: string, file: Blob) {
+  const downloadURL = await uploadFile(path, file);
   return downloadURL;
 }
 
@@ -54,7 +66,57 @@ export async function getUserProfiles() {
   return profiles;
 }
 
-export async function createPuzzlePack(pack: Extract<PuzzlePack, HasID>) {
-  const { cover, ...rest } = pack;
-  await setDoc(doc(db, "packs", "player"), { ...rest });
+interface CreateDocumentParams {
+  document: any;
+  path?: string;
+  documentId?: string;
 }
+
+export async function createDocument({ document, path, documentId }: CreateDocumentParams) {
+  let result = null;
+  path = path || "misc";
+  if (documentId) {
+    await setDoc(doc(db, path, documentId), { ...document });
+  } else {
+    result = await addDoc(collection(db, path), { ...document });
+  }
+  return result;
+}
+
+
+interface CreatePackParams {
+  pack: HasTitle & HasAuthor & { difficulty: Difficulty };
+  cover: File;
+  puzzles?: Array<Puzzle>;
+}
+
+export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
+  if (!cover) {
+    console.error("No cover");
+    return;
+  }
+  const result = await createDocument({ document: pack, path: "packs" });
+  if (!result) throw Error("Error while creating pack on server");
+  if (puzzles?.length !== 0) {
+    const serverPuzzles: any[] = [];
+    puzzles?.forEach(async (puzzle) => {
+      // const p1 = await uploadPuzzlePicture(`pack_data/${pack.title}/pictures/`, puzzle.pictures[0]);
+      // const urls = await Promise.all([
+      //   puzzle.pictures.map(async (picture) => {
+
+      //   })
+      // ]);
+      // const puzzleDoc = createDocument({ document: {}, path: `packs/${}` })
+    });
+    // await setDoc(result, { puzzles: coverUrl }, { merge: true });
+  }
+  const coverUrl = await uploadPackCover(pack.title, cover);
+  console.log(result);
+  console.log(coverUrl);
+  await setDoc(result, { cover: coverUrl }, { merge: true });
+}
+
+// export async function createPuzzlePack(pack: Extract<PuzzlePack, HasID>) {
+//   const { cover, ...rest } = pack;
+//   await setDoc(doc(db, "packs", "player"), { ...rest });
+// }
