@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { useFormContext } from "react-hook-form";
 import { getSrcFromFile } from "../../../../lib/utils";
-import { PuzzlePack } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { RectangularDropzone } from "../../Dropzone";
 import style from "./PuzzleEditor.module.css";
@@ -9,7 +8,6 @@ import style from "./PuzzleEditor.module.css";
 interface PuzzleEditorProps {
   isOpen?: boolean;
   setIsOpen?: Dispatch<SetStateAction<boolean>>;
-  setPack?: Dispatch<SetStateAction<PuzzlePack | undefined>>;
 }
 
 export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {

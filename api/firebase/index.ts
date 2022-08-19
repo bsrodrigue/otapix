@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
-import { addDoc, collection, doc, DocumentData, getDocs, QueryDocumentSnapshot, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentData, getDocs, query, QueryDocumentSnapshot, setDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth } from "../../config/firebase/auth";
 import { db } from "../../config/firebase/firestore";
@@ -133,7 +133,26 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
   console.log(coverUrl);
 }
 
-// export async function createPuzzlePack(pack: Extract<PuzzlePack, HasID>) {
-//   const { cover, ...rest } = pack;
-//   await setDoc(doc(db, "packs", "player"), { ...rest });
-// }
+export async function getPacksFromUser(uid: string) {
+  const packsRef = collection(db, "packs");
+  const q = query(packsRef, where("author", "==", uid));
+  const querySnapshot = await getDocs(q);
+
+  const result: Array<PuzzlePack> = [];
+
+  let index = 0;
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const puzzlePack: PuzzlePack = {
+      id: index,
+      title: data?.title,
+      cover: data?.cover,
+      author: data?.author,
+      difficulty: data?.difficulty,
+      puzzles: data?.puzzles,
+    }
+    result.push(puzzlePack);
+  })
+  return result;
+}
+

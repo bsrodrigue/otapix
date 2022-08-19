@@ -19,21 +19,28 @@ interface PackEditorProps {
 export default function PackEditor({ currentPack }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
-  const [pack, setPack] = useState<PuzzlePack>();
+  const [backup, setBackup] = useState<string>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch } = methods;
   const values = watch();
+  const { pack } = values;
   const { user } = useAuth();
 
   useEffect(() => {
     register("difficulty");
-    register("puzzles", { value: [] });
+    register("puzzles", { value: pack?.puzzles || [] });
   });
 
   useEffect(() => {
+
     if (currentPack) {
+      setBackup(JSON.stringify(currentPack));
+    }
+
+    if (currentPack) {
+      setValue("pack", currentPack);
+      setValue("puzzles", pack?.puzzles);
       setCheckedDifficulty(currentPack.difficulty);
-      setPack(currentPack);
     }
   }, [currentPack]);
 
@@ -64,6 +71,7 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
           <p>Couverture</p>
           <RectangularDropzone
             label="Telecharger une image"
+            src={pack?.cover}
             {...register("cover")}
           />
 
@@ -71,6 +79,7 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
           <input
             type="text"
             placeholder="Trouvez un titre pour votre pack..."
+            value={pack?.title}
             {...register("title")}
           />
 
@@ -113,7 +122,6 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
           <PuzzleEditor
             isOpen={puzzleEditorIsOpen}
             setIsOpen={setPuzzleEditorIsOpen}
-            setPack={setPack}
           />
         )}
       </FormProvider>
