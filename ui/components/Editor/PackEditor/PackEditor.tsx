@@ -32,7 +32,6 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
   });
 
   useEffect(() => {
-
     if (currentPack) {
       setBackup(JSON.stringify(currentPack));
     }

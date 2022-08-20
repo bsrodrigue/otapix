@@ -33,7 +33,9 @@
 
 .packcard_title {
     font-weight: bold;
-    font-size: 2em;
+    font-size: 1.5em;
+    width: 10em;
+    text-overflow: ellipsis;
 }
 
 .packcard_author {
@@ -89,4 +91,10 @@
 .packcard_action:hover {
     cursor: pointer;
     background-color: black;
+}
+
+@media screen and (max-width: 480px) {
+    .packcard_cover {
+        height: 10em;
+    }
 }
