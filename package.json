@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.184",
     "@types/uuid": "^8.3.4",
     "firebase": "^9.9.2",
+    "lodash": "^4.17.21",
     "next": "12.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { createPack } from "../../../../api/firebase";
+import { createPack, editPack } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { AppPacks, LocalPuzzlePack, PuzzlePack } from "../../../../types";
@@ -11,6 +11,7 @@ import { PuzzleGrid } from "../../Grid/PuzzleGrid";
 import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
 import { EditorWrapper } from "../EditorWrapper";
 import { PuzzleEditor } from "../PuzzleEditor";
+import _ from "lodash";
 import style from "./PackEditor.module.css";
 
 interface PackEditorProps {
@@ -21,6 +22,7 @@ interface PackEditorProps {
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
+  const [backup, setBackup] = useState<PuzzlePack | LocalPuzzlePack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
@@ -33,14 +35,17 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   });
 
   useEffect(() => {
-    console.log("Current pack in editor: ", currentPack);
     if (currentPack) {
       reset();
+      setBackup(currentPack);
       setValue("pack", currentPack);
       setValue("puzzles", currentPack?.puzzles);
+      setValue("cover", currentPack?.cover);
+      setValue("title", currentPack?.title);
       setCheckedDifficulty(currentPack?.difficulty);
+      console.log(values);
     }
-  }, [currentPack?.id, currentPack?.puzzles, currentPack?.difficulty]);
+  }, [currentPack]);
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
@@ -58,24 +63,49 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   author: user.uid,
                   difficulty: data.difficulty,
                 };
-                const result = await createPack({
-                  pack,
-                  cover: data.cover[0],
+
+                const cover = typeof data.cover === "string" ? data.cover : data.cover[0];
+
+                const newPack = {
+                  id: currentPack?.id,
+                  ...pack,
                   puzzles: data.puzzles,
-                });
+                  cover,
+                }
 
-                setPacks?.((prev) => {
-                  let local = prev.local;
-                  let remote = prev.remote;
-                  local = local.filter((pack) => pack.id !== currentPack?.id);
-                  remote.push(result);
+                if (_.isEqual(backup, newPack)) return;
 
-                  return {
-                    local, remote
+                if (currentPack?.local) {
+                  const result = await createPack({
+                    pack,
+                    cover: data.cover[0],
+                    puzzles: data.puzzles,
+                  });
+
+                  setPacks?.((prev) => {
+                    let local = prev.local;
+                    let remote = prev.remote;
+                    local = local.filter((pack) => pack.id !== currentPack?.id);
+                    remote.push(result);
+
+                    return {
+                      local, remote
+                    }
+                  });
+                  toast("Pack cree avec succes");
+                } else {
+                  console.log("Edit pack");
+                  if (currentPack && currentPack.id) {
+                    const result = await editPack({
+                      id: currentPack.id,
+                      title: data.title,
+                      difficulty: data?.difficulty,
+                      cover,
+                    })
+                    console.log("After update: ", result);
+                    toast("Pack edit avec succes");
                   }
-                });
-
-                toast("Pack cree avec succes");
+                }
               }
             } catch (error) {
               console.error(error);

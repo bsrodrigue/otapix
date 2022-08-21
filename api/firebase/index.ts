@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
-import { addDoc, collection, doc, DocumentData, getDoc, getDocs, query, QueryDocumentSnapshot, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentData, getDoc, getDocs, query, QueryDocumentSnapshot, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth } from "../../config/firebase/auth";
 import { db } from "../../config/firebase/firestore";
@@ -120,6 +120,11 @@ export async function uploadPuzzlePicturesFromPuzzle(puzzle: Puzzle, title: stri
   }
 
   return p;
+}
+
+export async function editPack({ id, ...rest }: any) {
+  const docRef = doc(db, "packs", id.toString());
+  await updateDoc(docRef, { ...rest });
 }
 
 export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
