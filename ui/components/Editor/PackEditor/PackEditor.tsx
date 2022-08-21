@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { createPack } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
-import { PuzzlePack } from "../../../../types";
+import { AppPacks, LocalPuzzlePack, PuzzlePack } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { RectangularDropzone } from "../../Dropzone/RectangularDropzone";
 import { PuzzleGrid } from "../../Grid/PuzzleGrid";
@@ -13,15 +14,15 @@ import { PuzzleEditor } from "../PuzzleEditor";
 import style from "./PackEditor.module.css";
 
 interface PackEditorProps {
-  currentPack: PuzzlePack;
+  currentPack?: PuzzlePack | LocalPuzzlePack;
+  setPacks?: Dispatch<SetStateAction<AppPacks>>
 }
 
-export default function PackEditor({ currentPack }: PackEditorProps) {
+export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
-  const [backup, setBackup] = useState<string>();
   const methods = useForm();
-  const { register, handleSubmit, setValue, watch } = methods;
+  const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { pack } = values;
   const { user } = useAuth();
@@ -32,16 +33,14 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
   });
 
   useEffect(() => {
+    console.log("Current pack in editor: ", currentPack);
     if (currentPack) {
-      setBackup(JSON.stringify(currentPack));
-    }
-
-    if (currentPack) {
+      reset();
       setValue("pack", currentPack);
-      setValue("puzzles", pack?.puzzles);
-      setCheckedDifficulty(currentPack.difficulty);
+      setValue("puzzles", currentPack?.puzzles);
+      setCheckedDifficulty(currentPack?.difficulty);
     }
-  }, [currentPack]);
+  }, [currentPack?.id, currentPack?.puzzles, currentPack?.difficulty]);
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
@@ -52,18 +51,35 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(async (data) => {
-            console.log(data);
-            if (user) {
-              const document = {
-                title: data.title,
-                author: user.uid,
-                difficulty: data.difficulty,
-              };
-              createPack({
-                pack: document,
-                cover: data.cover[0],
-                puzzles: data.puzzles,
-              });
+            try {
+              if (user) {
+                const pack = {
+                  title: data.title,
+                  author: user.uid,
+                  difficulty: data.difficulty,
+                };
+                const result = await createPack({
+                  pack,
+                  cover: data.cover[0],
+                  puzzles: data.puzzles,
+                });
+
+                setPacks?.((prev) => {
+                  let local = prev.local;
+                  let remote = prev.remote;
+                  local = local.filter((pack) => pack.id !== currentPack?.id);
+                  remote.push(result);
+
+                  return {
+                    local, remote
+                  }
+                });
+
+                toast("Pack cree avec succes");
+              }
+            } catch (error) {
+              console.error(error);
+              toast("Erreur lors de la creation du pack");
             }
           })}
         >
@@ -78,7 +94,7 @@ export default function PackEditor({ currentPack }: PackEditorProps) {
           <input
             type="text"
             placeholder="Trouvez un titre pour votre pack..."
-            value={pack?.title}
+            value={values.title}
             {...register("title")}
           />
 

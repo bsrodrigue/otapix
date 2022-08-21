@@ -2,7 +2,8 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { BsPlusCircleFill } from "react-icons/bs";
 import { Difficulty } from "../../../enums";
 import { useAuth } from "../../../hooks";
-import { PuzzlePack, UsePackArrayState, UsePackIndexState } from "../../../types";
+import { v4 as uuidv4 } from "uuid";
+import { LocalPuzzlePack, PuzzlePack, UsePackArrayState, UsePackIndexState } from "../../../types";
 import style from './Accordion.module.css';
 
 export interface AccordionProps
@@ -34,24 +35,22 @@ export default function Accordion({
               className={`${style.accordion_action}`}
               onClick={() => {
                 if (!user) return;
-
-                const biggestId = Math.max(...packs.map(pack => parseInt(pack.id.toString())));
-
-                const newPuzzlePack: PuzzlePack = {
-                  id: biggestId + 1,
+                const newPuzzlePack: LocalPuzzlePack = {
+                  id: uuidv4(),
                   title: "Nouveau pack",
-                  author: user.uid,
                   difficulty: Difficulty.F,
                   cover: "",
                   puzzles: [],
+                  local: true,
                 };
 
-                setPacks((oldPacks) => {
-                  const data = [...oldPacks, newPuzzlePack];
-                  return data;
+                setPacks((prev) => {
+                  prev.local.push(newPuzzlePack);
+                  return prev;
                 })
 
                 setCurrentPackIndex(packs.length);
+                setSideBarIsOpen(false);
               }}
             >
               <BsPlusCircleFill />

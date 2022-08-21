@@ -38,10 +38,6 @@ export async function uploadPackCover(title: string, file: Blob) {
   return downloadURL;
 }
 
-export async function uploadPuzzlePicture(path: string, file: Blob) {
-  const downloadURL = await uploadFile(path, file);
-  return downloadURL;
-}
 
 export async function uploadUserFile(fileName: string, file: Blob, user: User) {
   const path = `user_data/user_${user.email}/${fileName}`;
@@ -88,49 +84,72 @@ export async function createDocument({ document, path, documentId }: CreateDocum
 interface CreatePackParams {
   pack: HasTitle & HasAuthor & { difficulty: Difficulty };
   cover: File;
-  puzzles?: Array<Puzzle>;
+  puzzles: Array<Puzzle>;
+}
+
+export function dataURLToBlob(dataURL: string) {
+  const base64 = getBase64StringFromDataURL(dataURL);
+  const [, type] = dataURL.split(';')[0].split('/');
+  const file = base64ToBlob(base64, `image/${type}`);
+  return file;
+}
+
+interface UploadPuzzlePictureParams {
+  title: string;
+  word: string;
+  index: number;
+  file: Blob;
+}
+
+export async function uploadPuzzlePicture({ title, word, index, file }: UploadPuzzlePictureParams) {
+  const path = `pack_data/${title}/${word}/picture_${index}.${file.type.replace("image/", "")}`;
+  const downloadURL = await uploadFile(path, file);
+  return downloadURL;
+}
+
+export async function uploadPuzzlePicturesFromPuzzle(puzzle: Puzzle, title: string) {
+  const p: { word: string, pictures: Array<string> } = { word: puzzle.word, pictures: [] };
+  console.log(puzzle);
+
+  for (let i = 0; i < puzzle.pictures.length; i++) {
+    const picture = puzzle.pictures[i];
+    console.log(picture);
+    const file = dataURLToBlob(picture);
+    const url = await uploadPuzzlePicture({ title, word: puzzle.word, index: i, file });
+    url && p.pictures.push(url);
+  }
+
+  return p;
 }
 
 export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
-  if (!cover) {
-    console.error("No cover");
-    return;
-  }
-
-  const localPuzzles = [];
+  if (puzzles.length === 0) throw Error("No puzzles provided for this pack");
   const result = await createDocument({ document: pack, path: "packs" });
-
   if (!result) throw Error("Error while creating pack on server");
 
-  if (puzzles && puzzles.length !== 0) {
-    for (let i = 0; i < puzzles?.length; i++) {
-      const puzzle = puzzles[i];
-      const pictures: Array<string> = [];
-      const p: any = { word: "new_puzzle" };
-
-      for (let j = 0; j < puzzle.pictures.length; j++) {
-        const picture = puzzle.pictures[j];
-
-        const base64 = getBase64StringFromDataURL(picture);
-        const [, type] = picture.split(';')[0].split('/');
-        const file = base64ToBlob(base64, `image/${type}`);
-        const url = await uploadPuzzlePicture(`pack_data/${pack.title}/${puzzle.word}_picture_${j}.${file.type.replace("image/", "")}`, file);
-        url && pictures.push(url);
-      }
-
-      p.word = puzzle.word;
-      p.pictures = pictures;
-      console.log(p);
-      localPuzzles.push(p);
-    }
-  }
   const coverUrl = await uploadPackCover(pack.title, cover);
+
+  const localPuzzles = [];
+
+  for (let i = 0; i < puzzles?.length; i++) {
+    const puzzle = puzzles[i];
+    const p = await uploadPuzzlePicturesFromPuzzle(puzzle, pack.title);
+    localPuzzles.push(p);
+  }
 
   await setDoc(result, { puzzles: localPuzzles }, { merge: true });
   await setDoc(result, { cover: coverUrl }, { merge: true });
 
-  console.log(result);
-  console.log(coverUrl);
+  const localPack: PuzzlePack = {
+    id: result.id,
+    title: pack.title,
+    difficulty: pack.difficulty,
+    cover: coverUrl,
+    author: pack.author,
+    puzzles: localPuzzles,
+  }
+
+  return localPack;
 }
 
 export async function getAllPacks() {
@@ -157,17 +176,15 @@ export async function getAllPacks() {
 }
 
 export async function getPacksFromUser(uid: string) {
-  const packsRef = collection(db, "packs");
-  const q = query(packsRef, where("author", "==", uid));
+  const q = getUserIsAuthorQuery(uid);
   const querySnapshot = await getDocs(q);
 
   const result: Array<PuzzlePack> = [];
 
-  let index = 0;
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     const puzzlePack: PuzzlePack = {
-      id: index,
+      id: doc.id,
       title: data?.title,
       cover: data?.cover,
       author: data?.author,
@@ -179,3 +196,6 @@ export async function getPacksFromUser(uid: string) {
   return result;
 }
 
+export function getUserIsAuthorQuery(uid: string) {
+  return query(collection(db, "packs"), where("author", "==", uid));
+} 

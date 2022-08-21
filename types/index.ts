@@ -27,11 +27,17 @@ export interface FormField {
   className?: string;
 }
 
-export interface Puzzle extends HasID {
+export interface Puzzle {
   word: string;
-  universe: string;
+  universe?: string;
   pictures: Array<string>;
-  order: number;
+  order?: number;
+}
+
+export interface LocalPuzzlePack extends HasTitle, HasID, HasCover {
+  difficulty: Difficulty;
+  puzzles: Array<{ word: string; pictures: Array<string> }>
+  local: boolean;
 }
 
 export interface PuzzlePack extends IdentifiableCreation, HasCover, HasTitle {
@@ -47,8 +53,8 @@ export interface UsePackIndexState {
 }
 
 export interface UsePackArrayState {
-  packs: Array<PuzzlePack>;
-  setPacks: Dispatch<SetStateAction<Array<PuzzlePack>>>;
+  packs: Array<PuzzlePack | LocalPuzzlePack>;
+  setPacks: Dispatch<SetStateAction<AppPacks>>;
 }
 
 export interface UseDifficultyState {
@@ -59,3 +65,9 @@ export interface UseDifficultyState {
 export interface Styled {
   style?: any;
 }
+
+export interface AppPacks {
+  local: Array<LocalPuzzlePack>;
+  remote: Array<PuzzlePack>;
+}
+
