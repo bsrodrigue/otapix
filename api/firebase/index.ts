@@ -1,13 +1,16 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
-import { addDoc, collection, doc, DocumentData, getDoc, getDocs, query, QueryDocumentSnapshot, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentData, getDocs, query, QueryDocumentSnapshot, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth } from "../../config/firebase/auth";
 import { db } from "../../config/firebase/firestore";
 import { storage } from "../../config/firebase/storage";
 import { Difficulty } from "../../enums";
 import { base64ToBlob, getBase64StringFromDataURL } from "../../lib/utils";
-import { HasAuthor, HasID, HasTitle, Puzzle, PuzzlePack } from "../../types";
+import { HasAuthor, HasTitle, Puzzle, PuzzlePack } from "../../types";
 
+
+// Collections
+const PACKS = "packs";
 const USER_PROFILES = "user_profiles";
 
 export interface RegisterRequestParams {
@@ -157,22 +160,26 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
   return localPack;
 }
 
+
+export function getRef(documentPath: string) {
+  return collection(db, documentPath);
+}
+
 export async function getAllPacks() {
-  const packsRef = collection(db, "packs");
-  const querySnapshot = await getDocs(packsRef);
+  const packsRef = getRef(PACKS);
+  const packsDocs = await getDocs(packsRef);
 
   const result: Array<PuzzlePack> = [];
-  let index = 0;
 
-  querySnapshot.forEach((doc) => {
+  packsDocs.forEach((doc) => {
     const data = doc.data();
     const puzzlePack: PuzzlePack = {
-      id: index,
-      title: data?.title,
-      cover: data?.cover,
-      author: data?.author,
-      difficulty: data?.difficulty,
-      puzzles: data?.puzzles,
+      id: doc.id,
+      title: data.title,
+      cover: data.cover,
+      author: data.author,
+      difficulty: data.difficulty,
+      puzzles: data.puzzles,
     }
     result.push(puzzlePack);
   })

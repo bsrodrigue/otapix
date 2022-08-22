@@ -15,8 +15,8 @@ import _ from "lodash";
 import style from "./PackEditor.module.css";
 
 interface PackEditorProps {
-  currentPack?: PuzzlePack | LocalPuzzlePack;
-  setPacks?: Dispatch<SetStateAction<AppPacks>>
+  currentPack: LocalPuzzlePack | PuzzlePack;
+  setPacks?: Dispatch<SetStateAction<AppPacks>>;
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
@@ -43,9 +43,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       setValue("cover", currentPack?.cover);
       setValue("title", currentPack?.title);
       setCheckedDifficulty(currentPack?.difficulty);
-      console.log(values);
     }
-  }, [currentPack]);
+  }, [currentPack, reset, setValue]);
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
@@ -64,18 +63,19 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   difficulty: data.difficulty,
                 };
 
-                const cover = typeof data.cover === "string" ? data.cover : data.cover[0];
+                const cover =
+                  typeof data.cover === "string" ? data.cover : data.cover[0];
 
                 const newPack = {
                   id: currentPack?.id,
                   ...pack,
                   puzzles: data.puzzles,
                   cover,
-                }
+                };
 
                 if (_.isEqual(backup, newPack)) return;
 
-                if (currentPack?.local) {
+                if ("local" in currentPack && currentPack.local) {
                   const result = await createPack({
                     pack,
                     cover: data.cover[0],
@@ -89,8 +89,9 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                     remote.push(result);
 
                     return {
-                      local, remote
-                    }
+                      local,
+                      remote,
+                    };
                   });
                   toast("Pack cree avec succes");
                 } else {
@@ -101,7 +102,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                       title: data.title,
                       difficulty: data?.difficulty,
                       cover,
-                    })
+                    });
                     console.log("After update: ", result);
                     toast("Pack edit avec succes");
                   }

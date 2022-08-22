@@ -35,9 +35,9 @@ export interface Puzzle {
 }
 
 export interface LocalPuzzlePack extends HasTitle, HasID, HasCover {
+  local: boolean;
   difficulty: Difficulty;
   puzzles: Array<{ word: string; pictures: Array<string> }>;
-  local: boolean;
 }
 
 export interface PuzzlePack extends IdentifiableCreation, HasCover, HasTitle {
