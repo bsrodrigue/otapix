@@ -1,5 +1,4 @@
 /* Editor Wrapper */
-
 .container {
     margin: 0 auto;
     width: clamp(600px, 80%, 1200px);
@@ -12,7 +11,7 @@
 
 .container p {
     text-align: left;
-    margin: 0.5em 0 1em 0;
+    margin: 0.5em 0;
 }
 
 .container small {

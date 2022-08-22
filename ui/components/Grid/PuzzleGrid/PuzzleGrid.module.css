@@ -1,7 +1,7 @@
 /* Puzzle Grid */
 
 .container {
-    height: 20em;
+    height: 10em;
     padding: 0.5em;
     border-radius: 0.5em 0.5em 0 0;
     overflow: hidden;

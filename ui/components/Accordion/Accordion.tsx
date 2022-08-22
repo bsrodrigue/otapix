@@ -5,6 +5,7 @@ import { useAuth } from "../../../hooks";
 import { v4 as uuidv4 } from "uuid";
 import { LocalPuzzlePack, PuzzlePack, UsePackArrayState, UsePackIndexState } from "../../../types";
 import style from './Accordion.module.css';
+import { createLocalPuzzlePack } from "../../../lib/utils";
 
 export interface AccordionProps
   extends
@@ -35,14 +36,7 @@ export default function Accordion({
               className={`${style.accordion_action}`}
               onClick={() => {
                 if (!user) return;
-                const newPuzzlePack: LocalPuzzlePack = {
-                  id: uuidv4(),
-                  title: "Nouveau pack",
-                  difficulty: Difficulty.F,
-                  cover: "",
-                  puzzles: [],
-                  local: true,
-                };
+                const newPuzzlePack: LocalPuzzlePack = createLocalPuzzlePack();
 
                 setPacks((prev) => {
                   prev.local.push(newPuzzlePack);
@@ -92,6 +86,15 @@ export default function Accordion({
                     <div
                       className={`${style.accordion_item} ${style.selected}`}
                       onClick={() => {
+                        if (!user) return;
+                        const newPuzzlePack: LocalPuzzlePack = createLocalPuzzlePack();
+
+                        setPacks((prev) => {
+                          prev.local.push(newPuzzlePack);
+                          return prev;
+                        })
+
+                        setCurrentPackIndex(packs.length);
                         setSideBarIsOpen(false);
                       }}
                     >

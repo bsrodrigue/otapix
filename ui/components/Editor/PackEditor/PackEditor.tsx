@@ -12,7 +12,8 @@ import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
 import { EditorWrapper } from "../EditorWrapper";
 import { PuzzleEditor } from "../PuzzleEditor";
 import _ from "lodash";
-import style from "./PackEditor.module.css";
+import { SpinnerButton } from "../../Button/SpinnerButton";
+// import style from "./PackEditor.module.css";
 
 interface PackEditorProps {
   currentPack: LocalPuzzlePack | PuzzlePack;
@@ -22,6 +23,7 @@ interface PackEditorProps {
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [backup, setBackup] = useState<PuzzlePack | LocalPuzzlePack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
@@ -32,7 +34,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   useEffect(() => {
     register("difficulty");
     register("puzzles", { value: pack?.puzzles || [] });
-  });
+  }, []);
 
   useEffect(() => {
     if (currentPack) {
@@ -57,6 +59,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           onSubmit={handleSubmit(async (data) => {
             try {
               if (user) {
+                setIsLoading(true);
                 const pack = {
                   title: data.title,
                   author: user.uid,
@@ -111,6 +114,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             } catch (error) {
               console.error(error);
               toast("Erreur lors de la creation du pack");
+            } finally {
+              setIsLoading(false);
             }
           })}
         >
@@ -151,18 +156,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             </>
           )}
 
-          {!puzzleEditorIsOpen && (
-            <input
-              type="submit"
-              value="Sauvegarder"
-              style={{
-                marginTop: "0.5em",
-                backgroundColor: "white",
-                color: "black",
-              }}
-              className={`${style.action}`}
-            />
-          )}
+          {!puzzleEditorIsOpen && (<SpinnerButton isLoading={isLoading} />)}
         </form>
         {puzzleEditorIsOpen && (
           <PuzzleEditor
