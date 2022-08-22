@@ -29,3 +29,18 @@ export async function readFileAsDataURL(file: File) {
     });
     return result_base64;
 }
+
+export function base64ToBlob(base64: string, type?: string) {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type });
+    return blob;
+}
+
+export function getBase64StringFromDataURL(dataURL: string) {
+    return dataURL.replace('data:', '').replace(/^.+,/, '');
+}

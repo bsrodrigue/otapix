@@ -1,13 +1,25 @@
-import type { NextPage } from "next";
 import Head from "next/head";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getAllPacks } from "../api/firebase";
 import { Difficulty } from "../enums";
-import { useAuth } from "../hooks";
+import { PuzzlePack } from "../types";
 import { Header, PackCard } from "../ui/components";
 import DifficultyRadioGroup from '../ui/components/RadioGroup/DifficultyRadioGroup/DifficultyRadioGroup';
 
 export default function Home() {
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(Difficulty.F);
+  const [packs, setPacks] = useState<Array<PuzzlePack>>([]);
+
+  useEffect(() => {
+    async function getPacks() {
+      const result = await getAllPacks();
+      setPacks(result)
+    }
+
+    getPacks();
+
+  }, [])
+
   return (
     <>
       <Head>
@@ -32,10 +44,11 @@ export default function Home() {
         }}
         className="wrapper"
       >
-        <PackCard />
-        <PackCard />
-        <PackCard />
-        <PackCard />
+        {
+          packs?.map((pack, key) => (
+            <PackCard key={key} pack={pack} />
+          ))
+        }
       </div>
     </>
   );

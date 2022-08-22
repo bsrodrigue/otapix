@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { useFormContext } from "react-hook-form";
 import { getSrcFromFile } from "../../../../lib/utils";
-import { PuzzlePack } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { RectangularDropzone } from "../../Dropzone";
 import style from "./PuzzleEditor.module.css";
@@ -9,7 +8,6 @@ import style from "./PuzzleEditor.module.css";
 interface PuzzleEditorProps {
   isOpen?: boolean;
   setIsOpen?: Dispatch<SetStateAction<boolean>>;
-  setPack?: Dispatch<SetStateAction<PuzzlePack | undefined>>;
 }
 
 export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
@@ -40,6 +38,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
           />
           <div style={{ display: "flex", marginTop: "1em" }}>
             <Button
+              type="button"
               onClick={() => {
                 setIsOpen?.(false);
                 document
@@ -50,6 +49,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
               Annuler
             </Button>
             <Button
+              type="button"
               style={{ backgroundColor: "white", color: "black" }}
               onClick={async () => {
                 const pictures: Array<string> = [];
@@ -68,9 +68,6 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
 
                 setValue("puzzles", [...values.puzzles, newPuzzle]);
                 setIsOpen?.(false);
-                document
-                  .getElementById("puzzle-grid-container")
-                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Confirmer
