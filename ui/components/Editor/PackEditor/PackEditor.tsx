@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -11,7 +12,6 @@ import { PuzzleGrid } from "../../Grid/PuzzleGrid";
 import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
 import { EditorWrapper } from "../EditorWrapper";
 import { PuzzleEditor } from "../PuzzleEditor";
-import _ from "lodash";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 // import style from "./PackEditor.module.css";
 
@@ -37,6 +37,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   }, []);
 
   useEffect(() => {
+    console.log("Current pack changed");
     if (currentPack) {
       reset();
       setBackup(currentPack);
@@ -52,6 +53,22 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
+
+  function onSuccess(result: any) {
+    setPacks?.((prev) => {
+      let local = prev.local;
+      let remote = prev.remote;
+      local = local.filter((pack) => pack.id !== currentPack?.id);
+      remote = remote.filter((pack) => pack.id !== currentPack?.id);
+      remote.push({ ...currentPack, ...result });
+
+      return {
+        local,
+        remote,
+      };
+    });
+  }
+
   return (
     <EditorWrapper>
       <FormProvider {...methods}>
@@ -60,60 +77,49 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             try {
               if (user) {
                 setIsLoading(true);
+                const cover = typeof data.cover === "string" ? data.cover : data.cover[0];
                 const pack = {
                   title: data.title,
                   author: user.uid,
                   difficulty: data.difficulty,
                 };
 
-                const cover =
-                  typeof data.cover === "string" ? data.cover : data.cover[0];
 
-                const newPack = {
-                  id: currentPack?.id,
-                  ...pack,
-                  puzzles: data.puzzles,
-                  cover,
-                };
+                if (_.isEqual(backup, { id: currentPack.id, puzzles: data.puzzles, cover, ...pack })) {
+                  toast("Aucune modification", { type: "warning" });
+                  return;
+                }
 
-                if (_.isEqual(backup, newPack)) return;
-
+                // Create or update
                 if ("local" in currentPack && currentPack.local) {
                   const result = await createPack({
                     pack,
                     cover: data.cover[0],
                     puzzles: data.puzzles,
                   });
+                  // onSuccess(result);
+                  toast("Pack cree avec succes", { type: "success" });
 
-                  setPacks?.((prev) => {
-                    let local = prev.local;
-                    let remote = prev.remote;
-                    local = local.filter((pack) => pack.id !== currentPack?.id);
-                    remote.push(result);
-
-                    return {
-                      local,
-                      remote,
-                    };
-                  });
-                  toast("Pack cree avec succes");
                 } else {
-                  console.log("Edit pack");
+
+                  const localPuzzles = data.puzzles.filter((puzzle: any) => puzzle?.local);
+
                   if (currentPack && currentPack.id) {
                     const result = await editPack({
                       id: currentPack.id,
                       title: data.title,
                       difficulty: data?.difficulty,
                       cover,
+                      puzzles: localPuzzles,
                     });
-                    console.log("After update: ", result);
-                    toast("Pack edit avec succes");
+                    // onSuccess(result);
+                    toast("Pack edit avec succes", { type: "success" });
                   }
                 }
               }
             } catch (error) {
               console.error(error);
-              toast("Erreur lors de la creation du pack");
+              toast("Erreur lors de la creation du pack", { type: "error" });
             } finally {
               setIsLoading(false);
             }

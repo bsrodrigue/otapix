@@ -8,7 +8,10 @@ export interface SpinnerButton {
 export default function SpinnerButton({ isLoading }: SpinnerButton) {
 
   return (
-    <button type="submit" className={`${style.container} ${isLoading && style.loading}`}>
+    <button
+      type="submit"
+      disabled={isLoading}
+      className={`${style.container} ${isLoading && style.loading}`}>
       {isLoading ? <TailSpin color='white' /> : "Valider"}
     </button>
   );

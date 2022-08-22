@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
-import { addDoc, collection, doc, DocumentData, getDocs, query, QueryDocumentSnapshot, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, DocumentData, getDocs, query, QueryDocumentSnapshot, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth } from "../../config/firebase/auth";
 import { db } from "../../config/firebase/firestore";
@@ -112,11 +112,9 @@ export async function uploadPuzzlePicture({ title, word, index, file }: UploadPu
 
 export async function uploadPuzzlePicturesFromPuzzle(puzzle: Puzzle, title: string) {
   const p: { word: string, pictures: Array<string> } = { word: puzzle.word, pictures: [] };
-  console.log(puzzle);
 
   for (let i = 0; i < puzzle.pictures.length; i++) {
     const picture = puzzle.pictures[i];
-    console.log(picture);
     const file = dataURLToBlob(picture);
     const url = await uploadPuzzlePicture({ title, word: puzzle.word, index: i, file });
     url && p.pictures.push(url);
@@ -125,9 +123,30 @@ export async function uploadPuzzlePicturesFromPuzzle(puzzle: Puzzle, title: stri
   return p;
 }
 
-export async function editPack({ id, ...rest }: any) {
+export async function editPack({ id, puzzles, ...rest }: any) {
   const docRef = doc(db, "packs", id.toString());
-  await updateDoc(docRef, { ...rest });
+
+  const remotePuzzles = [];
+  if (puzzles && puzzles?.length !== 0) {
+
+    for (let i = 0; i < puzzles?.length; i++) {
+      const puzzle = puzzles[i];
+      const p = await uploadPuzzlePicturesFromPuzzle(puzzle, rest.title);
+      remotePuzzles.push(p);
+    }
+  }
+  if (remotePuzzles.length !== 0) {
+    for (let i = 0; i < remotePuzzles.length; i++) {
+      await updateDoc(docRef, { puzzles: arrayUnion(JSON.stringify(remotePuzzles[i])), ...rest });
+    }
+  } else {
+    await updateDoc(docRef, { ...rest });
+  }
+  return {
+    id,
+    puzzles: remotePuzzles,
+    ...rest
+  }
 }
 
 export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
@@ -137,15 +156,15 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
 
   const coverUrl = await uploadPackCover(pack.title, cover);
 
-  const localPuzzles = [];
+  const remotePuzzles = [];
 
   for (let i = 0; i < puzzles?.length; i++) {
     const puzzle = puzzles[i];
     const p = await uploadPuzzlePicturesFromPuzzle(puzzle, pack.title);
-    localPuzzles.push(p);
+    remotePuzzles.push(p);
   }
 
-  await setDoc(result, { puzzles: localPuzzles }, { merge: true });
+  await setDoc(result, { puzzles: remotePuzzles }, { merge: true });
   await setDoc(result, { cover: coverUrl }, { merge: true });
 
   const localPack: PuzzlePack = {
@@ -154,7 +173,7 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
     difficulty: pack.difficulty,
     cover: coverUrl,
     author: pack.author,
-    puzzles: localPuzzles,
+    puzzles: remotePuzzles,
   }
 
   return localPack;
@@ -173,18 +192,24 @@ export async function getAllPacks() {
 
   packsDocs.forEach((doc) => {
     const data = doc.data();
+    const puzzles = convertPuzzlesToObj(data.puzzles);
     const puzzlePack: PuzzlePack = {
       id: doc.id,
       title: data.title,
       cover: data.cover,
       author: data.author,
       difficulty: data.difficulty,
-      puzzles: data.puzzles,
+      puzzles,
     }
     result.push(puzzlePack);
   })
   return result;
 
+}
+
+function convertPuzzlesToObj(puzzles: Array<any>) {
+  console.log(puzzles);
+  return puzzles.map((puzzle) => (typeof puzzle === "string") ? JSON.parse(puzzle) : puzzle)
 }
 
 export async function getPacksFromUser(uid: string) {
@@ -195,13 +220,15 @@ export async function getPacksFromUser(uid: string) {
 
   querySnapshot.forEach((doc) => {
     const data = doc.data();
+    const puzzles = convertPuzzlesToObj(data.puzzles);
+    console.log(puzzles);
     const puzzlePack: PuzzlePack = {
       id: doc.id,
-      title: data?.title,
-      cover: data?.cover,
-      author: data?.author,
-      difficulty: data?.difficulty,
-      puzzles: data?.puzzles,
+      title: data.title,
+      cover: data.cover,
+      author: data.author,
+      difficulty: data.difficulty,
+      puzzles,
     }
     result.push(puzzlePack);
   })

@@ -19,6 +19,8 @@ export default function DashboardPage() {
   const [loading, setIsloading] = useState<boolean>(true);
   const { user } = useAuth();
 
+  console.log(packs);
+
   function appPacksToArr(appPacks: AppPacks) {
     return [...appPacks.remote, ...appPacks.local];
   }

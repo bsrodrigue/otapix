@@ -64,6 +64,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
                 const newPuzzle = {
                   word: values.puzzleTitle,
                   pictures,
+                  local: true,
                 };
 
                 setValue("puzzles", [...values.puzzles, newPuzzle]);
