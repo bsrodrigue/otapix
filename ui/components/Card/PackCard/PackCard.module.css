@@ -88,6 +88,10 @@
     font-weight: bold;
 }
 
+.packcard_action:disabled{
+  background-color: grey;
+}
+
 .packcard_action:hover {
     cursor: pointer;
     background-color: black;

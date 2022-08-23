@@ -37,7 +37,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   }, []);
 
   useEffect(() => {
-    console.log("Current pack changed");
     if (currentPack) {
       reset();
       setBackup(currentPack);

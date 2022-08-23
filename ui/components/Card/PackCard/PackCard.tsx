@@ -37,10 +37,10 @@ export default function PackCard({ pack }: PackCardProps) {
         </div>
         <div className={style.packcard_actions}>
           <button className={`${style.packcard_action} button`}>Play</button>
-          <button className={`${style.packcard_action} button`}>
+          <button disabled className={`${style.packcard_action} button`}>
             Add to collection
           </button>
-          <button className={`${style.packcard_action} button`}>Rate</button>
+          <button disabled className={`${style.packcard_action} button`}>Rate</button>
         </div>
       </div>
     </div>

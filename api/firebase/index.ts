@@ -208,7 +208,6 @@ export async function getAllPacks() {
 }
 
 function convertPuzzlesToObj(puzzles: Array<any>) {
-  console.log(puzzles);
   return puzzles.map((puzzle) => (typeof puzzle === "string") ? JSON.parse(puzzle) : puzzle)
 }
 
@@ -221,7 +220,6 @@ export async function getPacksFromUser(uid: string) {
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     const puzzles = convertPuzzlesToObj(data.puzzles);
-    console.log(puzzles);
     const puzzlePack: PuzzlePack = {
       id: doc.id,
       title: data.title,
