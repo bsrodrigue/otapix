@@ -1,10 +1,10 @@
-import { Puzzle } from "../../../../types";
+import { LocalPuzzle, RemotePuzzle } from "../../../../types/puzzle";
 import { PuzzleCard } from "../../Card/PuzzleCard";
 import { Grid } from "../Grid";
 import style from "./PuzzleGrid.module.css";
 
 interface PuzzleGridProps {
-  puzzles: Array<Puzzle>;
+  puzzles: Array<RemotePuzzle | LocalPuzzle>;
 }
 
 export default function PuzzleGrid({ puzzles }: PuzzleGridProps) {

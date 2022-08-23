@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
-import { Styled } from "../../../../types";
 import styleSheet from "./Button.module.css";
 
-interface ButtonProps extends Styled {
+interface ButtonProps {
   onClick?: () => void;
   children?: ReactNode;
   className?: string;
+  style?: any;
   type?: "button" | "reset" | "submit" | undefined;
 }
 
