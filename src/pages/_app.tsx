@@ -1,15 +1,20 @@
-import type { AppProps } from 'next/app';
-import { ToastContainer } from 'react-toastify';
-import { RecoilRoot } from 'recoil';
-import '../styles/globals.css';
-import 'react-toastify/dist/ReactToastify.css';
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
-
-  return (<RecoilRoot>
-    <Component {...pageProps} />
-    <ToastContainer />
-  </RecoilRoot>)
+  return (
+    <>
+      <Head>
+        <title>Otapix</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Component {...pageProps} />
+      <ToastContainer />
+    </>
+  );
 }
 
-export default MyApp
+export default MyApp;

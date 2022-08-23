@@ -6,7 +6,7 @@ import Modal from "react-modal";
 import { useAuth } from "../../../hooks/index";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
-import { auth } from "../../../config/firebase/auth";
+import { auth } from "../../../config/firebase";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);

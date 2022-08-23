@@ -1,18 +1,24 @@
 import { v4 as uuidv4 } from "uuid";
 import { Difficulty } from "../../enums";
-import { LocalPuzzlePack } from "../../types";
+import { LocalPuzzlePack } from "../../types/puzzle_pack";
 
-export function setImagePreviewFromInput(sourceInput: HTMLInputElement, targetImage: HTMLImageElement) {
+export function setImagePreviewFromInput(
+  sourceInput: HTMLInputElement,
+  targetImage: HTMLImageElement
+) {
   if (!sourceInput.files || !sourceInput.files[0]) return;
   const file = sourceInput.files[0];
 
   setImagePreviewFromFile(file, targetImage);
 }
 
-export function setImagePreviewFromFile(file: File, targetImage: HTMLImageElement) {
+export function setImagePreviewFromFile(
+  file: File,
+  targetImage: HTMLImageElement
+) {
   const reader = new FileReader();
 
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const image = e.target?.result as string;
     targetImage.src = image;
   };
@@ -21,7 +27,7 @@ export function setImagePreviewFromFile(file: File, targetImage: HTMLImageElemen
 }
 
 export async function getSrcFromFile(file: File) {
-  const src = await readFileAsDataURL(file) as string;
+  const src = (await readFileAsDataURL(file)) as string;
   return src;
 }
 
@@ -46,7 +52,7 @@ export function base64ToBlob(base64: string, type?: string) {
 }
 
 export function getBase64StringFromDataURL(dataURL: string) {
-  return dataURL.replace('data:', '').replace(/^.+,/, '');
+  return dataURL.replace("data:", "").replace(/^.+,/, "");
 }
 
 export function createLocalPuzzlePack() {
@@ -54,10 +60,22 @@ export function createLocalPuzzlePack() {
     id: uuidv4(),
     title: "Nouveau pack",
     difficulty: Difficulty.F,
+    author: "",
     cover: "",
     puzzles: [],
     local: true,
   };
 
   return newPuzzlePack;
+}
+
+export function dataURLToBlob(dataURL: string) {
+  const base64 = getBase64StringFromDataURL(dataURL);
+  const [, type] = dataURL.split(";")[0].split("/");
+  const file = base64ToBlob(base64, `image/${type}`);
+  return file;
+}
+
+export function getImageExtensionFromFile(file: Blob) {
+  return file.type.replace("image/", "");
 }
