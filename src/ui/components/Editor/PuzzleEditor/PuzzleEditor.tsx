@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { useFormContext } from "react-hook-form";
 import { getSrcFromFile } from "../../../../lib/utils";
+import { BasePuzzle } from "../../../../types/puzzle";
 import { Button } from "../../Button/Button";
 import { RectangularDropzone } from "../../Dropzone";
 import style from "./PuzzleEditor.module.css";
@@ -61,7 +62,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
                   pictures.push(result);
                 }
 
-                const newPuzzle = {
+                const newPuzzle: BasePuzzle = {
                   word: values.puzzleTitle,
                   pictures,
                   local: true,

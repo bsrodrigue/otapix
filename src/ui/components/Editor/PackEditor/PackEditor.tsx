@@ -2,11 +2,14 @@ import _ from "lodash";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { createPack, editPack } from "../../../../api/firebase";
+import { createPack, editPack, editPackCover, uploadPuzzlePicturesFromPuzzle } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
+import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { GlobalPacks } from "../../../../types";
+import { BasePuzzle } from "../../../../types/puzzle";
 import {
+  GenericPuzzlePack,
   LocalPuzzlePack,
   RemotePuzzlePack,
 } from "../../../../types/puzzle_pack";
@@ -24,15 +27,17 @@ interface PackEditorProps {
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
-  const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
+  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(Difficulty.F);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [backup, setBackup] = useState<RemotePuzzlePack | LocalPuzzlePack>();
+  const [backup, setBackup] = useState<GenericPuzzlePack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { pack } = values;
   const { user } = useAuth();
+
+  // console.log(values);
 
   useEffect(() => {
     register("difficulty");
@@ -40,34 +45,49 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   }, []);
 
   useEffect(() => {
-    if (currentPack) {
-      reset();
-      setBackup(currentPack);
-      setValue("pack", currentPack);
-      setValue("puzzles", currentPack?.puzzles);
-      setValue("cover", currentPack?.cover);
-      setValue("title", currentPack?.title);
-      setCheckedDifficulty(currentPack?.difficulty);
-    }
+    reset();
+    setBackup(currentPack);
+    setValue("pack", currentPack);
+    setValue("puzzles", currentPack.puzzles);
+    setValue("cover", currentPack.cover);
+    setValue("title", currentPack.title);
+    setValue("difficulty", currentPack.difficulty);
   }, [currentPack, reset, setValue]);
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
-  function onSuccess(result: any) {
-    setPacks?.((prev) => {
-      let local = prev.local;
-      let remote = prev.remote;
-      local = local.filter((pack) => pack.id !== currentPack?.id);
-      remote = remote.filter((pack) => pack.id !== currentPack?.id);
-      remote.push({ ...currentPack, ...result });
+  function onSuccess(newPack: GenericPuzzlePack) {
+    if (newPack.local) {
+      setPacks((prev) => {
+        let local = prev.local;
+        let remote = prev.remote;
+        local = local.filter((pack) => pack.id !== currentPack?.id);
+        remote = remote.filter((pack) => pack.id !== currentPack?.id);
+        newPack.local = false;
+        remote.push({ ...newPack });
+        return {
+          local,
+          remote,
+        };
+      });
+    } else {
+      setPacks((prev) => {
+        let local = prev.local;
+        let remote = prev.remote;
+        remote = remote.filter((pack) => pack.id !== currentPack?.id);
+        remote.push({ ...newPack });
+        return {
+          local,
+          remote,
+        };
+      });
+    }
+  }
 
-      return {
-        local,
-        remote,
-      };
-    });
+  function checkPackAreEqual(initialPack: GenericPuzzlePack, newPack: GenericPuzzlePack) {
+    return _.isEqual(initialPack, newPack);
   }
 
   return (
@@ -76,56 +96,78 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
         <form
           onSubmit={handleSubmit(async (data) => {
             try {
-              if (user) {
+              if (user && backup) {
                 setIsLoading(true);
-                const cover =
-                  typeof data.cover === "string" ? data.cover : data.cover[0];
-                const pack = {
-                  title: data.title,
+                const cover = typeof data.cover === "string" ? data.cover : data.cover[0];
+
+                const newPuzzlePack: GenericPuzzlePack = {
+                  id: currentPack.id,
                   author: user.uid,
+                  cover,
+                  title: data.title,
                   difficulty: data.difficulty,
+                  puzzles: data.puzzles,
+                  local: currentPack.local,
                 };
 
-                if (
-                  _.isEqual(backup, {
-                    id: currentPack.id,
-                    puzzles: data.puzzles,
-                    cover,
-                    ...pack,
-                  })
-                ) {
+                if (checkPackAreEqual(backup, newPuzzlePack)) {
                   toast("Aucune modification", { type: "warning" });
                   return;
                 }
 
-                // Create or update
-                if ("local" in currentPack && currentPack.local) {
-                  const result = await createPack({
-                    pack,
+                if (newPuzzlePack.local) {
+                  if (newPuzzlePack.puzzles.length === 0) {
+                    notifyError("Veuillez ajouter au moins un puzzle!");
+                    return;
+                  } else if (!cover) {
+                    notifyError("Veuillez ajouter une couverture!");
+                    return;
+                  }
+                  await createPack({
+                    pack: {
+                      title: newPuzzlePack.title,
+                      author: newPuzzlePack.author,
+                      difficulty: newPuzzlePack.difficulty,
+                    },
                     cover: data.cover[0],
                     puzzles: data.puzzles,
                   });
-                  // onSuccess(result);
-                  toast("Pack cree avec succes", { type: "success" });
+                  onSuccess(newPuzzlePack);
+                  notifySuccess("Pack cree avec succes");
                 } else {
-                  const localPuzzles = data.puzzles.filter(
-                    (puzzle: any) => puzzle?.local
-                  );
+                  const picturesUploadTasks: Array<Promise<BasePuzzle>> = [];
+                  const tasks: Array<Promise<void>> = [];
 
-                  if (currentPack && currentPack.id) {
-                    await editPack({
-                      id: currentPack.id,
-                      title: data.title,
-                      difficulty: data?.difficulty,
-                    });
-                    // onSuccess(result);
-                    toast("Pack edit avec succes", { type: "success" });
+                  const newPuzzles = newPuzzlePack.puzzles.filter((puzzle) => puzzle.local);
+
+                  if (newPuzzles) {
+                    for (let i = 0; i < newPuzzles.length; i++) {
+                      picturesUploadTasks.push(uploadPuzzlePicturesFromPuzzle(newPuzzles[i], newPuzzlePack.title));
+                    }
                   }
+
+                  if (!_.isEqual(backup.cover, newPuzzlePack.cover)) {
+                    tasks.push(editPackCover({ id: newPuzzlePack.id, packTitle: newPuzzlePack.title, cover }));
+                  }
+
+                  tasks.push(
+                    editPack({
+                      id: newPuzzlePack.id,
+                      title: newPuzzlePack.title,
+                      difficulty: newPuzzlePack.difficulty,
+                    })
+                  )
+
+                  // You forgot to add the puzzles to pack
+                  const [_result, result] = await Promise.all([Promise.all(tasks), Promise.all(picturesUploadTasks)])
+
+                  onSuccess(newPuzzlePack);
+                  notifySuccess("Pack modifie avec succes");
                 }
               }
             } catch (error) {
               console.error(error);
-              toast("Erreur lors de la creation du pack", { type: "error" });
+              notifyError("Erreur lors de la creation du pack");
             } finally {
               setIsLoading(false);
             }

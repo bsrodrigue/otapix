@@ -5,10 +5,11 @@ import { LocalPuzzle, RemotePuzzle } from "./puzzle";
 export interface BasePuzzlePack extends HasID, HasAuthor, HasCover, HasTitle {
   difficulty: Difficulty;
   puzzles: Array<LocalPuzzle | RemotePuzzle>;
-}
-
-export interface RemotePuzzlePack extends BasePuzzlePack {}
-
-export interface LocalPuzzlePack extends BasePuzzlePack {
   local: boolean;
 }
+
+export interface RemotePuzzlePack extends BasePuzzlePack { }
+
+export interface LocalPuzzlePack extends BasePuzzlePack { }
+
+export type GenericPuzzlePack = LocalPuzzlePack | RemotePuzzlePack;

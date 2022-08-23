@@ -36,7 +36,7 @@ export default function Accordion({
               className={`${style.accordion_action}`}
               onClick={() => {
                 if (!user) return;
-                const newPuzzlePack: LocalPuzzlePack = createLocalPuzzlePack();
+                const newPuzzlePack: LocalPuzzlePack = createLocalPuzzlePack(user.uid);
 
                 setPacks((prev) => {
                   prev.local.push(newPuzzlePack);
@@ -56,9 +56,8 @@ export default function Accordion({
           </div>
         </div>
         <div
-          className={`${style.accordion_content} ${
-            isClosed && style.accordion_closed
-          }`}
+          className={`${style.accordion_content} ${isClosed && style.accordion_closed
+            }`}
         >
           {loading ? (
             <div className={`${style.accordion_item} ${style.selected}`}>
@@ -71,9 +70,8 @@ export default function Accordion({
                   return (
                     <div
                       key={key}
-                      className={`${style.accordion_item} ${
-                        currentPackIndex === key && style.selected
-                      }`}
+                      className={`${style.accordion_item} ${currentPackIndex === key && style.selected
+                        }`}
                       onClick={() => {
                         setCurrentPackIndex?.(key);
                       }}
@@ -88,7 +86,7 @@ export default function Accordion({
                   onClick={() => {
                     if (!user) return;
                     const newPuzzlePack: LocalPuzzlePack =
-                      createLocalPuzzlePack();
+                      createLocalPuzzlePack(user.uid);
 
                     setPacks((prev) => {
                       prev.local.push(newPuzzlePack);

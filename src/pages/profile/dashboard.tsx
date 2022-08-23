@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
 import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
+import { notifyError } from "../../lib/notifications";
 import { GlobalPacks } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
 import { PackEditor } from "../../ui/components/Editor/PackEditor";
@@ -31,12 +32,12 @@ export default function DashboardPage() {
       try {
         setIsloading(true);
         const result = await getPacksFromUser(user.uid);
-        console.log("Remote Packs: ", result);
         setPacks((prev) => {
           prev.remote = result;
           return prev;
         });
       } catch (error) {
+        notifyError("Erreur lors du chargement des packs");
         console.error(error);
       } finally {
         setIsloading(false);

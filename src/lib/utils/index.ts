@@ -18,7 +18,7 @@ export function setImagePreviewFromFile(
 ) {
   const reader = new FileReader();
 
-  reader.onload = function (e) {
+  reader.onload = function(e) {
     const image = e.target?.result as string;
     targetImage.src = image;
   };
@@ -34,7 +34,7 @@ export async function getSrcFromFile(file: File) {
 export async function readFileAsDataURL(file: File) {
   let result_base64 = await new Promise((resolve) => {
     let fileReader = new FileReader();
-    fileReader.onload = (e) => resolve(fileReader.result);
+    fileReader.onload = () => resolve(fileReader.result);
     fileReader.readAsDataURL(file);
   });
   return result_base64;
@@ -55,12 +55,12 @@ export function getBase64StringFromDataURL(dataURL: string) {
   return dataURL.replace("data:", "").replace(/^.+,/, "");
 }
 
-export function createLocalPuzzlePack() {
+export function createLocalPuzzlePack(uid: string) {
   const newPuzzlePack: LocalPuzzlePack = {
     id: uuidv4(),
     title: "Nouveau pack",
     difficulty: Difficulty.F,
-    author: "",
+    author: uid,
     cover: "",
     puzzles: [],
     local: true,

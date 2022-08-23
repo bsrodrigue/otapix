@@ -21,9 +21,9 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
 import { Difficulty } from "../../enums";
 import { dataURLToBlob, getImageExtensionFromFile } from "../../lib/utils";
-import { HasAuthor, HasCover, HasID, HasTitle } from "../../types/base";
+import { HasAuthor, HasID, HasTitle } from "../../types/base";
 import { LoginParams } from "../../types/form";
-import { LocalPuzzle, RemotePuzzle } from "../../types/puzzle";
+import { BasePuzzle, LocalPuzzle, RemotePuzzle } from "../../types/puzzle";
 import { RemotePuzzlePack } from "../../types/puzzle_pack";
 
 const PACKS = "packs";
@@ -69,6 +69,7 @@ export async function uploadProfilePicture(file: Blob, user: User) {
 }
 
 export async function uploadPackCover(title: string, file: Blob) {
+  // console.log(file);
   const path = `pack_data/${title}/cover.${getImageExtensionFromFile(file)}`;
   return await uploadFile(path, file);
 }
@@ -103,12 +104,13 @@ export async function uploadPuzzlePicture({
 }
 
 export async function uploadPuzzlePicturesFromPuzzle(
-  puzzle: RemotePuzzle | LocalPuzzle,
+  puzzle: BasePuzzle,
   packTitle: string
 ) {
-  const destinationPuzzle: RemotePuzzle = {
+  const destinationPuzzle: BasePuzzle = {
     word: puzzle.word,
     pictures: [],
+    local: false,
   };
 
   const picturesToBeUploaded = puzzle.pictures;
@@ -161,6 +163,18 @@ export async function editPack({ id, ...rest }: EditPackParams) {
   await updateDoc(docRef, { ...rest });
 }
 
+interface EditPackCoverParams {
+  id: string | number;
+  packTitle: string;
+  cover: File;
+}
+
+export async function editPackCover({ id, packTitle, cover }: EditPackCoverParams) {
+  const docRef = doc(db, "packs", id.toString());
+  const url = await uploadPackCover(packTitle, cover);
+  await updateDoc(docRef, { cover: url })
+}
+
 interface CreatePackParams {
   pack: HasTitle & HasAuthor & { difficulty: Difficulty };
   cover: File;
@@ -207,6 +221,7 @@ export async function getAllPacks() {
       author: data.author,
       difficulty: data.difficulty,
       puzzles,
+      local: false,
     };
     result.push(puzzlePack);
   });
@@ -235,6 +250,7 @@ export async function getPacksFromUser(uid: string) {
       author: data.author,
       difficulty: data.difficulty,
       puzzles,
+      local: false,
     };
     result.push(puzzlePack);
   });
