@@ -18,6 +18,11 @@
     color: white;
 }
 
+.authform_field_error{
+  color: red;
+  font-weight: bold;
+}
+
 .authform_field:focus {
     outline: none;
 }
