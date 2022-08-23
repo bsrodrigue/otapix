@@ -1,25 +1,26 @@
 import Head from "next/head";
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { getAllPacks } from "../api/firebase";
 import { Difficulty } from "../enums";
-import { PuzzlePack } from "../types";
+import { RemotePuzzlePack } from "../types/puzzle_pack";
 import { Header, PackCard } from "../ui/components";
-import DifficultyRadioGroup from '../ui/components/RadioGroup/DifficultyRadioGroup/DifficultyRadioGroup';
+import DifficultyRadioGroup from "../ui/components/RadioGroup/DifficultyRadioGroup/DifficultyRadioGroup";
 
 export default function Home() {
-  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(Difficulty.F);
-  const [packs, setPacks] = useState<Array<PuzzlePack>>([]);
+  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
+    Difficulty.F
+  );
+  const [packs, setPacks] = useState<Array<RemotePuzzlePack>>([]);
 
   useEffect(() => {
     async function getPacks() {
       const result = await getAllPacks();
       console.log(result);
-      setPacks(result)
+      setPacks(result);
     }
 
     getPacks();
-
-  }, [])
+  }, []);
 
   return (
     <>
@@ -29,11 +30,14 @@ export default function Home() {
       </Head>
       <Header />
       <div style={{ marginBottom: "1em" }} className="wrapper">
-        <h1 style={{ color: 'white' }}>Difficulty</h1>
-        <small style={{ color: "white" }}>Select the difficulty of packages you want</small>
+        <h1 style={{ color: "white" }}>Difficulty</h1>
+        <small style={{ color: "white" }}>
+          Select the difficulty of packages you want
+        </small>
         <DifficultyRadioGroup
           checkedDifficulty={checkedDifficulty}
-          setCheckedDifficulty={setCheckedDifficulty} />
+          setCheckedDifficulty={setCheckedDifficulty}
+        />
       </div>
       <div
         style={{
@@ -45,12 +49,10 @@ export default function Home() {
         }}
         className="wrapper"
       >
-        {
-          packs?.map((pack, key) => (
-            <PackCard key={key} pack={pack} />
-          ))
-        }
+        {packs?.map((pack, key) => (
+          <PackCard key={key} pack={pack} />
+        ))}
       </div>
     </>
   );
-};
+}
