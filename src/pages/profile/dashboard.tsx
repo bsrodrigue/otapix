@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
 import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
-import { AppPacks } from "../../types";
+import { GlobalPacks } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
 import { PackEditor } from "../../ui/components/Editor/PackEditor";
 import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSidePanel";
 
-const initial: AppPacks = {
+const initial: GlobalPacks = {
   local: [],
   remote: [],
 };
@@ -15,13 +15,11 @@ const initial: AppPacks = {
 export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [currentPackIndex, setCurrentPackIndex] = useState(0);
-  const [packs, setPacks] = useState<AppPacks>(initial);
+  const [packs, setPacks] = useState<GlobalPacks>(initial);
   const [loading, setIsloading] = useState<boolean>(true);
   const { user } = useAuth();
 
-  console.log(packs);
-
-  function appPacksToArr(appPacks: AppPacks) {
+  function appPacksToArr(appPacks: GlobalPacks) {
     return [...appPacks.remote, ...appPacks.local];
   }
 
@@ -59,19 +57,17 @@ export default function DashboardPage() {
         loading={loading}
       />
 
-      {
-        packsArr.length !== 0 && (
-          <>
-            <PackEditor
-              currentPack={packsArr[currentPackIndex]}
-              setPacks={setPacks} />
-            <Fab onClick={() => setIsOpen(!isOpen)}>
-              <CgMenuRound />
-            </Fab>
-          </>
-        )
-      }
-
+      {packsArr.length !== 0 && (
+        <>
+          <PackEditor
+            currentPack={packsArr[currentPackIndex]}
+            setPacks={setPacks}
+          />
+          <Fab onClick={() => setIsOpen(!isOpen)}>
+            <CgMenuRound />
+          </Fab>
+        </>
+      )}
     </div>
   );
 }

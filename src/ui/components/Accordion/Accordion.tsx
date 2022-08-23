@@ -1,17 +1,17 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { BsPlusCircleFill } from "react-icons/bs";
-import { Difficulty } from "../../../enums";
 import { useAuth } from "../../../hooks";
-import { v4 as uuidv4 } from "uuid";
-import { LocalPuzzlePack, PuzzlePack, UsePackArrayState, UsePackIndexState } from "../../../types";
-import style from './Accordion.module.css';
 import { createLocalPuzzlePack } from "../../../lib/utils";
+import { GlobalPacks } from "../../../types";
+import { LocalPuzzlePack, RemotePuzzlePack } from "../../../types/puzzle_pack";
+import style from "./Accordion.module.css";
 
-export interface AccordionProps
-  extends
-  UsePackIndexState,
-  UsePackArrayState {
-  setSideBarIsOpen: Dispatch<SetStateAction<boolean>>
+export interface AccordionProps {
+  currentPackIndex: number;
+  setCurrentPackIndex: Dispatch<SetStateAction<number>>;
+  packs: Array<RemotePuzzlePack | LocalPuzzlePack>;
+  setPacks: Dispatch<SetStateAction<GlobalPacks>>;
+  setSideBarIsOpen: Dispatch<SetStateAction<boolean>>;
   loading: boolean;
 }
 
@@ -41,7 +41,7 @@ export default function Accordion({
                 setPacks((prev) => {
                   prev.local.push(newPuzzlePack);
                   return prev;
-                })
+                });
 
                 setCurrentPackIndex(packs.length);
                 setSideBarIsOpen(false);
@@ -52,62 +52,61 @@ export default function Accordion({
             <div
               className={`${style.accordion_action} ${style.accordion_indicator}`}
               onClick={() => setIsClosed(!isClosed)}
-            >
-            </div>
+            ></div>
           </div>
-
         </div>
-        <div className={`${style.accordion_content} ${isClosed && style.accordion_closed}`}>
-          {
-            loading ? (
-              <div
-                className={`${style.accordion_item} ${style.selected}`}
-              >
-                <p>Packs en cours de chargement...</p>
-              </div>
-            ) : (
-              <>
-                {
-                  packs && packs.length !== 0 ? (
-                    packs?.map((pack, key) => {
-                      return (
-                        <div
-                          key={key}
-                          className={`${style.accordion_item} ${(currentPackIndex === key) && style.selected}`}
-                          onClick={() => {
-                            setCurrentPackIndex?.(key);
-                          }}
-                        >
-                          <p>{pack.title}</p>
-                        </div>
-                      );
-                    })
-                  ) : (
+        <div
+          className={`${style.accordion_content} ${
+            isClosed && style.accordion_closed
+          }`}
+        >
+          {loading ? (
+            <div className={`${style.accordion_item} ${style.selected}`}>
+              <p>Packs en cours de chargement...</p>
+            </div>
+          ) : (
+            <>
+              {packs && packs.length !== 0 ? (
+                packs?.map((pack, key) => {
+                  return (
                     <div
-                      className={`${style.accordion_item} ${style.selected}`}
+                      key={key}
+                      className={`${style.accordion_item} ${
+                        currentPackIndex === key && style.selected
+                      }`}
                       onClick={() => {
-                        if (!user) return;
-                        const newPuzzlePack: LocalPuzzlePack = createLocalPuzzlePack();
-
-                        setPacks((prev) => {
-                          prev.local.push(newPuzzlePack);
-                          return prev;
-                        })
-
-                        setCurrentPackIndex(packs.length);
-                        setSideBarIsOpen(false);
+                        setCurrentPackIndex?.(key);
                       }}
                     >
-                      <p>Pas de packs...</p>
-                      <small>Cliquez ici pour ajouter un pack</small>
+                      <p>{pack.title}</p>
                     </div>
-                  )
-                }
-              </>
-            )
-          }
+                  );
+                })
+              ) : (
+                <div
+                  className={`${style.accordion_item} ${style.selected}`}
+                  onClick={() => {
+                    if (!user) return;
+                    const newPuzzlePack: LocalPuzzlePack =
+                      createLocalPuzzlePack();
+
+                    setPacks((prev) => {
+                      prev.local.push(newPuzzlePack);
+                      return prev;
+                    });
+
+                    setCurrentPackIndex(packs.length);
+                    setSideBarIsOpen(false);
+                  }}
+                >
+                  <p>Pas de packs...</p>
+                  <small>Cliquez ici pour ajouter un pack</small>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
-    </div >
+    </div>
   );
 }

@@ -5,26 +5,29 @@ import { toast } from "react-toastify";
 import { createPack, editPack } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
-import { AppPacks, LocalPuzzlePack, PuzzlePack } from "../../../../types";
+import { GlobalPacks } from "../../../../types";
+import {
+  LocalPuzzlePack,
+  RemotePuzzlePack,
+} from "../../../../types/puzzle_pack";
 import { Button } from "../../Button/Button";
+import { SpinnerButton } from "../../Button/SpinnerButton";
 import { RectangularDropzone } from "../../Dropzone/RectangularDropzone";
 import { PuzzleGrid } from "../../Grid/PuzzleGrid";
 import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
 import { EditorWrapper } from "../EditorWrapper";
 import { PuzzleEditor } from "../PuzzleEditor";
-import { SpinnerButton } from "../../Button/SpinnerButton";
-// import style from "./PackEditor.module.css";
 
 interface PackEditorProps {
-  currentPack: LocalPuzzlePack | PuzzlePack;
-  setPacks?: Dispatch<SetStateAction<AppPacks>>;
+  currentPack: LocalPuzzlePack | RemotePuzzlePack;
+  setPacks: Dispatch<SetStateAction<GlobalPacks>>;
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<any>(Difficulty.F);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [backup, setBackup] = useState<PuzzlePack | LocalPuzzlePack>();
+  const [backup, setBackup] = useState<RemotePuzzlePack | LocalPuzzlePack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
@@ -52,7 +55,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
-
   function onSuccess(result: any) {
     setPacks?.((prev) => {
       let local = prev.local;
@@ -76,15 +78,22 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             try {
               if (user) {
                 setIsLoading(true);
-                const cover = typeof data.cover === "string" ? data.cover : data.cover[0];
+                const cover =
+                  typeof data.cover === "string" ? data.cover : data.cover[0];
                 const pack = {
                   title: data.title,
                   author: user.uid,
                   difficulty: data.difficulty,
                 };
 
-
-                if (_.isEqual(backup, { id: currentPack.id, puzzles: data.puzzles, cover, ...pack })) {
+                if (
+                  _.isEqual(backup, {
+                    id: currentPack.id,
+                    puzzles: data.puzzles,
+                    cover,
+                    ...pack,
+                  })
+                ) {
                   toast("Aucune modification", { type: "warning" });
                   return;
                 }
@@ -98,18 +107,16 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   });
                   // onSuccess(result);
                   toast("Pack cree avec succes", { type: "success" });
-
                 } else {
-
-                  const localPuzzles = data.puzzles.filter((puzzle: any) => puzzle?.local);
+                  const localPuzzles = data.puzzles.filter(
+                    (puzzle: any) => puzzle?.local
+                  );
 
                   if (currentPack && currentPack.id) {
-                    const result = await editPack({
+                    await editPack({
                       id: currentPack.id,
                       title: data.title,
                       difficulty: data?.difficulty,
-                      cover,
-                      puzzles: localPuzzles,
                     });
                     // onSuccess(result);
                     toast("Pack edit avec succes", { type: "success" });
@@ -161,7 +168,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             </>
           )}
 
-          {!puzzleEditorIsOpen && (<SpinnerButton isLoading={isLoading} />)}
+          {!puzzleEditorIsOpen && <SpinnerButton isLoading={isLoading} />}
         </form>
         {puzzleEditorIsOpen && (
           <PuzzleEditor
