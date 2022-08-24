@@ -58,7 +58,7 @@ export default function DashboardPage() {
         loading={loading}
       />
 
-      {packsArr.length !== 0 && (
+      {packsArr.length !== 0 && packsArr[currentPackIndex] && (
         <PackEditor
           currentPack={packsArr[currentPackIndex]}
           currentPackIndex={currentPackIndex}

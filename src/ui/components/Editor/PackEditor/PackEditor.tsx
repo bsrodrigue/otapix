@@ -9,17 +9,12 @@ import {
   deletePack,
   editPack,
   editPackCover,
-  uploadPuzzlePicturesFromPuzzle,
 } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { GlobalPacks } from "../../../../types";
-import {
-  BasePuzzle,
-  LocalPuzzle,
-  RemotePuzzle,
-} from "../../../../types/puzzle";
+import { LocalPuzzle, RemotePuzzle } from "../../../../types/puzzle";
 import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
@@ -36,11 +31,7 @@ interface PackEditorProps {
   setPacks: Dispatch<SetStateAction<GlobalPacks>>;
 }
 
-export default function PackEditor({
-  currentPack,
-  currentPackIndex,
-  setPacks,
-}: PackEditorProps) {
+export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
     currentPack.difficulty
   );
@@ -53,10 +44,6 @@ export default function PackEditor({
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { user } = useAuth();
-
-  useEffect(() => {
-    console.log("BACKUP: ", backup);
-  }, [backup]);
 
   useEffect(() => {
     setConfirmationIsOpen(false);
@@ -266,8 +253,8 @@ export default function PackEditor({
                 setPacks((prev) => {
                   let local = prev.local;
                   let remote = prev.remote;
-                  local = local.filter((pack) => pack.id !== currentPack?.id);
-                  remote = remote.filter((pack) => pack.id !== currentPack?.id);
+                  local = local.filter((pack) => pack.id !== currentPack.id);
+                  remote = remote.filter((pack) => pack.id !== currentPack.id);
                   return {
                     local,
                     remote,
