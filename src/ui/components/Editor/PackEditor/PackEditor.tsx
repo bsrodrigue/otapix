@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import {
+  addPuzzles,
   createPack,
   editPack,
   editPackCover,
@@ -12,7 +13,11 @@ import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { GlobalPacks } from "../../../../types";
-import { BasePuzzle } from "../../../../types/puzzle";
+import {
+  BasePuzzle,
+  LocalPuzzle,
+  RemotePuzzle,
+} from "../../../../types/puzzle";
 import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
@@ -24,10 +29,15 @@ import { PuzzleEditor } from "../PuzzleEditor";
 
 interface PackEditorProps {
   currentPack: GenericPuzzlePack;
+  currentPackIndex: number;
   setPacks: Dispatch<SetStateAction<GlobalPacks>>;
 }
 
-export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
+export default function PackEditor({
+  currentPack,
+  currentPackIndex,
+  setPacks,
+}: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
     currentPack.difficulty
   );
@@ -133,22 +143,21 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   onSuccess({ ...newPuzzlePack, id, cover, puzzles });
                   notifySuccess("Pack cree avec succes");
                 } else {
-                  const picturesUploadTasks: Array<Promise<BasePuzzle>> = [];
                   const tasks: Array<Promise<void>> = [];
 
-                  const newPuzzles = newPuzzlePack.puzzles.filter(
-                    (puzzle) => puzzle.local
-                  );
+                  const newPuzzles: Array<LocalPuzzle> =
+                    newPuzzlePack.puzzles.filter((puzzle) => puzzle.local);
 
-                  if (newPuzzles) {
-                    for (let i = 0; i < newPuzzles.length; i++) {
-                      picturesUploadTasks.push(
-                        uploadPuzzlePicturesFromPuzzle(
-                          newPuzzles[i],
-                          newPuzzlePack.title
-                        )
-                      );
-                    }
+                  const oldPuzzles: Array<RemotePuzzle> =
+                    newPuzzlePack.puzzles.filter((puzzle) => !puzzle.local);
+
+                  let destinationPuzzleTasks: any;
+                  if (newPuzzles.length !== 0) {
+                    destinationPuzzleTasks = addPuzzles({
+                      packId: newPuzzlePack.id,
+                      packTitle: newPuzzlePack.title,
+                      puzzles: newPuzzles,
+                    });
                   }
 
                   if (!_.isEqual(backup.cover, newPuzzlePack.cover)) {
@@ -172,14 +181,20 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   // You forgot to add the puzzles to pack
                   const [_result, result] = await Promise.all([
                     Promise.all(tasks),
-                    Promise.all(picturesUploadTasks),
+                    destinationPuzzleTasks,
                   ]);
 
-                  onSuccess(newPuzzlePack);
+                  const remotePuzzles = result || [];
+
+                  onSuccess({
+                    ...newPuzzlePack,
+                    puzzles: [...oldPuzzles, ...remotePuzzles],
+                  });
                   notifySuccess("Pack modifie avec succes");
                 }
               }
             } catch (error) {
+              console.error(error);
               if (error instanceof Error) notifyError(error.message);
             } finally {
               setIsLoading(false);

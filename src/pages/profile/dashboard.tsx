@@ -62,6 +62,7 @@ export default function DashboardPage() {
         <>
           <PackEditor
             currentPack={packsArr[currentPackIndex]}
+            currentPackIndex={currentPackIndex}
             setPacks={setPacks}
           />
           <Fab onClick={() => setIsOpen(!isOpen)}>

@@ -161,6 +161,35 @@ export async function addPuzzle({
     puzzles: arrayUnion(JSON.stringify(destinationPuzzle)),
   });
 }
+interface AddPuzzlesParams {
+  packId: string | number;
+  packTitle: string;
+  puzzles: Array<LocalPuzzle>;
+}
+export async function addPuzzles({
+  packId,
+  packTitle,
+  puzzles,
+}: AddPuzzlesParams) {
+  const packRef = doc(db, "packs", packId.toString());
+  const uploadTasks: Array<Promise<RemotePuzzle>> = [];
+  const updateTasks: Array<Promise<void>> = [];
+
+  for (let i = 0; i < puzzles.length; i++) {
+    uploadTasks.push(uploadPuzzlePicturesFromPuzzle(puzzles[i], packTitle));
+  }
+  const destinationPuzzles = await Promise.all([...uploadTasks]);
+  for (let i = 0; i < destinationPuzzles.length; i++) {
+    updateTasks.push(
+      updateDoc(packRef, {
+        puzzles: arrayUnion(JSON.stringify(destinationPuzzles[i])),
+      })
+    );
+  }
+  await Promise.all([...updateTasks]);
+
+  return destinationPuzzles;
+}
 
 export async function editPack({ id, ...rest }: EditPackParams) {
   const docRef = doc(db, "packs", id.toString());
