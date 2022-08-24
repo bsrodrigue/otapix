@@ -1,3 +1,4 @@
+import { FirebaseError } from "firebase/app";
 import _ from "lodash";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -5,6 +6,7 @@ import { toast } from "react-toastify";
 import {
   addPuzzles,
   createPack,
+  deletePack,
   editPack,
   editPackCover,
   uploadPuzzlePicturesFromPuzzle,
@@ -21,6 +23,7 @@ import {
 import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
+import { ConfirmationAlert } from "../../ConfirmationAlert";
 import { RectangularDropzone } from "../../Dropzone/RectangularDropzone";
 import { PuzzleGrid } from "../../Grid/PuzzleGrid";
 import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
@@ -43,6 +46,8 @@ export default function PackEditor({
   );
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [deleteIsLoading, setDeleteIsLoading] = useState<boolean>(false);
+  const [confirmationIsOpen, setConfirmationIsOpen] = useState<boolean>(false);
   const [backup, setBackup] = useState<GenericPuzzlePack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
@@ -54,6 +59,7 @@ export default function PackEditor({
   }, [backup]);
 
   useEffect(() => {
+    setConfirmationIsOpen(false);
     reset();
     register("difficulty");
     register("puzzles");
@@ -223,7 +229,7 @@ export default function PackEditor({
             setCheckedDifficulty={setCheckedDifficulty}
           />
 
-          {!puzzleEditorIsOpen && (
+          {!puzzleEditorIsOpen && !confirmationIsOpen && (
             <>
               <p>Liste des énigmes</p>
               <PuzzleGrid puzzles={values.puzzles} />
@@ -232,9 +238,52 @@ export default function PackEditor({
               </Button>
             </>
           )}
-
-          {!puzzleEditorIsOpen && <SpinnerButton isLoading={isLoading} />}
+          {!puzzleEditorIsOpen && !confirmationIsOpen && (
+            <div style={{ display: "flex", gap: "1em" }}>
+              <SpinnerButton
+                buttonType="button"
+                type="error"
+                text="Supprimer"
+                disabled={deleteIsLoading || isLoading}
+                isLoading={deleteIsLoading}
+                onClick={() => setConfirmationIsOpen(true)}
+              />
+              <SpinnerButton isLoading={isLoading} />
+            </div>
+          )}
         </form>
+        {confirmationIsOpen && (
+          <ConfirmationAlert
+            isLoading={deleteIsLoading}
+            onCancel={() => {
+              setConfirmationIsOpen(false);
+            }}
+            onConfirm={async () => {
+              try {
+                setDeleteIsLoading(true);
+                !currentPack.local &&
+                  (await deletePack(currentPack.id.toString()));
+                setPacks((prev) => {
+                  let local = prev.local;
+                  let remote = prev.remote;
+                  local = local.filter((pack) => pack.id !== currentPack?.id);
+                  remote = remote.filter((pack) => pack.id !== currentPack?.id);
+                  return {
+                    local,
+                    remote,
+                  };
+                });
+                notifySuccess("Pack supprime avec succes");
+              } catch (error) {
+                if (error instanceof FirebaseError)
+                  notifySuccess(error.message);
+                console.error(error);
+              } finally {
+                setDeleteIsLoading(false);
+              }
+            }}
+          />
+        )}
         {puzzleEditorIsOpen && (
           <PuzzleEditor
             isOpen={puzzleEditorIsOpen}

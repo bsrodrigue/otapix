@@ -59,17 +59,33 @@ export default function DashboardPage() {
       />
 
       {packsArr.length !== 0 && (
-        <>
-          <PackEditor
-            currentPack={packsArr[currentPackIndex]}
-            currentPackIndex={currentPackIndex}
-            setPacks={setPacks}
-          />
-          <Fab onClick={() => setIsOpen(!isOpen)}>
-            <CgMenuRound />
-          </Fab>
-        </>
+        <PackEditor
+          currentPack={packsArr[currentPackIndex]}
+          currentPackIndex={currentPackIndex}
+          setPacks={setPacks}
+        />
       )}
+
+      {packsArr.length === 0 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          <div>
+            <h1>Vous n'avez pas de packs...</h1>
+            <small>Ouvrez le panneau pour creer un pack</small>
+          </div>
+        </div>
+      )}
+      <Fab onClick={() => setIsOpen(!isOpen)}>
+        <CgMenuRound />
+      </Fab>
     </div>
   );
 }

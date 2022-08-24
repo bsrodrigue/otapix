@@ -8,8 +8,10 @@ import {
   addDoc,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   DocumentData,
+  DocumentReference,
   getDocs,
   query,
   setDoc,
@@ -20,12 +22,7 @@ import {
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
 import { Difficulty } from "../../enums";
-import {
-  base64ToBlob,
-  dataURLToBlob,
-  getBase64StringFromDataURL,
-  getImageExtensionFromFile,
-} from "../../lib/utils";
+import { dataURLToBlob, getImageExtensionFromFile } from "../../lib/utils";
 import { HasAuthor, HasID, HasTitle } from "../../types/base";
 import { LoginParams } from "../../types/form";
 import { BasePuzzle, LocalPuzzle, RemotePuzzle } from "../../types/puzzle";
@@ -51,6 +48,7 @@ export async function signIn({ email, password }: LoginParams) {
   );
   return userCredentials;
 }
+
 // Storage
 export async function uploadFile(path: string, file: Blob) {
   const fileRef = ref(storage, path);
@@ -73,7 +71,6 @@ export async function uploadProfilePicture(file: Blob, user: User) {
   return photoURL;
 }
 export async function uploadPackCover(title: string, file: Blob) {
-  // console.log(file);
   const path = `pack_data/${title}/cover.${getImageExtensionFromFile(file)}`;
   return await uploadFile(path, file);
 }
@@ -86,6 +83,10 @@ interface CreateDocumentParams {
 
 export async function createDocument({ document, path }: CreateDocumentParams) {
   return await addDoc(collection(db, path), { ...document });
+}
+
+export async function deleteDocument(docRef: DocumentReference) {
+  await deleteDoc(docRef);
 }
 
 interface UploadPuzzlePictureParams {
@@ -194,6 +195,11 @@ export async function addPuzzles({
 export async function editPack({ id, ...rest }: EditPackParams) {
   const docRef = doc(db, "packs", id.toString());
   await updateDoc(docRef, { ...rest });
+}
+
+export async function deletePack(packId: string) {
+  const docRef = doc(db, "packs", packId);
+  await deleteDocument(docRef);
 }
 
 interface EditPackCoverParams {

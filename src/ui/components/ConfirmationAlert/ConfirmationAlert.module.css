@@ -1,0 +1,23 @@
+.container {
+    border-radius: 0.5em;
+    background-color: white;
+    font-weight: normal;
+    margin: 1em 0;
+    padding: 1em;
+    color: black;
+    text-align: center;
+}
+
+.container small {
+    color: gray;
+}
+
+.container p {
+    margin: 0;
+    text-align: center;
+}
+
+.title {
+    font-weight: bold;
+    color: red;
+}
