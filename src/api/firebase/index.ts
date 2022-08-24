@@ -20,7 +20,12 @@ import {
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
 import { Difficulty } from "../../enums";
-import { dataURLToBlob, getImageExtensionFromFile } from "../../lib/utils";
+import {
+  base64ToBlob,
+  dataURLToBlob,
+  getBase64StringFromDataURL,
+  getImageExtensionFromFile,
+} from "../../lib/utils";
 import { HasAuthor, HasID, HasTitle } from "../../types/base";
 import { LoginParams } from "../../types/form";
 import { BasePuzzle, LocalPuzzle, RemotePuzzle } from "../../types/puzzle";
@@ -67,7 +72,6 @@ export async function uploadProfilePicture(file: Blob, user: User) {
   });
   return photoURL;
 }
-
 export async function uploadPackCover(title: string, file: Blob) {
   // console.log(file);
   const path = `pack_data/${title}/cover.${getImageExtensionFromFile(file)}`;
@@ -169,10 +173,14 @@ interface EditPackCoverParams {
   cover: File;
 }
 
-export async function editPackCover({ id, packTitle, cover }: EditPackCoverParams) {
+export async function editPackCover({
+  id,
+  packTitle,
+  cover,
+}: EditPackCoverParams) {
   const docRef = doc(db, "packs", id.toString());
   const url = await uploadPackCover(packTitle, cover);
-  await updateDoc(docRef, { cover: url })
+  await updateDoc(docRef, { cover: url });
 }
 
 interface CreatePackParams {
@@ -182,9 +190,11 @@ interface CreatePackParams {
 }
 
 export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
-  if (puzzles.length === 0) throw new Error("Veuillez ajouter au moins un puzzle!");
+  if (puzzles.length === 0)
+    throw new Error("Veuillez ajouter au moins un puzzle!");
   if (!cover) throw new Error("Veuillez ajouter une couverture!");
-  if (!pack.title || !pack.author || !pack.difficulty) throw new Error("Veuillez renseigner toutes les informations!");
+  if (!pack.title || !pack.author || !pack.difficulty)
+    throw new Error("Veuillez renseigner toutes les informations!");
 
   const uploadTasks: Array<Promise<RemotePuzzle>> = [];
 
@@ -202,6 +212,12 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
     setDoc(result, { puzzles: remotePuzzles }, { merge: true }),
     setDoc(result, { cover: coverUrl }, { merge: true }),
   ]);
+
+  return {
+    id: result.id,
+    cover: coverUrl,
+    puzzles: remotePuzzles,
+  };
 }
 
 export function getRef(documentPath: string) {

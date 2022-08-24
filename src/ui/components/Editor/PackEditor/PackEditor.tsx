@@ -2,10 +2,14 @@ import _ from "lodash";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { createPack, editPack, editPackCover, uploadPuzzlePicturesFromPuzzle } from "../../../../api/firebase";
+import {
+  createPack,
+  editPack,
+  editPackCover,
+  uploadPuzzlePicturesFromPuzzle,
+} from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
-import { handleError } from "../../../../lib/errors";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { GlobalPacks } from "../../../../types";
 import { BasePuzzle } from "../../../../types/puzzle";
@@ -24,7 +28,9 @@ interface PackEditorProps {
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
-  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(Difficulty.F);
+  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
+    currentPack.difficulty
+  );
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [backup, setBackup] = useState<GenericPuzzlePack>();
@@ -34,7 +40,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const { user } = useAuth();
 
   useEffect(() => {
-    setBackup(currentPack);
+    console.log("BACKUP: ", backup);
+  }, [backup]);
+
+  useEffect(() => {
     reset();
     register("difficulty");
     register("puzzles");
@@ -42,6 +51,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     setValue("cover", currentPack.cover);
     setValue("title", currentPack.title);
     setValue("difficulty", currentPack.difficulty);
+    setBackup(currentPack);
   }, [currentPack, reset, setValue]);
 
   useEffect(() => {
@@ -76,7 +86,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     }
   }
 
-  function checkPackAreEqual(initialPack: GenericPuzzlePack, newPack: GenericPuzzlePack) {
+  function checkPackAreEqual(
+    initialPack: GenericPuzzlePack,
+    newPack: GenericPuzzlePack
+  ) {
     return _.isEqual(initialPack, newPack);
   }
 
@@ -88,8 +101,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             try {
               if (user && backup) {
                 setIsLoading(true);
-                const cover = typeof data.cover === "string" ? data.cover : data.cover[0];
-
+                let cover = data.cover;
+                if (cover instanceof FileList) {
+                  cover = cover[0];
+                }
                 const newPuzzlePack: GenericPuzzlePack = {
                   id: currentPack.id,
                   author: user.uid,
@@ -106,7 +121,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 }
 
                 if (newPuzzlePack.local) {
-                  await createPack({
+                  const { id, cover, puzzles } = await createPack({
                     pack: {
                       title: newPuzzlePack.title,
                       author: newPuzzlePack.author,
@@ -115,22 +130,35 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                     cover: data.cover[0],
                     puzzles: data.puzzles,
                   });
-                  onSuccess(newPuzzlePack);
+                  onSuccess({ ...newPuzzlePack, id, cover, puzzles });
                   notifySuccess("Pack cree avec succes");
                 } else {
                   const picturesUploadTasks: Array<Promise<BasePuzzle>> = [];
                   const tasks: Array<Promise<void>> = [];
 
-                  const newPuzzles = newPuzzlePack.puzzles.filter((puzzle) => puzzle.local);
+                  const newPuzzles = newPuzzlePack.puzzles.filter(
+                    (puzzle) => puzzle.local
+                  );
 
                   if (newPuzzles) {
                     for (let i = 0; i < newPuzzles.length; i++) {
-                      picturesUploadTasks.push(uploadPuzzlePicturesFromPuzzle(newPuzzles[i], newPuzzlePack.title));
+                      picturesUploadTasks.push(
+                        uploadPuzzlePicturesFromPuzzle(
+                          newPuzzles[i],
+                          newPuzzlePack.title
+                        )
+                      );
                     }
                   }
 
                   if (!_.isEqual(backup.cover, newPuzzlePack.cover)) {
-                    tasks.push(editPackCover({ id: newPuzzlePack.id, packTitle: newPuzzlePack.title, cover }));
+                    tasks.push(
+                      editPackCover({
+                        id: newPuzzlePack.id,
+                        packTitle: newPuzzlePack.title,
+                        cover,
+                      })
+                    );
                   }
 
                   tasks.push(
@@ -139,18 +167,20 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                       title: newPuzzlePack.title,
                       difficulty: newPuzzlePack.difficulty,
                     })
-                  )
+                  );
 
                   // You forgot to add the puzzles to pack
-                  const [_result, result] = await Promise.all([Promise.all(tasks), Promise.all(picturesUploadTasks)])
+                  const [_result, result] = await Promise.all([
+                    Promise.all(tasks),
+                    Promise.all(picturesUploadTasks),
+                  ]);
 
                   onSuccess(newPuzzlePack);
                   notifySuccess("Pack modifie avec succes");
                 }
               }
             } catch (error) {
-              if (error instanceof Error)
-                notifyError(error.message);
+              if (error instanceof Error) notifyError(error.message);
             } finally {
               setIsLoading(false);
             }

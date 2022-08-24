@@ -18,7 +18,7 @@ export function setImagePreviewFromFile(
 ) {
   const reader = new FileReader();
 
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const image = e.target?.result as string;
     targetImage.src = image;
   };
@@ -59,7 +59,7 @@ export function createLocalPuzzlePack(uid: string) {
   const newPuzzlePack: LocalPuzzlePack = {
     id: uuidv4(),
     title: "Nouveau pack",
-    difficulty: Difficulty.F,
+    difficulty: Difficulty.D,
     author: uid,
     cover: "",
     puzzles: [],
@@ -78,4 +78,19 @@ export function dataURLToBlob(dataURL: string) {
 
 export function getImageExtensionFromFile(file: Blob) {
   return file.type.replace("image/", "");
+}
+
+interface ImageAdapterParams {
+  image: string | File | FileList;
+}
+
+export function adaptImageToFile({ image }: ImageAdapterParams): File {
+  if (image instanceof File) return image;
+  if (image instanceof FileList) return image[0];
+  if (typeof image === "string") {
+    const base64 = getBase64StringFromDataURL(image);
+    const blob = base64ToBlob(base64) as File;
+    return blob;
+  }
+  throw new Error("Erreur lors de l'adaptation de l'image");
 }

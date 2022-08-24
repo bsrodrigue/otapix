@@ -1,13 +1,13 @@
 import style from "./PackCard.module.css";
 import { BsFillStarFill } from "react-icons/bs";
-import { PuzzlePack } from "../../../../types";
+import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
 
 interface PackCardProps {
-  pack: PuzzlePack;
+  pack: GenericPuzzlePack;
 }
 
 export default function PackCard({ pack }: PackCardProps) {
-  const { id, title, cover, puzzles, author, difficulty } = pack;
+  const { title, cover, puzzles, difficulty } = pack;
   return (
     <div className={style.packcard_container}>
       <img
@@ -33,14 +33,18 @@ export default function PackCard({ pack }: PackCardProps) {
               ))}
             </div>
           </div>
-          <div className={`${style.packcard_level} material-shadow`}>{difficulty}</div>
+          <div className={`${style.packcard_level} material-shadow`}>
+            {difficulty}
+          </div>
         </div>
         <div className={style.packcard_actions}>
           <button className={`${style.packcard_action} button`}>Play</button>
           <button disabled className={`${style.packcard_action} button`}>
             Add to collection
           </button>
-          <button disabled className={`${style.packcard_action} button`}>Rate</button>
+          <button disabled className={`${style.packcard_action} button`}>
+            Rate
+          </button>
         </div>
       </div>
     </div>
