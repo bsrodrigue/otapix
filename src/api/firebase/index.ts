@@ -182,7 +182,10 @@ interface CreatePackParams {
 }
 
 export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
-  if (puzzles.length === 0) throw Error("No puzzles provided for this pack");
+  if (puzzles.length === 0) throw new Error("Veuillez ajouter au moins un puzzle!");
+  if (!cover) throw new Error("Veuillez ajouter une couverture!");
+  if (!pack.title || !pack.author || !pack.difficulty) throw new Error("Veuillez renseigner toutes les informations!");
+
   const uploadTasks: Array<Promise<RemotePuzzle>> = [];
 
   for (let i = 0; i < puzzles.length; i++) {

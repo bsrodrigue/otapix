@@ -5,14 +5,11 @@ import { toast } from "react-toastify";
 import { createPack, editPack, editPackCover, uploadPuzzlePicturesFromPuzzle } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
+import { handleError } from "../../../../lib/errors";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { GlobalPacks } from "../../../../types";
 import { BasePuzzle } from "../../../../types/puzzle";
-import {
-  GenericPuzzlePack,
-  LocalPuzzlePack,
-  RemotePuzzlePack,
-} from "../../../../types/puzzle_pack";
+import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { RectangularDropzone } from "../../Dropzone/RectangularDropzone";
@@ -22,7 +19,7 @@ import { EditorWrapper } from "../EditorWrapper";
 import { PuzzleEditor } from "../PuzzleEditor";
 
 interface PackEditorProps {
-  currentPack: LocalPuzzlePack | RemotePuzzlePack;
+  currentPack: GenericPuzzlePack;
   setPacks: Dispatch<SetStateAction<GlobalPacks>>;
 }
 
@@ -34,20 +31,13 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
-  const { pack } = values;
   const { user } = useAuth();
 
-  // console.log(values);
-
   useEffect(() => {
-    register("difficulty");
-    register("puzzles", { value: pack?.puzzles || [] });
-  }, []);
-
-  useEffect(() => {
-    reset();
     setBackup(currentPack);
-    setValue("pack", currentPack);
+    reset();
+    register("difficulty");
+    register("puzzles");
     setValue("puzzles", currentPack.puzzles);
     setValue("cover", currentPack.cover);
     setValue("title", currentPack.title);
@@ -116,13 +106,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 }
 
                 if (newPuzzlePack.local) {
-                  if (newPuzzlePack.puzzles.length === 0) {
-                    notifyError("Veuillez ajouter au moins un puzzle!");
-                    return;
-                  } else if (!cover) {
-                    notifyError("Veuillez ajouter une couverture!");
-                    return;
-                  }
                   await createPack({
                     pack: {
                       title: newPuzzlePack.title,
@@ -166,8 +149,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 }
               }
             } catch (error) {
-              console.error(error);
-              notifyError("Erreur lors de la creation du pack");
+              if (error instanceof Error)
+                notifyError(error.message);
             } finally {
               setIsLoading(false);
             }
@@ -176,7 +159,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           <p>Couverture</p>
           <RectangularDropzone
             label="Telecharger une image"
-            src={pack?.cover}
+            src={values.cover}
             {...register("cover")}
           />
 
@@ -199,12 +182,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             <>
               <p>Liste des énigmes</p>
               <PuzzleGrid puzzles={values.puzzles} />
-              <Button
-                onClick={() => {
-                  setPuzzleEditorIsOpen(true);
-                  window.scrollTo(0, document.body.scrollHeight);
-                }}
-              >
+              <Button onClick={() => setPuzzleEditorIsOpen(true)}>
                 Ajouter un puzzle
               </Button>
             </>

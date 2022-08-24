@@ -21,33 +21,41 @@ const CircularDropzone = React.forwardRef(({
   isSquare,
   ...rest
 }: CircularDropzoneProps, ref: any) => {
-  const [inputElement, setInputElement] = useState<HTMLInputElement>();
   const [imageSrc, setImageSrc] = useState<string>("");
-  const imageRef = useRef<any>();
+  const previewRef = useRef<any>();
 
   useEffect(() => {
     async function setUpImage() {
-      if (!src) return;
+      if (!src) { setImageSrc(""); return; }
       if (typeof src === "string") setImageSrc(src);
       else {
+        if (src instanceof FileList) {
+          src = src[0];
+        }
         const dataURL = await readFileAsDataURL(src) as string;
         setImageSrc(dataURL)
       }
     }
     setUpImage();
-    const element = document?.querySelector?.(`#dropzone-${name}`) as HTMLInputElement;
-    setInputElement(element);
-    element.value = '';
   }, [name, src]);
 
   return (
     <label className={`${style.circular_dropzone} ${isSquare && style.is_square}`} htmlFor={`dropzone-${name}`}>
       {label}
-      <img
-        ref={imageRef}
-        className={`${style.image_preview} ${isSquare && style.is_square}`}
-        src={imageSrc}
-      />
+      {
+        imageSrc ? (
+          <img
+            ref={previewRef}
+            className={`${style.image_preview} ${isSquare && style.is_square}`}
+            src={imageSrc}
+          />
+        ) : (
+          <img
+            ref={previewRef}
+            className={`${style.image_preview} ${isSquare && style.is_square}`}
+          />
+        )
+      }
       <input
         id={`dropzone-${name}`}
         name={name}
@@ -55,7 +63,7 @@ const CircularDropzone = React.forwardRef(({
         accept="image/*"
         hidden
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          inputElement && setImagePreviewFromInput(inputElement, imageRef.current);
+          setImagePreviewFromInput(e.target, previewRef.current);
           onChange?.(e);
         }}
         ref={ref}
