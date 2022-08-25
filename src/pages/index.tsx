@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getAllPacks } from "../api/firebase";
-import { RemotePuzzlePack } from "../types/puzzle_pack";
+import { Pack } from "../types";
 import { Header, PackCard } from "../ui/components";
 import { Grid } from "../ui/components/Grid/Grid";
 
 export default function Home() {
-  const [packs, setPacks] = useState<Array<RemotePuzzlePack>>([]);
+  const [packs, setPacks] = useState<Array<Pack>>([]);
 
   useEffect(() => {
     async function getPacks() {
@@ -20,15 +20,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <Image src="/img/home-large.jpg" height="10px" width="100%" />
-      <div className="wrapper" style={{ color: "white" }}>
-        <h1>
-          Bienvenue sur Otapix
-        </h1>
-      </div>
-      <div
-        className="wrapper"
-      >
+      <div className="wrapper">
         <Grid>
           {packs?.map((pack, key) => (
             <PackCard key={key} pack={pack} />

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { Difficulty } from "../../enums";
-import { LocalPuzzlePack } from "../../types/puzzle_pack";
+import { Pack, Puzzles } from "../../types";
 
 export function setImagePreviewFromInput(
   sourceInput: HTMLInputElement,
@@ -55,18 +55,16 @@ export function getBase64StringFromDataURL(dataURL: string) {
   return dataURL.replace("data:", "").replace(/^.+,/, "");
 }
 
-export function createLocalPuzzlePack(uid: string) {
-  const newPuzzlePack: LocalPuzzlePack = {
+export function createPuzzlePack(uid: string): Required<Pack> {
+  return {
     id: uuidv4(),
-    title: "Nouveau pack",
+    title: "New pack",
     difficulty: Difficulty.D,
-    author: uid,
+    authorId: uid,
     cover: "",
+    online: false,
     puzzles: [],
-    local: true,
   };
-
-  return newPuzzlePack;
 }
 
 export function dataURLToBlob(dataURL: string) {
@@ -93,4 +91,12 @@ export function adaptImageToFile({ image }: ImageAdapterParams): File {
     return blob;
   }
   throw new Error("Erreur lors de l'adaptation de l'image");
+}
+
+export function getNewPuzzles(puzzles: Puzzles) {
+  return puzzles.filter((puzzle) => !puzzle.online);
+}
+
+export function getOldPuzzles(puzzles: Puzzles) {
+  return puzzles.filter((puzzle) => puzzle.online);
 }

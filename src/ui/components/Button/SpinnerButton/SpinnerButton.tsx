@@ -23,7 +23,7 @@ export default function SpinnerButton({
 }: SpinnerButton) {
   return (
     <button
-      type={buttonType || "submit"}
+      type={buttonType || "button"}
       disabled={disabled || isLoading}
       className={`${styleSheet.container} ${isLoading && styleSheet.loading} ${
         type === "error" && styleSheet.error

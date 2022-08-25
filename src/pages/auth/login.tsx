@@ -5,7 +5,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { loginFormFields } from "../../lib/forms/auth/fields";
 import { submitLogin } from "../../lib/forms/auth/submit";
 import { loginSchema } from "../../lib/forms/auth/validationSchemas";
-import { FormField } from "../../types/form";
+import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
 

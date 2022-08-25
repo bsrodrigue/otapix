@@ -1,15 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FirebaseError } from "firebase/app";
-import { updateProfile } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { signUp, uploadProfilePicture } from "../../api/firebase";
 import { registerFormFields } from "../../lib/forms/auth/fields";
 import { submitRegister } from "../../lib/forms/auth/submit";
 import { registerSchema } from "../../lib/forms/auth/validationSchemas";
-import { FormField } from "../../types/form";
+import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
 import { CircularDropzone } from "../../ui/components/Dropzone/CircularDropzone";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";

@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import _ from "lodash";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import {
@@ -13,9 +13,8 @@ import {
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
-import { GlobalPacks } from "../../../../types";
-import { LocalPuzzle, RemotePuzzle } from "../../../../types/puzzle";
-import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
+import { getNewPuzzles, getOldPuzzles } from "../../../../lib/utils";
+import { Pack, PacksSetter } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { ConfirmationAlert } from "../../ConfirmationAlert";
@@ -26,9 +25,9 @@ import { EditorWrapper } from "../EditorWrapper";
 import { PuzzleEditor } from "../PuzzleEditor";
 
 interface PackEditorProps {
-  currentPack: GenericPuzzlePack;
+  currentPack: Pack;
   currentPackIndex: number;
-  setPacks: Dispatch<SetStateAction<GlobalPacks>>;
+  setPacks: PacksSetter;
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
@@ -39,18 +38,19 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteIsLoading, setDeleteIsLoading] = useState<boolean>(false);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState<boolean>(false);
-  const [backup, setBackup] = useState<GenericPuzzlePack>();
+  const [backup, setBackup] = useState<Pack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { user } = useAuth();
 
   useEffect(() => {
-    setConfirmationIsOpen(false);
     reset();
+    setConfirmationIsOpen(false);
     register("difficulty");
     register("puzzles");
     setValue("puzzles", currentPack.puzzles);
+    setValue("packId", currentPack.id);
     setValue("cover", currentPack.cover);
     setValue("title", currentPack.title);
     setValue("difficulty", currentPack.difficulty);
@@ -61,39 +61,16 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
-  function onSuccess(newPack: GenericPuzzlePack) {
-    if (newPack.local) {
-      setPacks((prev) => {
-        let local = prev.local;
-        let remote = prev.remote;
-        local = local.filter((pack) => pack.id !== currentPack?.id);
-        remote = remote.filter((pack) => pack.id !== currentPack?.id);
-        newPack.local = false;
-        remote.push({ ...newPack });
-        return {
-          local,
-          remote,
-        };
+  function onSuccess(newPack: Pack) {
+    newPack.online = true;
+    setPacks((packs) => {
+      return packs.map((pack) => {
+        if (pack.id === newPack.id) {
+          pack = newPack;
+        }
+        return pack;
       });
-    } else {
-      setPacks((prev) => {
-        let local = prev.local;
-        let remote = prev.remote;
-        remote = remote.filter((pack) => pack.id !== currentPack?.id);
-        remote.push({ ...newPack });
-        return {
-          local,
-          remote,
-        };
-      });
-    }
-  }
-
-  function checkPackAreEqual(
-    initialPack: GenericPuzzlePack,
-    newPack: GenericPuzzlePack
-  ) {
-    return _.isEqual(initialPack, newPack);
+    });
   }
 
   return (
@@ -108,26 +85,34 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 if (cover instanceof FileList) {
                   cover = cover[0];
                 }
-                const newPuzzlePack: GenericPuzzlePack = {
+                const newPuzzlePack: Pack = {
                   id: currentPack.id,
-                  author: user.uid,
+                  authorId: user.uid,
                   cover,
                   title: data.title,
                   difficulty: data.difficulty,
                   puzzles: data.puzzles,
-                  local: currentPack.local,
+                  online: currentPack.online,
                 };
 
-                if (checkPackAreEqual(backup, newPuzzlePack)) {
+                if (
+                  !newPuzzlePack.puzzles ||
+                  newPuzzlePack.puzzles.length === 0
+                ) {
+                  notifyError("Veuillez creer au moins un puzzle!");
+                  return;
+                }
+
+                if (_.isEqual(backup, newPuzzlePack)) {
                   toast("Aucune modification", { type: "warning" });
                   return;
                 }
 
-                if (newPuzzlePack.local) {
+                if (!newPuzzlePack.online) {
                   const { id, cover, puzzles } = await createPack({
                     pack: {
                       title: newPuzzlePack.title,
-                      author: newPuzzlePack.author,
+                      authorId: newPuzzlePack.authorId,
                       difficulty: newPuzzlePack.difficulty,
                     },
                     cover: data.cover[0],
@@ -138,11 +123,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 } else {
                   const tasks: Array<Promise<void>> = [];
 
-                  const newPuzzles: Array<LocalPuzzle> =
-                    newPuzzlePack.puzzles.filter((puzzle) => puzzle.local);
-
-                  const oldPuzzles: Array<RemotePuzzle> =
-                    newPuzzlePack.puzzles.filter((puzzle) => !puzzle.local);
+                  const newPuzzles = getNewPuzzles(newPuzzlePack.puzzles);
+                  const oldPuzzles = getOldPuzzles(newPuzzlePack.puzzles);
 
                   let destinationPuzzleTasks: any;
                   if (newPuzzles.length !== 0) {
@@ -225,20 +207,32 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
               </Button>
             </>
           )}
+
           {!puzzleEditorIsOpen && !confirmationIsOpen && (
             <div style={{ display: "flex", gap: "1em" }}>
+              {/* Delete Pack */}
               <SpinnerButton
-                buttonType="button"
                 type="error"
                 text="Supprimer"
                 disabled={deleteIsLoading || isLoading}
                 isLoading={deleteIsLoading}
                 onClick={() => setConfirmationIsOpen(true)}
               />
-              <SpinnerButton isLoading={isLoading} />
+
+              {/* Submit Pack */}
+              <SpinnerButton buttonType="submit" isLoading={isLoading} />
             </div>
           )}
         </form>
+
+        {/* Puzzle Editor */}
+        {puzzleEditorIsOpen && (
+          <PuzzleEditor
+            isOpen={puzzleEditorIsOpen}
+            setIsOpen={setPuzzleEditorIsOpen}
+          />
+        )}
+
         {confirmationIsOpen && (
           <ConfirmationAlert
             isLoading={deleteIsLoading}
@@ -248,18 +242,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             onConfirm={async () => {
               try {
                 setDeleteIsLoading(true);
-                !currentPack.local &&
+                currentPack.online &&
                   (await deletePack(currentPack.id.toString()));
-                setPacks((prev) => {
-                  let local = prev.local;
-                  let remote = prev.remote;
-                  local = local.filter((pack) => pack.id !== currentPack.id);
-                  remote = remote.filter((pack) => pack.id !== currentPack.id);
-                  return {
-                    local,
-                    remote,
-                  };
-                });
+                setPacks((packs) =>
+                  packs.filter((pack) => pack.id !== currentPack.id)
+                );
                 notifySuccess("Pack supprime avec succes");
               } catch (error) {
                 if (error instanceof FirebaseError)
@@ -269,12 +256,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 setDeleteIsLoading(false);
               }
             }}
-          />
-        )}
-        {puzzleEditorIsOpen && (
-          <PuzzleEditor
-            isOpen={puzzleEditorIsOpen}
-            setIsOpen={setPuzzleEditorIsOpen}
           />
         )}
       </FormProvider>
