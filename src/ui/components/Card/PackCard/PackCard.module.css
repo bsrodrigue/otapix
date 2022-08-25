@@ -3,7 +3,7 @@
 .packcard_container {
     flex-grow: 1;
     background-color: white;
-    border-radius: 10em 0.8em 0.8em 0.8em;
+    border-radius: 0.5em; 
     display: flex;
     flex-wrap: wrap;
 }
@@ -12,7 +12,7 @@
     object-fit: cover;
     flex: 1;
     width: 20em;
-    border-radius: 0.8em 0.8em 10em 0;
+    border-radius: 0.5em;
 }
 
 .packcard_content {

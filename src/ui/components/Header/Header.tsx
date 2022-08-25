@@ -91,20 +91,24 @@ export default function Header() {
         </div>
       </div>
 
-      <div className={style.search_form}>
-        <div className={style.search_form_content}>
-          <input
-            className={style.search_form_input}
-            type="text"
-            name="search"
-            id=""
-            placeholder="Search for an otapix pack..."
-          />
-          <div className={`${style.search_form_button} material-shadow`}>
-            <BsSearch />
+
+      <div className="wrapper">
+        <div className={style.search_form}>
+          <div className={style.search_form_content}>
+            <input
+              className={style.search_form_input}
+              type="text"
+              name="search"
+              id=""
+              placeholder="Search for an otapix pack..."
+            />
+            <div className={`${style.search_form_button} material-shadow`}>
+              <BsSearch />
+            </div>
           </div>
         </div>
       </div>
+
     </header>
   );
 }

@@ -6,7 +6,9 @@
     font-weight: bold;
     background-color: var(--primary-color);
     padding: 2em 0;
-    margin-bottom: 5em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }
 
 .header_content {
@@ -14,6 +16,7 @@
     justify-content: space-between;
     align-items: center;
 }
+
 
 .header_logo {
     font-size: 2em;
@@ -41,15 +44,15 @@
 
 .search_form {
     width: 100%;
-    position: absolute;
-    top: 85%;
+    /* position: absolute; */
+    /* top: 85%; */
     display: flex;
     justify-content: center;
 }
 
 .search_form_content {
     position: relative;
-    width: 80%;
+    width: 100%;
 }
 
 .search_form_button {
