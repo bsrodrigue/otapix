@@ -25,9 +25,8 @@ export default function SpinnerButton({
     <button
       type={buttonType || "button"}
       disabled={disabled || isLoading}
-      className={`${styleSheet.container} ${isLoading && styleSheet.loading} ${
-        type === "error" && styleSheet.error
-      }`}
+      className={`${styleSheet.container} ${isLoading && styleSheet.loading} ${type === "error" && styleSheet.error
+        }`}
       style={style}
       onClick={onClick}
     >

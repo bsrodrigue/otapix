@@ -11,8 +11,8 @@ import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSideP
 
 export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
-  const [currentPackIndex, setCurrentPackIndex] = useState(0);
   const [packs, setPacks] = useState<Packs>([]);
+  const [currentPackIndex, setCurrentPackIndex] = useState(0);
   const [loading, setIsloading] = useState(true);
   const { user } = useAuth();
 
@@ -20,6 +20,7 @@ export default function DashboardPage() {
     if (!user) return;
     const pack: Pack = createPuzzlePack(user.uid);
     setPacks((prev) => {
+      setCurrentPackIndex(prev.length);
       return [...prev, pack];
     });
     setIsOpen(false);

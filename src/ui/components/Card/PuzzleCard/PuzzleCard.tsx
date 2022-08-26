@@ -9,7 +9,7 @@ export default function PuzzleCard({ title, pictures }: PuzzleCardProps) {
   return (
     <div className={style.puzzle_card}>
       <div className={style.puzzle_card_pictures}>
-        {pictures.map((picture, key) => (
+        {pictures?.map((picture, key) => (
           <img key={key} src={picture} />
         ))}
       </div>

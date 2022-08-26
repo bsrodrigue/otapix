@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getAllPacks } from "../api/firebase";
 import { Pack } from "../types";
@@ -11,6 +10,7 @@ export default function Home() {
   useEffect(() => {
     async function getPacks() {
       const result = await getAllPacks();
+      console.log(result);
       setPacks(result);
     }
 

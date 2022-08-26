@@ -14,7 +14,7 @@ import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { getNewPuzzles, getOldPuzzles } from "../../../../lib/utils";
-import { Pack, PacksSetter } from "../../../../types";
+import { Pack, PacksSetter, Puzzles } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { ConfirmationAlert } from "../../ConfirmationAlert";
@@ -63,13 +63,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
 
   function onSuccess(newPack: Pack) {
     newPack.online = true;
+    setBackup(newPack);
     setPacks((packs) => {
-      return packs.map((pack) => {
-        if (pack.id === newPack.id) {
-          pack = newPack;
-        }
-        return pack;
-      });
+      packs = packs.filter((pack) => pack.id !== currentPack.id);
+      packs.push(newPack);
+      return packs;
     });
   }
 
@@ -80,15 +78,19 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           onSubmit={handleSubmit(async (data) => {
             try {
               if (user && backup) {
+
+                console.log("Data to be used: ", data);
+
                 setIsLoading(true);
                 let cover = data.cover;
                 if (cover instanceof FileList) {
-                  cover = cover[0];
+                  cover = cover.item(0);
                 }
+
                 const newPuzzlePack: Pack = {
-                  id: currentPack.id,
-                  authorId: user.uid,
                   cover,
+                  id: data.packId,
+                  authorId: currentPack.authorId,
                   title: data.title,
                   difficulty: data.difficulty,
                   puzzles: data.puzzles,
@@ -109,16 +111,16 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 }
 
                 if (!newPuzzlePack.online) {
-                  const { id, cover, puzzles } = await createPack({
+                  const { id, cover: coverURL, puzzles } = await createPack({
                     pack: {
                       title: newPuzzlePack.title,
                       authorId: newPuzzlePack.authorId,
                       difficulty: newPuzzlePack.difficulty,
                     },
-                    cover: data.cover[0],
+                    cover,
                     puzzles: data.puzzles,
                   });
-                  onSuccess({ ...newPuzzlePack, id, cover, puzzles });
+                  onSuccess({ ...newPuzzlePack, id, cover: coverURL, puzzles });
                   notifySuccess("Pack cree avec succes");
                 } else {
                   const tasks: Array<Promise<void>> = [];
@@ -126,10 +128,9 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   const newPuzzles = getNewPuzzles(newPuzzlePack.puzzles);
                   const oldPuzzles = getOldPuzzles(newPuzzlePack.puzzles);
 
-                  let destinationPuzzleTasks: any;
+                  let destinationPuzzleTasks: Promise<Puzzles>;
                   if (newPuzzles.length !== 0) {
                     destinationPuzzleTasks = addPuzzles({
-                      packId: newPuzzlePack.id,
                       packTitle: newPuzzlePack.title,
                       puzzles: newPuzzles,
                     });
@@ -156,7 +157,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   // You forgot to add the puzzles to pack
                   const [_result, result] = await Promise.all([
                     Promise.all(tasks),
-                    destinationPuzzleTasks,
+                    destinationPuzzleTasks!,
                   ]);
 
                   const remotePuzzles = result || [];

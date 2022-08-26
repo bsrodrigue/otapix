@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { TailSpin } from 'react-loader-spinner';
 import { SpinnerButton } from '../../Button/SpinnerButton';
 import style from './AuthForm.module.css';
 
@@ -46,7 +45,7 @@ export default function AuthfForm({
         <a href={message?.[1]}>
           <small className={style.authform_message}>{message?.[0]}</small>
         </a>
-        <SpinnerButton isLoading={isLoading} />
+        <SpinnerButton buttonType="submit" isLoading={isLoading} />
         <a className={style.authform_alternative} href={alternative?.[2]}>
           {alternative?.[0]}<span className='primary-color'>&nbsp;{alternative?.[1]}</span>
         </a>
