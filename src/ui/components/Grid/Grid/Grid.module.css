@@ -1,5 +1,5 @@
-.container{
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 1em;
+.container {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1.5em;
 }

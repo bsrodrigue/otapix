@@ -1,5 +1,5 @@
 .puzzle_card {
-  position: relative;
+    position: relative;
     display: flex;
     flex-direction: column;
     aspect-ratio: 1/1;
@@ -23,12 +23,40 @@
 }
 
 .puzzle_card_title {
-  position: absolute;
-  padding: 0.5em;
-  border-radius: 0.5em;
-  font-size: 0.8em;
-  text-overflow: ellipsis;
+    position: absolute;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    font-size: 0.8em;
+    text-overflow: ellipsis;
     color: white;
-  background-color: var(--primary-color);
+    background-color: var(--primary-color);
 }
 
+.actions {
+    padding: 0.5em;
+    border-radius: 0 0 0.8em 0.8em;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5em;
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.304);
+}
+
+.actions button {
+    color: white;
+    font-weight: bold;
+    border: white 1px solid;
+    border-radius: 0.5em;
+    display: flex;
+    justify-content: center;
+    padding: 0.1em 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    font-size: 1.5em;
+}
+
+.actions button:hover {
+    background-color: black;
+}
