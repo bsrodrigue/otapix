@@ -207,6 +207,11 @@ export async function editPackCover({
   await updateDoc(docRef, { cover: url });
 }
 
+export async function deletePuzzle(puzzleId: string) {
+  const docRef = doc(db, "puzzles", puzzleId);
+  await deleteDocument(docRef);
+}
+
 export async function createPuzzle(
   puzzle: { word: string; pictures: Array<string> },
   packRef: DocumentReference,
