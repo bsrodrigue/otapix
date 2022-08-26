@@ -78,7 +78,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           onSubmit={handleSubmit(async (data) => {
             try {
               if (user && backup) {
-
                 console.log("Data to be used: ", data);
 
                 setIsLoading(true);
@@ -110,8 +109,16 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   return;
                 }
 
+                if (!cover) {
+                  notifyError("Veuillez ajouter une couverture!");
+                }
+
                 if (!newPuzzlePack.online) {
-                  const { id, cover: coverURL, puzzles } = await createPack({
+                  const {
+                    id,
+                    cover: coverURL,
+                    puzzles,
+                  } = await createPack({
                     pack: {
                       title: newPuzzlePack.title,
                       authorId: newPuzzlePack.authorId,
@@ -161,7 +168,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   ]);
 
                   const remotePuzzles = result || [];
-
                   onSuccess({
                     ...newPuzzlePack,
                     puzzles: [...oldPuzzles, ...remotePuzzles],
