@@ -7,6 +7,7 @@ import {
   addPuzzles,
   createPack,
   deletePack,
+  deletePuzzle,
   editPack,
   editPackCover,
 } from "../../../../api/firebase";
@@ -14,7 +15,7 @@ import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { getNewPuzzles, getOldPuzzles } from "../../../../lib/utils";
-import { Pack, PacksSetter, Puzzles } from "../../../../types";
+import { Pack, PacksSetter, Puzzle, Puzzles } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { ConfirmationAlert } from "../../ConfirmationAlert";
@@ -37,7 +38,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteIsLoading, setDeleteIsLoading] = useState<boolean>(false);
-  const [confirmationIsOpen, setConfirmationIsOpen] = useState<boolean>(false);
+  const [puzzleToDelete, setPuzzleToDelete] = useState<Puzzle>();
+  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] =
+    useState<boolean>(false);
+  const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] =
+    useState<boolean>(false);
   const [backup, setBackup] = useState<Pack>();
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
@@ -69,7 +74,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
 
   useEffect(() => {
     reset();
-    setConfirmationIsOpen(false);
+    setPackDeleteConfirmIsOpen(false);
+    setPuzzleDeleteConfirmIsOpen(false);
     register("difficulty");
     register("puzzles");
     setValue("puzzles", currentPack.puzzles);
@@ -101,7 +107,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           onSubmit={handleSubmit(async (data) => {
             try {
               if (user && backup) {
-
                 console.log("Data to be used: ", data);
 
                 setIsLoading(true);
@@ -133,8 +138,16 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   return;
                 }
 
+                if (!cover) {
+                  notifyError("Veuillez ajouter une couverture!");
+                }
+
                 if (!newPuzzlePack.online) {
-                  const { id, cover: coverURL, puzzles } = await createPack({
+                  const {
+                    id,
+                    cover: coverURL,
+                    puzzles,
+                  } = await createPack({
                     pack: {
                       title: newPuzzlePack.title,
                       authorId: newPuzzlePack.authorId,
@@ -184,7 +197,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   ]);
 
                   const remotePuzzles = result || [];
-
                   onSuccess({
                     ...newPuzzlePack,
                     puzzles: [...oldPuzzles, ...remotePuzzles],
@@ -222,31 +234,41 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             setCheckedDifficulty={setCheckedDifficulty}
           />
 
-          {!puzzleEditorIsOpen && !confirmationIsOpen && (
-            <>
-              <p>Liste des énigmes</p>
-              <PuzzleGrid puzzles={values.puzzles} />
-              <Button onClick={() => setPuzzleEditorIsOpen(true)}>
-                Ajouter un puzzle
-              </Button>
-            </>
-          )}
+          {!puzzleEditorIsOpen &&
+            !packDeleteConfirmIsOpen &&
+            !puzzleDeleteConfirmIsOpen && (
+              <>
+                <p>Liste des énigmes</p>
+                <PuzzleGrid
+                  onDelete={(puzzle: Puzzle) => {
+                    setPuzzleToDelete(puzzle);
+                    setPuzzleDeleteConfirmIsOpen(true);
+                  }}
+                  puzzles={values.puzzles}
+                />
+                <Button onClick={() => setPuzzleEditorIsOpen(true)}>
+                  Ajouter un puzzle
+                </Button>
+              </>
+            )}
 
-          {!puzzleEditorIsOpen && !confirmationIsOpen && (
-            <div style={{ display: "flex", gap: "1em" }}>
-              {/* Delete Pack */}
-              <SpinnerButton
-                type="error"
-                text="Supprimer"
-                disabled={deleteIsLoading || isLoading}
-                isLoading={deleteIsLoading}
-                onClick={() => setConfirmationIsOpen(true)}
-              />
+          {!puzzleEditorIsOpen &&
+            !packDeleteConfirmIsOpen &&
+            !puzzleDeleteConfirmIsOpen && (
+              <div style={{ display: "flex", gap: "1em" }}>
+                {/* Delete Pack */}
+                <SpinnerButton
+                  type="error"
+                  text="Supprimer"
+                  disabled={deleteIsLoading || isLoading}
+                  isLoading={deleteIsLoading}
+                  onClick={() => setPackDeleteConfirmIsOpen(true)}
+                />
 
-              {/* Submit Pack */}
-              <SpinnerButton buttonType="submit" isLoading={isLoading} />
-            </div>
-          )}
+                {/* Submit Pack */}
+                <SpinnerButton buttonType="submit" isLoading={isLoading} />
+              </div>
+            )}
         </form>
 
         {/* Puzzle Editor */}
@@ -257,11 +279,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           />
         )}
 
-        {confirmationIsOpen && (
+        {packDeleteConfirmIsOpen && (
           <ConfirmationAlert
             isLoading={deleteIsLoading}
             onCancel={() => {
-              setConfirmationIsOpen(false);
+              setPackDeleteConfirmIsOpen(false);
             }}
             onConfirm={async () => {
               try {
@@ -272,6 +294,44 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   packs.filter((pack) => pack.id !== currentPack.id)
                 );
                 notifySuccess("Pack supprime avec succes");
+              } catch (error) {
+                if (error instanceof FirebaseError)
+                  notifySuccess(error.message);
+                console.error(error);
+              } finally {
+                setDeleteIsLoading(false);
+              }
+            }}
+          />
+        )}
+
+        {puzzleDeleteConfirmIsOpen && (
+          <ConfirmationAlert
+            isLoading={deleteIsLoading}
+            onCancel={() => {
+              setPuzzleDeleteConfirmIsOpen(false);
+            }}
+            onConfirm={async () => {
+              try {
+                setDeleteIsLoading(true);
+                puzzleToDelete?.online &&
+                  (await deletePuzzle(puzzleToDelete.id));
+                setPacks((packs) => {
+                  for (let i = 0; i < packs.length; i++) {
+                    if (packs[i].id === currentPack.id) {
+                      const pack = packs[i];
+                      pack.puzzles = pack.puzzles?.filter(
+                        (puzzle) => puzzle.id !== puzzleToDelete?.id
+                      );
+                      packs[i] = pack;
+                      setValue("puzzles", pack.puzzles);
+                      setBackup(packs[i]);
+                    }
+                  }
+                  return packs;
+                });
+                notifySuccess("Puzzle supprime avec succes");
+                setPuzzleDeleteConfirmIsOpen(false);
               } catch (error) {
                 if (error instanceof FirebaseError)
                   notifySuccess(error.message);

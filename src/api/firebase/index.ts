@@ -159,10 +159,7 @@ interface AddPuzzleParams {
   puzzle: Puzzle;
 }
 
-export async function addPuzzle({
-  packTitle,
-  puzzle,
-}: AddPuzzleParams) {
+export async function addPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
   const docRef = doc(db, "packs", puzzle.packId);
   return await createPuzzle(puzzle, docRef, packTitle);
 }
@@ -171,10 +168,7 @@ interface AddPuzzlesParams {
   packTitle: string;
   puzzles: Puzzles;
 }
-export async function addPuzzles({
-  packTitle,
-  puzzles,
-}: AddPuzzlesParams) {
+export async function addPuzzles({ packTitle, puzzles }: AddPuzzlesParams) {
   const uploadTasks: Array<Promise<Puzzle>> = [];
   for (let i = 0; i < puzzles.length; i++) {
     uploadTasks.push(addPuzzle({ packTitle, puzzle: puzzles[i] }));
@@ -193,7 +187,7 @@ export async function deletePack(packId: string) {
   const puzzlesDocs = await getDocs(q);
   puzzlesDocs.forEach((doc) => {
     deleteDocument(doc.ref);
-  })
+  });
   await deleteDocument(docRef);
 }
 
@@ -213,11 +207,16 @@ export async function editPackCover({
   await updateDoc(docRef, { cover: url });
 }
 
+export async function deletePuzzle(puzzleId: string) {
+  const docRef = doc(db, "puzzles", puzzleId);
+  await deleteDocument(docRef);
+}
+
 export async function createPuzzle(
   puzzle: { word: string; pictures: Array<string> },
   packRef: DocumentReference,
   packTitle: string
-): Promise<Puzzle> {
+): Promise<Required<Puzzle>> {
   const { pictures, word } = puzzle;
   const puzzleRef = await createDocument({
     document: { word, packId: packRef.id },
@@ -241,6 +240,7 @@ export async function createPuzzle(
     packId: packRef.id,
     pictures: urls,
     word,
+    online: true,
   };
 }
 
@@ -250,7 +250,11 @@ interface CreatePackParams {
   puzzles: Puzzles;
 }
 
-export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
+export async function createPack({
+  pack,
+  cover,
+  puzzles,
+}: CreatePackParams): Promise<Required<Pack>> {
   const puzzleDocCreationTasks: Array<Promise<Puzzle>> = [];
   const packRef = await createDocument({ document: pack, path: "packs" });
 
@@ -267,6 +271,9 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams) {
 
   return {
     id: packRef.id,
+    title: pack.title,
+    difficulty: pack.difficulty,
+    authorId: pack.authorId,
     cover: coverUrl,
     puzzles: createdPuzzles,
     online: true,
@@ -281,21 +288,20 @@ function extractDocs(docs: QuerySnapshot<DocumentData>) {
   const temp: any[] = [];
   docs.forEach((doc) => {
     temp.push(doc);
-  })
+  });
   return temp;
 }
 
 async function packDocsToPacks(packsDocs: QuerySnapshot<DocumentData>) {
   const result: Packs = [];
   for (const doc of extractDocs(packsDocs)) {
-
     const pack = hydratePack(doc, []);
     const q = getPuzzleIsFromPackQuery(doc.id);
     const puzzlesDocs = await getDocs(q);
 
     puzzlesDocs.forEach((doc) => {
       pack.puzzles?.push(hydratePuzzle(doc));
-    })
+    });
 
     result.push(pack);
   }
@@ -308,10 +314,8 @@ export async function getAllPacks() {
   return await packDocsToPacks(packsDocs);
 }
 
-
 export async function getPacksFromUser(uid: string) {
   const q = getUserIsAuthorQuery(uid);
   const packDocs = await getDocs(q);
-  return await packDocsToPacks(packDocs)
+  return await packDocsToPacks(packDocs);
 }
-
