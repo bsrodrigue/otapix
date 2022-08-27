@@ -18,7 +18,7 @@ export function setImagePreviewFromFile(
 ) {
   const reader = new FileReader();
 
-  reader.onload = function (e) {
+  reader.onload = function(e) {
     const image = e.target?.result as string;
     targetImage.src = image;
   };

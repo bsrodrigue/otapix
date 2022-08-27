@@ -14,6 +14,7 @@ interface CircularDropzoneProps {
   value?: any;
   src?: string | File;
   isSquare?: boolean;
+  multiple?: boolean;
 }
 
 const CircularDropzone = React.forwardRef(
@@ -31,10 +32,14 @@ const CircularDropzone = React.forwardRef(
           return;
         }
         if (typeof src === "string") setImageSrc(src);
-        else {
-          if (src instanceof FileList) {
-            src = src[0];
+        else if (src instanceof FileList) {
+          if (src.length === 0) {
+            setImageSrc("");
+            return;
+          } else if (src.length > 1) {
+
           }
+          src = src[0];
           const dataURL = (await readFileAsDataURL(src)) as string;
           setImageSrc(dataURL);
         }

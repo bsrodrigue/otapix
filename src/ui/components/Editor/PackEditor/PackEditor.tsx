@@ -44,6 +44,29 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const values = watch();
   const { user } = useAuth();
 
+
+  function redistributeImagesAmongInputs() {
+    const pp1 = values['puzzle-pic-1'];
+    console.log(pp1);
+    if (pp1 instanceof FileList) {
+      if (pp1.length > 1) {
+
+        for (let i = 0; i < pp1.length; i++) {
+          console.log("Working?: ", pp1);
+          setValue(`puzzle-pic-${i + 1}`, pp1[i]);
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.log(values);
+  }, [values]);
+
+  useEffect(() => {
+    redistributeImagesAmongInputs();
+  }, [values[`puzzle-pic-1`]]);
+
   useEffect(() => {
     reset();
     setConfirmationIsOpen(false);

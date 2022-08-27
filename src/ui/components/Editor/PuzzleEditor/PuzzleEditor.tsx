@@ -32,6 +32,8 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
             {[1, 2, 3, 4].map((value, key) => (
               <RectangularDropzone
                 key={key}
+                src={values[`puzzle-pic-${value}`]}
+                multiple
                 {...register(`puzzle-pic-${value}`)}
                 isSquare
               />
