@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <div className="wrapper">
+      <div style={{ padding: "1em" }} className="wrapper">
         <Grid>
           {packs?.map((pack, key) => (
             <PackCard key={key} pack={pack} />

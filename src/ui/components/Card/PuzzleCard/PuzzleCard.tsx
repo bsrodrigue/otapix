@@ -7,6 +7,7 @@ interface PuzzleCardProps {
   title: string;
   pictures: Array<string>;
   onDelete: (puzzle: Puzzle) => void;
+  onEdit: (puzzle: Puzzle) => void;
 }
 
 export default function PuzzleCard({
@@ -14,6 +15,7 @@ export default function PuzzleCard({
   title,
   pictures,
   onDelete,
+  onEdit,
 }: PuzzleCardProps) {
   return (
     <div className={style.puzzle_card}>
@@ -33,7 +35,11 @@ export default function PuzzleCard({
         >
           <BsTrash />
         </button>
-        <button type="button">
+        <button
+          onClick={() => {
+            onEdit(puzzle);
+          }}
+          type="button">
           <BsPen />
         </button>
       </div>

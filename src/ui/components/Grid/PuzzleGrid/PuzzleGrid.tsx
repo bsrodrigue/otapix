@@ -6,9 +6,10 @@ import style from "./PuzzleGrid.module.css";
 interface PuzzleGridProps {
   puzzles: Puzzles;
   onDelete: (puzzle: Puzzle) => void;
+  onEdit: (puzzle: Puzzle) => void;
 }
 
-export default function PuzzleGrid({ puzzles, onDelete }: PuzzleGridProps) {
+export default function PuzzleGrid({ puzzles, onEdit, onDelete }: PuzzleGridProps) {
   return (
     <Grid className={style.container}>
       {puzzles?.map((puzzle, key) => {
@@ -19,6 +20,7 @@ export default function PuzzleGrid({ puzzles, onDelete }: PuzzleGridProps) {
             title={puzzle.word}
             pictures={puzzle.pictures}
             onDelete={onDelete}
+            onEdit={onEdit}
           />
         );
       })}

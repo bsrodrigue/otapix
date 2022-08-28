@@ -1,9 +1,9 @@
 import style from "./PackCard.module.css";
 import { BsFillStarFill } from "react-icons/bs";
-import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
+import { Pack } from "../../../../types";
 
 interface PackCardProps {
-  pack: GenericPuzzlePack;
+  pack: Pack;
 }
 
 export default function PackCard({ pack }: PackCardProps) {
@@ -24,11 +24,11 @@ export default function PackCard({ pack }: PackCardProps) {
               <span>doomer_coder</span>
             </small>
             <p className={style.packcard_puzzle_count}>
-              {puzzles.length}
+              {puzzles?.length}
               <span> puzzles</span>
             </p>
             <div className={style.packcard_rating}>
-              {[1, 2, 3, 4, 5].map((item: any, key: number) => (
+              {[1, 2, 3, 4, 5].map((_item: any, key: number) => (
                 <BsFillStarFill key={key} />
               ))}
             </div>

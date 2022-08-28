@@ -2,7 +2,6 @@ import { FirebaseError } from "firebase/app";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import {
   addPuzzles,
   createPack,
@@ -49,13 +48,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const values = watch();
   const { user } = useAuth();
 
-
   function redistributeImagesAmongInputs() {
     const pp1 = values['puzzle-pic-1'];
-    console.log(pp1);
     if (pp1 instanceof FileList) {
       if (pp1.length > 1) {
-
         for (let i = 0; i < pp1.length; i++) {
           console.log("Working?: ", pp1);
           setValue(`puzzle-pic-${i + 1}`, pp1[i]);
@@ -64,9 +60,27 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     }
   }
 
-  useEffect(() => {
-    console.log(values);
-  }, [values]);
+  function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: Pack; cover: File; }) {
+    const tasks: Array<Promise<void>> = [];
+    if (!_.isEqual(backup.cover, pack.cover)) {
+      tasks.push(
+        editPackCover({
+          id: pack.id,
+          packTitle: pack.title,
+          cover,
+        })
+      );
+    }
+
+    tasks.push(
+      editPack({
+        id: pack.id,
+        title: pack.title,
+        difficulty: pack.difficulty,
+      })
+    );
+    return tasks;
+  }
 
   useEffect(() => {
     redistributeImagesAmongInputs();
@@ -77,6 +91,9 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     setPackDeleteConfirmIsOpen(false);
     setPuzzleDeleteConfirmIsOpen(false);
     register("difficulty");
+    register("puzzle-online-edit");
+    register("puzzle-editor-mode");
+    register("puzzle-id");
     register("puzzles");
     setValue("puzzles", currentPack.puzzles);
     setValue("packId", currentPack.id);
@@ -100,6 +117,27 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     });
   }
 
+
+  interface SubmitCreatePackParams {
+    pack: {
+      title: string;
+      authorId: string;
+      difficulty: Difficulty;
+    },
+    cover: File;
+    puzzles: Puzzles;
+  }
+
+  async function submitCreatePack({ pack, cover, puzzles }: SubmitCreatePackParams) {
+    const result = await createPack({
+      pack,
+      cover,
+      puzzles,
+    });
+    onSuccess({ ...pack, ...result });
+    notifySuccess("Pack cree avec succes");
+  }
+
   return (
     <EditorWrapper>
       <FormProvider {...methods}>
@@ -107,7 +145,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           onSubmit={handleSubmit(async (data) => {
             try {
               if (user && backup) {
-                console.log("Data to be used: ", data);
 
                 setIsLoading(true);
                 let cover = data.cover;
@@ -125,82 +162,36 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   online: currentPack.online,
                 };
 
+
+                if (_.isEqual(backup, newPuzzlePack)) {
+                  throw new Error("No modifications provided");
+                }
+
                 if (
                   !newPuzzlePack.puzzles ||
                   newPuzzlePack.puzzles.length === 0
                 ) {
-                  notifyError("Veuillez creer au moins un puzzle!");
-                  return;
-                }
-
-                if (_.isEqual(backup, newPuzzlePack)) {
-                  toast("Aucune modification", { type: "warning" });
-                  return;
+                  throw new Error("No puzzle created");
                 }
 
                 if (!cover) {
-                  notifyError("Veuillez ajouter une couverture!");
+                  throw new Error("No cover set");
                 }
 
                 if (!newPuzzlePack.online) {
-                  const {
-                    id,
-                    cover: coverURL,
-                    puzzles,
-                  } = await createPack({
+                  await submitCreatePack({
                     pack: {
-                      title: newPuzzlePack.title,
+                      title:
+                        newPuzzlePack.title,
                       authorId: newPuzzlePack.authorId,
-                      difficulty: newPuzzlePack.difficulty,
-                    },
-                    cover,
-                    puzzles: data.puzzles,
+                      difficulty: newPuzzlePack.difficulty
+                    }, cover, puzzles: data.puzzles
                   });
-                  onSuccess({ ...newPuzzlePack, id, cover: coverURL, puzzles });
-                  notifySuccess("Pack cree avec succes");
                 } else {
-                  const tasks: Array<Promise<void>> = [];
 
-                  const newPuzzles = getNewPuzzles(newPuzzlePack.puzzles);
-                  const oldPuzzles = getOldPuzzles(newPuzzlePack.puzzles);
-
-                  let destinationPuzzleTasks: Promise<Puzzles>;
-                  if (newPuzzles.length !== 0) {
-                    destinationPuzzleTasks = addPuzzles({
-                      packTitle: newPuzzlePack.title,
-                      puzzles: newPuzzles,
-                    });
-                  }
-
-                  if (!_.isEqual(backup.cover, newPuzzlePack.cover)) {
-                    tasks.push(
-                      editPackCover({
-                        id: newPuzzlePack.id,
-                        packTitle: newPuzzlePack.title,
-                        cover,
-                      })
-                    );
-                  }
-
-                  tasks.push(
-                    editPack({
-                      id: newPuzzlePack.id,
-                      title: newPuzzlePack.title,
-                      difficulty: newPuzzlePack.difficulty,
-                    })
-                  );
-
-                  // You forgot to add the puzzles to pack
-                  const [_result, result] = await Promise.all([
-                    Promise.all(tasks),
-                    destinationPuzzleTasks!,
-                  ]);
-
-                  const remotePuzzles = result || [];
-                  onSuccess({
-                    ...newPuzzlePack,
-                    puzzles: [...oldPuzzles, ...remotePuzzles],
-                  });
+                  const tasks = getPackModificationTasksToPerform({ pack: newPuzzlePack, backup, cover })
+                  await Promise.all([Promise.all(tasks)]);
+                  onSuccess({ ...newPuzzlePack });
                   notifySuccess("Pack modifie avec succes");
                 }
               }
@@ -244,9 +235,23 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                     setPuzzleToDelete(puzzle);
                     setPuzzleDeleteConfirmIsOpen(true);
                   }}
+                  onEdit={(puzzle: Puzzle) => {
+                    setValue("puzzle-editor-mode", currentPack.online ? "update-online" : "update-offline");
+                    setValue("puzzle-id", puzzle.id);
+                    setValue(`puzzle-pic-1`, puzzle.pictures[0]);
+                    setValue(`puzzle-pic-2`, puzzle.pictures[1]);
+                    setValue(`puzzle-pic-3`, puzzle.pictures[2]);
+                    setValue(`puzzle-pic-4`, puzzle.pictures[3]);
+                    setPuzzleEditorIsOpen(true);
+                  }}
                   puzzles={values.puzzles}
                 />
-                <Button onClick={() => setPuzzleEditorIsOpen(true)}>
+                <Button onClick={
+                  () => {
+                    setValue("puzzle-editor-mode", currentPack.online ? "create-online" : "create-offline");
+                    setPuzzleEditorIsOpen(true)
+                  }
+                } >
                   Ajouter un puzzle
                 </Button>
               </>

@@ -160,8 +160,19 @@ interface AddPuzzleParams {
 }
 
 export async function addPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
-  const docRef = doc(db, "packs", puzzle.packId);
+  const docRef = doc(db, "puzzles", puzzle.packId);
   return await createPuzzle(puzzle, docRef, packTitle);
+}
+
+export async function editPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
+  console.log(puzzle)
+  const docRef = doc(db, "puzzles", puzzle.id);
+  const tasks: Array<Promise<string>> = [];
+  for (let i = 0; i < 4; i++) {
+    tasks.push(uploadPuzzlePicture({ packTitle, word: puzzle.word, index: i, file: dataURLToBlob(puzzle.pictures[i]) }))
+  }
+  const urls = await Promise.all(tasks);
+  await updateDoc(docRef, { pictures: urls });
 }
 
 interface AddPuzzlesParams {
@@ -256,7 +267,8 @@ export async function createPack({
   puzzles,
 }: CreatePackParams): Promise<Required<Pack>> {
   const puzzleDocCreationTasks: Array<Promise<Puzzle>> = [];
-  const packRef = await createDocument({ document: pack, path: "packs" });
+  const { title, difficulty, authorId } = pack;
+  const packRef = await createDocument({ document: { title, difficulty, authorId }, path: "packs" });
 
   for (let i = 0; i < puzzles.length; i++) {
     const puzzle = puzzles[i];
