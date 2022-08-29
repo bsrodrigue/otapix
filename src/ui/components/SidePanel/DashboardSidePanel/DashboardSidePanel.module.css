@@ -1,28 +1,28 @@
 /* Dashboard Side Panel */
 
 .container {
-    /* position: absolute; */
-    background-color: rgb(255, 255, 255);
-    height: 100%;
-    width: clamp(480px, 100vw, 500px);
-    font-weight: bold;
-    overflow-y: scroll;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  /* position: absolute; */
+  background-color: rgb(255, 255, 255);
+  height: 100%;
+  width: clamp(480px, 100vw, 500px);
+  font-weight: bold;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .container::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 @media screen and (max-width: 480px) {
-    .container {
-        position: fixed;
-        width: 100vw;
-        z-index: 1;
-    }
+  .container {
+    position: fixed;
+    width: 100vw;
+    z-index: 1;
+  }
 }
 
 .closed {
-    width: 0;
+  width: 0;
 }

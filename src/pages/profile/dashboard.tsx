@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { CgMenuRound } from "react-icons/cg";
-import { getPacksFromUser } from "../../api/firebase";
-import { useAuth } from "../../hooks";
-import { notifyError } from "../../lib/notifications";
-import { createPuzzlePack } from "../../lib/utils";
-import { Pack, Packs } from "../../types";
-import { Fab } from "../../ui/components/Button/Fab";
-import { PackEditor } from "../../ui/components/Editor/PackEditor";
-import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSidePanel";
+import { useEffect, useState } from 'react';
+import { CgMenuRound } from 'react-icons/cg';
+import { getPacksFromUser } from '../../api/firebase';
+import { useAuth } from '../../hooks';
+import { notifyError } from '../../lib/notifications';
+import { createPuzzlePack } from '../../lib/utils';
+import { Pack, Packs } from '../../types';
+import { Fab } from '../../ui/components/Button/Fab';
+import { PackEditor } from '../../ui/components/Editor/PackEditor';
+import { DashboardSidePanel } from '../../ui/components/SidePanel/DashboardSidePanel';
 
 export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
@@ -34,7 +34,7 @@ export default function DashboardPage() {
         const result = await getPacksFromUser(user.uid);
         setPacks(result);
       } catch (error) {
-        notifyError("Erreur lors du chargement des packs");
+        notifyError('Erreur lors du chargement des packs');
         console.error(error);
       } finally {
         setIsloading(false);
@@ -57,22 +57,18 @@ export default function DashboardPage() {
       />
 
       {packs.length !== 0 && packs[currentPackIndex] && (
-        <PackEditor
-          currentPack={packs[currentPackIndex]}
-          currentPackIndex={currentPackIndex}
-          setPacks={setPacks}
-        />
+        <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
       )}
 
       {packs.length === 0 && (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            color: "white",
-            textAlign: "center",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            color: 'white',
+            textAlign: 'center',
           }}
         >
           <div>

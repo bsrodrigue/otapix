@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import style from "./Header.module.css";
-import { BsSearch } from "react-icons/bs";
-import Link from "next/link";
-import Modal from "react-modal";
-import { useAuth } from "../../../hooks/index";
-import { useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../../../config/firebase";
+import style from './Header.module.css';
+import { BsSearch } from 'react-icons/bs';
+import Link from 'next/link';
+import Modal from 'react-modal';
+import { useAuth } from '../../../hooks/index';
+import { useState } from 'react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../../config/firebase';
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -24,7 +24,7 @@ export default function Header() {
               <>
                 <img
                   className={`${style.avatar} material-shadow`}
-                  src={user.photoURL || ""}
+                  src={user.photoURL || ''}
                   onClick={(e: any) => {
                     e.preventDefault();
                     setModalIsOpen(!modalIsOpen);
@@ -37,34 +37,27 @@ export default function Header() {
                   ariaHideApp={false}
                   style={{
                     content: {
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "3em 1.5em",
-                      borderRadius: "2em",
-                      border: "none",
-                      boxShadow:
-                        "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)",
-                      textAlign: "center",
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '3em 1.5em',
+                      borderRadius: '2em',
+                      border: 'none',
+                      boxShadow: '0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)',
+                      textAlign: 'center',
                     },
                   }}
                 >
                   <div>
-                    <img
-                      className={`${style.avatar} ${style.modal_avatar}`}
-                      src={user.photoURL || ""}
-                      alt="avatar"
-                    />
+                    <img className={`${style.avatar} ${style.modal_avatar}`} src={user.photoURL || ''} alt="avatar" />
                     <p className={style.modal_username}>{user.displayName}</p>
                     <small>{user.email}</small>
                   </div>
 
                   <div className={style.modal_actions}>
                     <Link href="/profile/dashboard">
-                      <a className={` ${style.modal_action}`}>
-                        Tableau de bord
-                      </a>
+                      <a className={` ${style.modal_action}`}>Tableau de bord</a>
                     </Link>
                     <Link href="">
                       <a
@@ -91,7 +84,6 @@ export default function Header() {
         </div>
       </div>
 
-
       <div className="wrapper">
         <div className={style.search_form}>
           <div className={style.search_form_content}>
@@ -108,7 +100,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
     </header>
   );
 }

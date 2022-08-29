@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
-import { Difficulty } from "../../../../enums";
-import style from "./DifficultyRadio.module.css";
+import { Dispatch, SetStateAction } from 'react';
+import { Difficulty } from '../../../../enums';
+import style from './DifficultyRadio.module.css';
 
 interface DifficultyRadioProps {
   difficulty: string;
@@ -8,11 +8,7 @@ interface DifficultyRadioProps {
   setCheckedDifficulty: Dispatch<SetStateAction<Difficulty>>;
 }
 
-export default function DifficultyRadio({
-  difficulty,
-  checkedDifficulty,
-  setCheckedDifficulty,
-}: DifficultyRadioProps) {
+export default function DifficultyRadio({ difficulty, checkedDifficulty, setCheckedDifficulty }: DifficultyRadioProps) {
   const isChecked = difficulty === checkedDifficulty;
 
   function onClickLabel(e: any) {
@@ -23,9 +19,7 @@ export default function DifficultyRadio({
     <label
       // onClick={onClickLabel}
       htmlFor={`difficulty-${difficulty}`}
-      className={`${style.difficulty_radio_container} ${
-        isChecked && style.checked
-      }`}
+      className={`${style.difficulty_radio_container} ${isChecked && style.checked}`}
     >
       {difficulty}
       <input

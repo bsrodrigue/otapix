@@ -1,10 +1,10 @@
-import { collection, query, where } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { collection, query, where } from 'firebase/firestore';
+import { db } from '../../config/firebase';
 
 export function getPuzzleIsFromPackQuery(packId: string) {
-  return query(collection(db, "puzzles"), where("packId", "==", packId));
+  return query(collection(db, 'puzzles'), where('packId', '==', packId));
 }
 
 export function getUserIsAuthorQuery(uid: string) {
-  return query(collection(db, "packs"), where("authorId", "==", uid));
+  return query(collection(db, 'packs'), where('authorId', '==', uid));
 }

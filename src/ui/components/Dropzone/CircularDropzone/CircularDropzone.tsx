@@ -25,10 +25,7 @@ const CircularDropzone = React.forwardRef(({ name, label, onChange, ...rest }: C
   return (
     <label className={style.circular_dropzone} htmlFor={`dropzone-${name}`}>
       {label}
-      <img
-        ref={imageRef}
-        className={style.image_preview}
-      />
+      <img ref={imageRef} className={style.image_preview} />
       <input
         id={`dropzone-${name}`}
         name={name}
@@ -43,8 +40,8 @@ const CircularDropzone = React.forwardRef(({ name, label, onChange, ...rest }: C
         {...rest}
       />
     </label>
-  )
+  );
 });
 
-CircularDropzone.displayName = "CircularDropzone";
+CircularDropzone.displayName = 'CircularDropzone';
 export default CircularDropzone;

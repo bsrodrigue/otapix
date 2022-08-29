@@ -19,11 +19,13 @@ export default function AuthFormField({
   name,
   className,
   register,
-  errors
+  errors,
 }: AuthFormFieldProps) {
   return (
     <div className={style.authform_field_container}>
-      <label className={style.authform_label} htmlFor="">{label}</label>
+      <label className={style.authform_label} htmlFor="">
+        {label}
+      </label>
       <input
         name={name}
         placeholder={placeholder}
@@ -31,9 +33,7 @@ export default function AuthFormField({
         type={type}
         {...register?.(name!)}
       />
-      <small className={style.authform_field_error}>
-        {errors[name!]?.message}
-      </small>
+      <small className={style.authform_field_error}>{errors[name!]?.message}</small>
     </div>
   );
 }

@@ -1,12 +1,7 @@
-import { useState } from "react";
-import { BsPlusCircleFill } from "react-icons/bs";
-import {
-  BooleanSetter,
-  NumberSetter,
-  Packs,
-  PacksSetter,
-} from "../../../types";
-import style from "./Accordion.module.css";
+import { useState } from 'react';
+import { BsPlusCircleFill } from 'react-icons/bs';
+import { BooleanSetter, NumberSetter, Packs, PacksSetter } from '../../../types';
+import style from './Accordion.module.css';
 
 export interface AccordionProps {
   packs: Packs;
@@ -33,10 +28,7 @@ export default function Accordion({
         <div className={style.accordion_header}>
           <p className={style.accordion_title}>Mes creations</p>
           <div className={style.accordion_actions}>
-            <div
-              className={`${style.accordion_action}`}
-              onClick={onCreatePackClick}
-            >
+            <div className={`${style.accordion_action}`} onClick={onCreatePackClick}>
               <BsPlusCircleFill />
             </div>
             <div
@@ -45,11 +37,7 @@ export default function Accordion({
             ></div>
           </div>
         </div>
-        <div
-          className={`${style.accordion_content} ${
-            isClosed && style.accordion_closed
-          }`}
-        >
+        <div className={`${style.accordion_content} ${isClosed && style.accordion_closed}`}>
           {loading ? (
             <div className={`${style.accordion_item} ${style.selected}`}>
               <p>Packs en cours de chargement...</p>
@@ -61,9 +49,7 @@ export default function Accordion({
                   return (
                     <div
                       key={key}
-                      className={`${style.accordion_item} ${
-                        currentPackIndex === key && style.selected
-                      }`}
+                      className={`${style.accordion_item} ${currentPackIndex === key && style.selected}`}
                       onClick={() => {
                         setCurrentPackIndex?.(key);
                       }}
@@ -73,10 +59,7 @@ export default function Accordion({
                   );
                 })
               ) : (
-                <div
-                  className={`${style.accordion_item} ${style.selected}`}
-                  onClick={onCreatePackClick}
-                >
+                <div className={`${style.accordion_item} ${style.selected}`} onClick={onCreatePackClick}>
                   <p>Pas de packs...</p>
                   <small>Cliquez ici pour ajouter un pack</small>
                 </div>

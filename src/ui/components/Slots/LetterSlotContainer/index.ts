@@ -1,1 +1,1 @@
-export { default as LetterSlotContainer } from './LetterSlotContainer'
+export { default as LetterSlotContainer } from './LetterSlotContainer';

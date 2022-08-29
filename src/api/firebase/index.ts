@@ -1,9 +1,4 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-  User,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from 'firebase/auth';
 import {
   addDoc,
   collection,
@@ -18,16 +13,16 @@ import {
   setDoc,
   updateDoc,
   WithFieldValue,
-} from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { auth, db, storage } from "../../config/firebase";
-import { Difficulty } from "../../enums";
-import { dataURLToBlob, getImageExtensionFromFile } from "../../lib/utils";
-import { Pack, Packs, Puzzle, Puzzles } from "../../types";
-import { hydratePack, hydratePuzzle } from "./hydrators";
-import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery } from "./queries";
+} from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { auth, db, storage } from '../../config/firebase';
+import { Difficulty } from '../../enums';
+import { dataURLToBlob, getImageExtensionFromFile } from '../../lib/utils';
+import { Pack, Packs, Puzzle, Puzzles } from '../../types';
+import { hydratePack, hydratePuzzle } from './hydrators';
+import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery } from './queries';
 
-const PACKS = "packs";
+const PACKS = 'packs';
 
 interface LoginParams {
   email: string;
@@ -36,20 +31,12 @@ interface LoginParams {
 
 // Auth
 export async function signUp({ email, password }: LoginParams) {
-  const userCredentials = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+  const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
   return userCredentials;
 }
 
 export async function signIn({ email, password }: LoginParams) {
-  const userCredentials = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+  const userCredentials = await signInWithEmailAndPassword(auth, email, password);
   return userCredentials;
 }
 
@@ -67,10 +54,7 @@ export async function uploadUserFile(fileName: string, file: Blob) {
 }
 
 export async function uploadProfilePicture(file: Blob, user: User) {
-  const fileName = `profile-pictures/${user.email}avatar.${file.type.replace(
-    "image/",
-    ""
-  )}`;
+  const fileName = `profile-pictures/${user.email}avatar.${file.type.replace('image/', '')}`;
   const photoURL = await uploadUserFile(fileName, file);
   await updateProfile(user, {
     photoURL,
@@ -103,24 +87,12 @@ interface UploadPuzzlePictureParams {
   file: Blob;
 }
 
-export async function uploadPuzzlePicture({
-  packTitle,
-  word,
-  index,
-  file,
-}: UploadPuzzlePictureParams) {
-  const path = `pack_data/${packTitle}/${word}/picture_${index}.${getImageExtensionFromFile(
-    file
-  )}`;
+export async function uploadPuzzlePicture({ packTitle, word, index, file }: UploadPuzzlePictureParams) {
+  const path = `pack_data/${packTitle}/${word}/picture_${index}.${getImageExtensionFromFile(file)}`;
   return await uploadFile(path, file);
 }
 
-export async function uploadPuzzlePicturesFromPuzzle(
-  id: string,
-  packId: string,
-  puzzle: Puzzle,
-  packTitle: string
-) {
+export async function uploadPuzzlePicturesFromPuzzle(id: string, packId: string, puzzle: Puzzle, packTitle: string) {
   const destinationPuzzle: Puzzle = {
     id,
     packId,
@@ -138,7 +110,7 @@ export async function uploadPuzzlePicturesFromPuzzle(
         word: puzzle.word,
         index: i,
         file: dataURLToBlob(picturesToBeUploaded[i]),
-      })
+      }),
     );
   }
 
@@ -160,16 +132,23 @@ interface AddPuzzleParams {
 }
 
 export async function addPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
-  const docRef = doc(db, "puzzles", puzzle.packId);
+  const docRef = doc(db, 'puzzles', puzzle.packId);
   return await createPuzzle(puzzle, docRef, packTitle);
 }
 
 export async function editPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
-  console.log(puzzle)
-  const docRef = doc(db, "puzzles", puzzle.id);
+  console.log(puzzle);
+  const docRef = doc(db, 'puzzles', puzzle.id);
   const tasks: Array<Promise<string>> = [];
   for (let i = 0; i < 4; i++) {
-    tasks.push(uploadPuzzlePicture({ packTitle, word: puzzle.word, index: i, file: dataURLToBlob(puzzle.pictures[i]) }))
+    tasks.push(
+      uploadPuzzlePicture({
+        packTitle,
+        word: puzzle.word,
+        index: i,
+        file: dataURLToBlob(puzzle.pictures[i]),
+      }),
+    );
   }
   const urls = await Promise.all(tasks);
   await updateDoc(docRef, { pictures: urls });
@@ -188,12 +167,12 @@ export async function addPuzzles({ packTitle, puzzles }: AddPuzzlesParams) {
 }
 
 export async function editPack({ id, ...rest }: EditPackParams) {
-  const docRef = doc(db, "packs", id.toString());
+  const docRef = doc(db, 'packs', id.toString());
   await updateDoc(docRef, { ...rest });
 }
 
 export async function deletePack(packId: string) {
-  const docRef = doc(db, "packs", packId);
+  const docRef = doc(db, 'packs', packId);
   const q = getPuzzleIsFromPackQuery(docRef.id);
   const puzzlesDocs = await getDocs(q);
   puzzlesDocs.forEach((doc) => {
@@ -208,30 +187,26 @@ interface EditPackCoverParams {
   cover: File;
 }
 
-export async function editPackCover({
-  id,
-  packTitle,
-  cover,
-}: EditPackCoverParams) {
-  const docRef = doc(db, "packs", id.toString());
+export async function editPackCover({ id, packTitle, cover }: EditPackCoverParams) {
+  const docRef = doc(db, 'packs', id.toString());
   const url = await uploadPackCover(packTitle, cover);
   await updateDoc(docRef, { cover: url });
 }
 
 export async function deletePuzzle(puzzleId: string) {
-  const docRef = doc(db, "puzzles", puzzleId);
+  const docRef = doc(db, 'puzzles', puzzleId);
   await deleteDocument(docRef);
 }
 
 export async function createPuzzle(
   puzzle: { word: string; pictures: Array<string> },
   packRef: DocumentReference,
-  packTitle: string
+  packTitle: string,
 ): Promise<Required<Puzzle>> {
   const { pictures, word } = puzzle;
   const puzzleRef = await createDocument({
     document: { word, packId: packRef.id },
-    path: "puzzles",
+    path: 'puzzles',
   });
   const puzzlePicturesUploadTasks: Array<Promise<string>> = [];
   for (let j = 0; j < pictures.length; j++) {
@@ -241,7 +216,7 @@ export async function createPuzzle(
         word,
         index: j,
         file: dataURLToBlob(pictures[j]),
-      })
+      }),
     );
   }
   const urls = await Promise.all(puzzlePicturesUploadTasks);
@@ -256,19 +231,18 @@ export async function createPuzzle(
 }
 
 interface CreatePackParams {
-  pack: Omit<Pack, "id" | "online" | "puzzles" | "cover">;
+  pack: Omit<Pack, 'id' | 'online' | 'puzzles' | 'cover'>;
   cover: File;
   puzzles: Puzzles;
 }
 
-export async function createPack({
-  pack,
-  cover,
-  puzzles,
-}: CreatePackParams): Promise<Required<Pack>> {
+export async function createPack({ pack, cover, puzzles }: CreatePackParams): Promise<Required<Pack>> {
   const puzzleDocCreationTasks: Array<Promise<Puzzle>> = [];
   const { title, difficulty, authorId } = pack;
-  const packRef = await createDocument({ document: { title, difficulty, authorId }, path: "packs" });
+  const packRef = await createDocument({
+    document: { title, difficulty, authorId },
+    path: 'packs',
+  });
 
   for (let i = 0; i < puzzles.length; i++) {
     const puzzle = puzzles[i];
@@ -333,7 +307,7 @@ async function packDocToPacks(doc: DocumentSnapshot<DocumentData>) {
 }
 
 export async function getPack(packId: string) {
-  const packRef = doc(db, "packs", packId);
+  const packRef = doc(db, 'packs', packId);
   const packDoc = await getDoc(packRef);
   return await packDocToPacks(packDoc);
 }

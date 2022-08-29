@@ -7,10 +7,5 @@ interface GridProps {
 }
 
 export default function Grid({ children, className }: GridProps) {
-
-  return (
-    <div className={`${style.container} ${className}`}>
-      {children}
-    </div>
-  )
+  return <div className={`${style.container} ${className}`}>{children}</div>;
 }

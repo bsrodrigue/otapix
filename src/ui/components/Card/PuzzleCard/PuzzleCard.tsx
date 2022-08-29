@@ -1,6 +1,6 @@
-import { BsPen, BsTrash } from "react-icons/bs";
-import { Puzzle } from "../../../../types";
-import style from "./PuzzleCard.module.css";
+import { BsPen, BsTrash } from 'react-icons/bs';
+import { Puzzle } from '../../../../types';
+import style from './PuzzleCard.module.css';
 
 interface PuzzleCardProps {
   puzzle: Puzzle;
@@ -10,13 +10,7 @@ interface PuzzleCardProps {
   onEdit: (puzzle: Puzzle) => void;
 }
 
-export default function PuzzleCard({
-  puzzle,
-  title,
-  pictures,
-  onDelete,
-  onEdit,
-}: PuzzleCardProps) {
+export default function PuzzleCard({ puzzle, title, pictures, onDelete, onEdit }: PuzzleCardProps) {
   return (
     <div className={style.puzzle_card}>
       <div className={style.puzzle_card_pictures}>
@@ -39,7 +33,8 @@ export default function PuzzleCard({
           onClick={() => {
             onEdit(puzzle);
           }}
-          type="button">
+          type="button"
+        >
           <BsPen />
         </button>
       </div>

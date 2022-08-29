@@ -1,9 +1,12 @@
-import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
-import { Pack, Puzzle, Puzzles } from "../../types";
+import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from 'firebase/firestore';
+import { Pack, Puzzle, Puzzles } from '../../types';
 
-export function hydratePack(doc: QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData>, puzzles: Puzzles): Pack {
+export function hydratePack(
+  doc: QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData>,
+  puzzles: Puzzles,
+): Pack {
   const data = doc.data();
-  if (!data) throw new Error("Data does not exist");
+  if (!data) throw new Error('Data does not exist');
   return {
     id: doc.id,
     title: data.title,
@@ -24,5 +27,5 @@ export function hydratePuzzle(doc: QueryDocumentSnapshot<DocumentData>): Puzzle 
     word: data.word,
     pictures: data.pictures,
     online: true,
-  }
+  };
 }

@@ -1,55 +1,55 @@
 .accordion_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5em;
-    font-size: 1.3em;
-    background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5em;
+  font-size: 1.3em;
+  background-color: white;
 }
 
 .accordion_actions {
-    flex-grow: 1;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1em;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1em;
 }
 
 .accordion_action {
-    display: flex;
+  display: flex;
 }
 
 .accordion_action:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .accordion_indicator {
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-    width: 1em;
-    background-color: var(--primary-color);
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+  width: 1em;
+  background-color: var(--primary-color);
 }
 
 .accordion_content {
-    background-color: var(--primary-color);
-    overflow: hidden;
+  background-color: var(--primary-color);
+  overflow: hidden;
 }
 
 .accordion_item {
-    color: white;
-    text-align: right;
-    padding: 1em;
+  color: white;
+  text-align: right;
+  padding: 1em;
 }
 
 .accordion_item:hover {
-    cursor: pointer;
-    background-color: rgb(0, 0, 0);
+  cursor: pointer;
+  background-color: rgb(0, 0, 0);
 }
 
 .selected {
-    background-color: black;
+  background-color: black;
 }
 
 .accordion_closed {
-    height: 0;
+  height: 0;
 }

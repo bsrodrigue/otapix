@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
-import { Difficulty } from "../enums";
+import { Dispatch, SetStateAction } from 'react';
+import { string } from 'yup';
+import { Difficulty } from '../enums';
 
 export type Setter<T> = Dispatch<SetStateAction<T>>;
 export type BooleanSetter = Setter<boolean>;
@@ -36,18 +37,29 @@ export interface FormField {
 }
 
 export interface LetterSlot {
-  letter: string
-  index: number
-  selected: boolean
+  letter: string;
+  index: number;
+  selected: boolean;
 }
 
 export interface GameState {
-  puzzles: Array<Puzzle>
-  currentLevelIndex: number
-  letterSlotsState: LetterSlotsState
+  puzzles: Array<Puzzle>;
+  currentLevelIndex: number;
+  letterSlotsState: LetterSlotsState;
 }
 
 export interface LetterSlotsState {
-  targetSlots: LetterSlot[]
-  pickerSlots: LetterSlot[]
+  targetSlots: LetterSlot[];
+  pickerSlots: LetterSlot[];
+}
+
+export interface LoginParams {
+  email: string;
+  password: string;
+}
+export interface RegisterParams {
+  avatar: Blob;
+  username: string;
+  email: string;
+  password: string;
 }

@@ -1,31 +1,31 @@
 /* Circular Dropzone */
 
 .circular_dropzone {
-    position: relative;
-    border: rgba(145, 145, 145, 0.671) 0.25em dashed;
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-    background-color: rgba(128, 128, 128, 0.164);
-    width: 8em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: 1.3em;
-    text-align: center;
-    padding: 0 1em;
-    margin: 0 auto;
+  position: relative;
+  border: rgba(145, 145, 145, 0.671) 0.25em dashed;
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+  background-color: rgba(128, 128, 128, 0.164);
+  width: 8em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 1.3em;
+  text-align: center;
+  padding: 0 1em;
+  margin: 0 auto;
 }
 
 .circular_dropzone:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .image_preview {
-    position: absolute;
-    aspect-ratio: 1/1;
-    width: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+  position: absolute;
+  aspect-ratio: 1/1;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }

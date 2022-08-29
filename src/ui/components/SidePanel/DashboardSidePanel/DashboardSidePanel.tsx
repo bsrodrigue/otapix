@@ -1,11 +1,6 @@
-import {
-  BooleanSetter,
-  NumberSetter,
-  Packs,
-  PacksSetter,
-} from "../../../../types";
-import { Accordion } from "../../Accordion";
-import style from "./DashboardSidePanel.module.css";
+import { BooleanSetter, NumberSetter, Packs, PacksSetter } from '../../../../types';
+import { Accordion } from '../../Accordion';
+import style from './DashboardSidePanel.module.css';
 
 interface DashboardSidePanelProps {
   isOpen: boolean;
@@ -18,10 +13,7 @@ interface DashboardSidePanelProps {
   onCreatePackClick: () => void;
 }
 
-export default function DashboardSidePanel({
-  isOpen,
-  ...rest
-}: DashboardSidePanelProps) {
+export default function DashboardSidePanel({ isOpen, ...rest }: DashboardSidePanelProps) {
   return (
     <div className={`${style.container} ${!isOpen && style.closed}`}>
       <Accordion {...rest} />

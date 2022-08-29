@@ -1,21 +1,17 @@
-import style from "./PackCard.module.css";
-import { BsFillStarFill } from "react-icons/bs";
-import { Pack } from "../../../../types";
-import  Link  from 'next/link';
+import style from './PackCard.module.css';
+import { BsFillStarFill } from 'react-icons/bs';
+import { Pack } from '../../../../types';
+import Link from 'next/link';
 
 interface PackCardProps {
   pack: Pack;
 }
 
 export default function PackCard({ pack }: PackCardProps) {
-  const {id, title, cover, puzzles, difficulty } = pack;
+  const { id, title, cover, puzzles, difficulty } = pack;
   return (
     <div className={style.packcard_container}>
-      <img
-        className={`${style.packcard_cover} material-shadow`}
-        src={cover}
-        alt="Pack cover"
-      />
+      <img className={`${style.packcard_cover} material-shadow`} src={cover} alt="Pack cover" />
       <div className={style.packcard_content}>
         <div className={style.packcard_infos}>
           <div>
@@ -34,13 +30,11 @@ export default function PackCard({ pack }: PackCardProps) {
               ))}
             </div>
           </div>
-          <div className={`${style.packcard_level} material-shadow`}>
-            {difficulty}
-          </div>
+          <div className={`${style.packcard_level} material-shadow`}>{difficulty}</div>
         </div>
         <div className={style.packcard_actions}>
           <Link href={`/game/${id}`}>
-          <button className={`${style.packcard_action} button`}>Play</button>
+            <button className={`${style.packcard_action} button`}>Play</button>
           </Link>
           <button disabled className={`${style.packcard_action} button`}>
             Add to collection

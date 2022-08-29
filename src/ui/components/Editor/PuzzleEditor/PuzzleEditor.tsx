@@ -1,14 +1,14 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { v4 as uuidv4 } from "uuid";
-import { addPuzzle, editPuzzle } from "../../../../api/firebase";
-import { notifyError, notifySuccess } from "../../../../lib/notifications";
-import { getSrcFromFile } from "../../../../lib/utils";
-import { Puzzle } from "../../../../types";
-import { Button } from "../../Button/Button";
-import { SpinnerButton } from "../../Button/SpinnerButton";
-import { RectangularDropzone } from "../../Dropzone";
-import style from "./PuzzleEditor.module.css";
+import { Dispatch, SetStateAction, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+import { addPuzzle, editPuzzle } from '../../../../api/firebase';
+import { notifyError, notifySuccess } from '../../../../lib/notifications';
+import { getSrcFromFile } from '../../../../lib/utils';
+import { Puzzle } from '../../../../types';
+import { Button } from '../../Button/Button';
+import { SpinnerButton } from '../../Button/SpinnerButton';
+import { RectangularDropzone } from '../../Dropzone';
+import style from './PuzzleEditor.module.css';
 
 interface PuzzleEditorProps {
   isOpen?: boolean;
@@ -22,7 +22,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
 
   function resetPictures() {
     for (let i = 0; i < 4; i++) {
-      setValue(`puzzle-pic-${i + 1}`, "");
+      setValue(`puzzle-pic-${i + 1}`, '');
     }
   }
 
@@ -30,8 +30,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
     const pictures: Array<string> = [];
     for (let i = 0; i < 4; i++) {
       const value = values[`puzzle-pic-${i + 1}`];
-      if (!(value instanceof FileList) || value.length === 0)
-        throw Error("Image(s) manquante(s)");
+      if (!(value instanceof FileList) || value.length === 0) throw Error('Image(s) manquante(s)');
       const file: File = value[0];
       const result = await getSrcFromFile(file);
       pictures.push(result);
@@ -40,7 +39,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
   }
 
   function onSuccess() {
-    setValue("puzzle-editor-mode", "none");
+    setValue('puzzle-editor-mode', 'none');
     resetPictures();
     setIsOpen?.(false);
   }
@@ -79,9 +78,9 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
             type="text"
             placeholder="Entrez le nom que les joueurs doivent deviner..."
             value={values.puzzleTitle}
-            {...register(`puzzleTitle`)}
+            {...register('puzzleTitle')}
           />
-          <div style={{ display: "flex", marginTop: "1em", gap: "1em" }}>
+          <div style={{ display: 'flex', marginTop: '1em', gap: '1em' }}>
             <SpinnerButton type="error" buttonType="button" text="Annuler" onClick={() => setIsOpen?.(false)} />
             <SpinnerButton
               buttonType="button"
@@ -89,51 +88,48 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
               isLoading={puzzleOperationIsLoading}
               onClick={async () => {
                 try {
-                  if (!values.puzzleTitle)
-                    throw new Error("Veuillez donner un nom a deviner");
+                  if (!values.puzzleTitle) throw new Error('Veuillez donner un nom a deviner');
                   setPuzzleOperationIsLoading(true);
-                  if (values["puzzle-editor-mode"] === "create-offline") {
+                  if (values['puzzle-editor-mode'] === 'create-offline') {
                     const puzzle = await createPuzzleFromInputs();
-                    setValue("puzzles", [...values.puzzles, puzzle]);
+                    setValue('puzzles', [...values.puzzles, puzzle]);
                     onSuccess();
-                  } else if (values["puzzle-editor-mode"] === "create-online") {
-                    if (!values.title) throw new Error("Pack has no title");
+                  } else if (values['puzzle-editor-mode'] === 'create-online') {
+                    if (!values.title) throw new Error('Pack has no title');
                     const pictures = await extractImageFilesAsSrc();
 
                     const puzzle = await addPuzzle({
-                      packTitle: values.title, puzzle: {
+                      packTitle: values.title,
+                      puzzle: {
                         id: uuidv4(),
                         packId: values.packId,
                         word: values.puzzleTitle,
                         pictures,
                         online: false,
-                      }
+                      },
                     });
 
-                    notifySuccess("Puzzle created with success");
-                    setValue("puzzles", [...values.puzzles, puzzle]);
+                    notifySuccess('Puzzle created with success');
+                    setValue('puzzles', [...values.puzzles, puzzle]);
                     onSuccess();
-                  } else if (values["puzzle-editor-mode"] === "update-offline") {
+                  } else if (values['puzzle-editor-mode'] === 'update-offline') {
                     const puzzle = await createPuzzleFromInputs();
-                    const puzzles = values.puzzles.filter((puzzle: Puzzle) => puzzle.id !== values["puzzle-id"]);
-                    setValue("puzzles", [...puzzles, puzzle]);
+                    const puzzles = values.puzzles.filter((puzzle: Puzzle) => puzzle.id !== values['puzzle-id']);
+                    setValue('puzzles', [...puzzles, puzzle]);
                     onSuccess();
-                  } else if (values["puzzle-editor-mode"] === "update-online") {
-                    const puzzle = await createPuzzleFromInputs(values["puzzle-id"]);
+                  } else if (values['puzzle-editor-mode'] === 'update-online') {
+                    const puzzle = await createPuzzleFromInputs(values['puzzle-id']);
                     await editPuzzle({ packTitle: values.title, puzzle });
-                    notifySuccess("Puzzle modified with success");
-                    const puzzles = values.puzzles.filter((puzzle: Puzzle) => puzzle.id !== values["puzzle-id"]);
-                    setValue("puzzles", [...puzzles, puzzle]);
+                    notifySuccess('Puzzle modified with success');
+                    const puzzles = values.puzzles.filter((puzzle: Puzzle) => puzzle.id !== values['puzzle-id']);
+                    setValue('puzzles', [...puzzles, puzzle]);
                     onSuccess();
                   }
-
-
                 } catch (error) {
                   if (error instanceof Error) {
                     notifyError(error.message);
                   }
-                }
-                finally {
+                } finally {
                   setPuzzleOperationIsLoading(false);
                 }
               }}
@@ -142,8 +138,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
         </div>
       ) : (
         <></>
-      )
-      }
+      )}
     </>
   );
 }
