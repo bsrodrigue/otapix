@@ -6,18 +6,18 @@ import {
 } from "firebase/auth";
 import {
   addDoc,
-  arrayUnion,
   collection,
   deleteDoc,
   doc,
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
+  getDoc,
   getDocs,
   QuerySnapshot,
   setDoc,
   updateDoc,
   WithFieldValue,
-  WriteBatch,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
@@ -318,6 +318,24 @@ async function packDocsToPacks(packsDocs: QuerySnapshot<DocumentData>) {
     result.push(pack);
   }
   return result;
+}
+
+async function packDocToPacks(doc: DocumentSnapshot<DocumentData>) {
+  const pack = hydratePack(doc, []);
+  const q = getPuzzleIsFromPackQuery(doc.id);
+  const puzzlesDocs = await getDocs(q);
+
+  puzzlesDocs.forEach((doc) => {
+    pack.puzzles?.push(hydratePuzzle(doc));
+  });
+
+  return pack;
+}
+
+export async function getPack(packId: string) {
+  const packRef = doc(db, "packs", packId);
+  const packDoc = await getDoc(packRef);
+  return await packDocToPacks(packDoc);
 }
 
 export async function getAllPacks() {

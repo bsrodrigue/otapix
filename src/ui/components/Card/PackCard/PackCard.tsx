@@ -1,13 +1,14 @@
 import style from "./PackCard.module.css";
 import { BsFillStarFill } from "react-icons/bs";
 import { Pack } from "../../../../types";
+import  Link  from 'next/link';
 
 interface PackCardProps {
   pack: Pack;
 }
 
 export default function PackCard({ pack }: PackCardProps) {
-  const { title, cover, puzzles, difficulty } = pack;
+  const {id, title, cover, puzzles, difficulty } = pack;
   return (
     <div className={style.packcard_container}>
       <img
@@ -38,7 +39,9 @@ export default function PackCard({ pack }: PackCardProps) {
           </div>
         </div>
         <div className={style.packcard_actions}>
+          <Link href={`/game/${id}`}>
           <button className={`${style.packcard_action} button`}>Play</button>
+          </Link>
           <button disabled className={`${style.packcard_action} button`}>
             Add to collection
           </button>

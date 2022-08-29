@@ -34,3 +34,20 @@ export interface FormField {
   name?: string;
   className?: string;
 }
+
+export interface LetterSlot {
+  letter: string
+  index: number
+  selected: boolean
+}
+
+export interface GameState {
+  puzzles: Array<Puzzle>
+  currentLevelIndex: number
+  letterSlotsState: LetterSlotsState
+}
+
+export interface LetterSlotsState {
+  targetSlots: LetterSlot[]
+  pickerSlots: LetterSlot[]
+}
