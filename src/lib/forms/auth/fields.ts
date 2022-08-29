@@ -1,4 +1,4 @@
-import { FormField } from "../../../types/form";
+import { FormField } from "../../../types";
 
 export const loginFormFields: Array<FormField> = [
   {
