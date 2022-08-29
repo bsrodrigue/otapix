@@ -1,21 +1,21 @@
-import { FirebaseError } from 'firebase/app';
-import _ from 'lodash';
-import { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { addPuzzles, createPack, deletePack, deletePuzzle, editPack, editPackCover } from '../../../../api/firebase';
-import { Difficulty } from '../../../../enums';
-import { useAuth } from '../../../../hooks';
-import { notifyError, notifySuccess } from '../../../../lib/notifications';
-import { getNewPuzzles, getOldPuzzles } from '../../../../lib/utils';
-import { Pack, PacksSetter, Puzzle, Puzzles } from '../../../../types';
-import { Button } from '../../Button/Button';
-import { SpinnerButton } from '../../Button/SpinnerButton';
-import { ConfirmationAlert } from '../../ConfirmationAlert';
-import { RectangularDropzone } from '../../Dropzone/RectangularDropzone';
-import { PuzzleGrid } from '../../Grid/PuzzleGrid';
-import { DifficultyRadioGroup } from '../../RadioGroup/DifficultyRadioGroup';
-import { EditorWrapper } from '../EditorWrapper';
-import { PuzzleEditor } from '../PuzzleEditor';
+import { FirebaseError } from "firebase/app";
+import _ from "lodash";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { createPack, deletePack, deletePuzzle, editPack, editPackCover } from "../../../../api/firebase";
+import { Difficulty } from "../../../../enums";
+import { useAuth } from "../../../../hooks";
+import { notifyError, notifySuccess } from "../../../../lib/notifications";
+import { Pack, PacksSetter, Puzzle, Puzzles } from "../../../../types";
+import { Button } from "../../Button/Button";
+import { SpinnerButton } from "../../Button/SpinnerButton";
+import { ConfirmationAlert } from "../../ConfirmationAlert";
+import { RectangularDropzone } from "../../Dropzone/RectangularDropzone";
+import { PuzzleGrid } from "../../Grid/PuzzleGrid";
+import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
+import { EditorWrapper } from "../EditorWrapper";
+
+import { PuzzleEditor } from "../PuzzleEditor";
 
 interface PackEditorProps {
   currentPack: Pack;
@@ -38,11 +38,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const { user } = useAuth();
 
   function redistributeImagesAmongInputs() {
-    const pp1 = values['puzzle-pic-1'];
+    const pp1 = values["puzzle-pic-1"];
     if (pp1 instanceof FileList) {
       if (pp1.length > 1) {
         for (let i = 0; i < pp1.length; i++) {
-          console.log('Working?: ', pp1);
+          console.log("Working?: ", pp1);
           setValue(`puzzle-pic-${i + 1}`, pp1[i]);
         }
       }
@@ -73,27 +73,27 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
 
   useEffect(() => {
     redistributeImagesAmongInputs();
-  }, [values['puzzle-pic-1']]);
+  }, [values["puzzle-pic-1"]]);
 
   useEffect(() => {
     reset();
     setPackDeleteConfirmIsOpen(false);
     setPuzzleDeleteConfirmIsOpen(false);
-    register('difficulty');
-    register('puzzle-online-edit');
-    register('puzzle-editor-mode');
-    register('puzzle-id');
-    register('puzzles');
-    setValue('puzzles', currentPack.puzzles);
-    setValue('packId', currentPack.id);
-    setValue('cover', currentPack.cover);
-    setValue('title', currentPack.title);
-    setValue('difficulty', currentPack.difficulty);
+    register("difficulty");
+    register("puzzle-online-edit");
+    register("puzzle-editor-mode");
+    register("puzzle-id");
+    register("puzzles");
+    setValue("puzzles", currentPack.puzzles);
+    setValue("packId", currentPack.id);
+    setValue("cover", currentPack.cover);
+    setValue("title", currentPack.title);
+    setValue("difficulty", currentPack.difficulty);
     setBackup(currentPack);
   }, [currentPack, reset, setValue]);
 
   useEffect(() => {
-    checkedDifficulty && setValue('difficulty', checkedDifficulty);
+    checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
   function onSuccess(newPack: Pack) {
@@ -123,7 +123,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       puzzles,
     });
     onSuccess({ ...pack, ...result });
-    notifySuccess('Pack cree avec succes');
+    notifySuccess("Pack cree avec succes");
   }
 
   return (
@@ -150,15 +150,15 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 };
 
                 if (_.isEqual(backup, newPuzzlePack)) {
-                  throw new Error('No modifications provided');
+                  throw new Error("No modifications provided");
                 }
 
                 if (!newPuzzlePack.puzzles || newPuzzlePack.puzzles.length === 0) {
-                  throw new Error('No puzzle created');
+                  throw new Error("No puzzle created");
                 }
 
                 if (!cover) {
-                  throw new Error('No cover set');
+                  throw new Error("No cover set");
                 }
 
                 if (!newPuzzlePack.online) {
@@ -179,7 +179,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   });
                   await Promise.all([Promise.all(tasks)]);
                   onSuccess({ ...newPuzzlePack });
-                  notifySuccess('Pack modifie avec succes');
+                  notifySuccess("Pack modifie avec succes");
                 }
               }
             } catch (error) {
@@ -191,14 +191,14 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           })}
         >
           <p>Couverture</p>
-          <RectangularDropzone label="Telecharger une image" src={values.cover} {...register('cover')} />
+          <RectangularDropzone label="Telecharger une image" src={values.cover} {...register("cover")} />
 
           <p>Titre</p>
           <input
             type="text"
             placeholder="Trouvez un titre pour votre pack..."
             value={values.title}
-            {...register('title')}
+            {...register("title")}
           />
 
           <p>Difficulte</p>
@@ -214,19 +214,19 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   setPuzzleDeleteConfirmIsOpen(true);
                 }}
                 onEdit={(puzzle: Puzzle) => {
-                  setValue('puzzle-editor-mode', currentPack.online ? 'update-online' : 'update-offline');
-                  setValue('puzzle-id', puzzle.id);
-                  setValue('puzzle-pic-1', puzzle.pictures[0]);
-                  setValue('puzzle-pic-2', puzzle.pictures[1]);
-                  setValue('puzzle-pic-3', puzzle.pictures[2]);
-                  setValue('puzzle-pic-4', puzzle.pictures[3]);
+                  setValue("puzzle-editor-mode", currentPack.online ? "update-online" : "update-offline");
+                  setValue("puzzle-id", puzzle.id);
+                  setValue("puzzle-pic-1", puzzle.pictures[0]);
+                  setValue("puzzle-pic-2", puzzle.pictures[1]);
+                  setValue("puzzle-pic-3", puzzle.pictures[2]);
+                  setValue("puzzle-pic-4", puzzle.pictures[3]);
                   setPuzzleEditorIsOpen(true);
                 }}
                 puzzles={values.puzzles}
               />
               <Button
                 onClick={() => {
-                  setValue('puzzle-editor-mode', currentPack.online ? 'create-online' : 'create-offline');
+                  setValue("puzzle-editor-mode", currentPack.online ? "create-online" : "create-offline");
                   setPuzzleEditorIsOpen(true);
                 }}
               >
@@ -236,7 +236,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           )}
 
           {!puzzleEditorIsOpen && !packDeleteConfirmIsOpen && !puzzleDeleteConfirmIsOpen && (
-            <div style={{ display: 'flex', gap: '1em' }}>
+            <div style={{ display: "flex", gap: "1em" }}>
               {/* Delete Pack */}
               <SpinnerButton
                 type="error"
@@ -266,7 +266,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 setDeleteIsLoading(true);
                 currentPack.online && (await deletePack(currentPack.id.toString()));
                 setPacks((packs) => packs.filter((pack) => pack.id !== currentPack.id));
-                notifySuccess('Pack supprime avec succes');
+                notifySuccess("Pack supprime avec succes");
               } catch (error) {
                 if (error instanceof FirebaseError) notifySuccess(error.message);
                 console.error(error);
@@ -293,13 +293,13 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                       const pack = packs[i];
                       pack.puzzles = pack.puzzles?.filter((puzzle) => puzzle.id !== puzzleToDelete?.id);
                       packs[i] = pack;
-                      setValue('puzzles', pack.puzzles);
+                      setValue("puzzles", pack.puzzles);
                       setBackup(packs[i]);
                     }
                   }
                   return packs;
                 });
-                notifySuccess('Puzzle supprime avec succes');
+                notifySuccess("Puzzle supprime avec succes");
                 setPuzzleDeleteConfirmIsOpen(false);
               } catch (error) {
                 if (error instanceof FirebaseError) notifySuccess(error.message);

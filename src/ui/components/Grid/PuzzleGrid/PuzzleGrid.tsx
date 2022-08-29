@@ -1,7 +1,7 @@
-import { Puzzle, Puzzles } from '../../../../types';
-import { PuzzleCard } from '../../Card/PuzzleCard';
-import { Grid } from '../Grid';
-import style from './PuzzleGrid.module.css';
+import { Puzzle, Puzzles } from "../../../../types";
+import { PuzzleCard } from "../../Card/PuzzleCard";
+import { Grid } from "../Grid";
+import style from "./PuzzleGrid.module.css";
 
 interface PuzzleGridProps {
   puzzles: Puzzles;

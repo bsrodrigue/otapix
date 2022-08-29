@@ -1,5 +1,5 @@
-import { MouseEventHandler, ReactNode } from 'react';
-import styleSheet from './Fab.module.css';
+import { MouseEventHandler, ReactNode } from "react";
+import styleSheet from "./Fab.module.css";
 
 interface FabProps {
   onClick?: MouseEventHandler<HTMLButtonElement>;

@@ -1,7 +1,7 @@
-import _ from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
-import { Difficulty } from '../../enums';
-import { LetterSlot, LetterSlotsState, Pack, Puzzle, Puzzles } from '../../types';
+import _ from "lodash";
+import { v4 as uuidv4 } from "uuid";
+import { Difficulty } from "../../enums";
+import { LetterSlot, LetterSlotsState, Pack, Puzzle, Puzzles } from "../../types";
 
 export function setImagePreviewFromInput(sourceInput: HTMLInputElement, targetImage: HTMLImageElement) {
   if (!sourceInput.files || !sourceInput.files[0]) return;
@@ -47,16 +47,16 @@ export function base64ToBlob(base64: string, type?: string) {
 }
 
 export function getBase64StringFromDataURL(dataURL: string) {
-  return dataURL.replace('data:', '').replace(/^.+,/, '');
+  return dataURL.replace("data:", "").replace(/^.+,/, "");
 }
 
 export function createPuzzlePack(uid: string): Required<Pack> {
   return {
     id: uuidv4(),
-    title: 'New pack',
+    title: "New pack",
     difficulty: Difficulty.D,
     authorId: uid,
-    cover: '',
+    cover: "",
     online: false,
     puzzles: [],
   };
@@ -64,13 +64,13 @@ export function createPuzzlePack(uid: string): Required<Pack> {
 
 export function dataURLToBlob(dataURL: string) {
   const base64 = getBase64StringFromDataURL(dataURL);
-  const [, type] = dataURL.split(';')[0].split('/');
+  const [, type] = dataURL.split(";")[0].split("/");
   const file = base64ToBlob(base64, `image/${type}`);
   return file;
 }
 
 export function getImageExtensionFromFile(file: Blob) {
-  return file.type.replace('image/', '');
+  return file.type.replace("image/", "");
 }
 
 interface ImageAdapterParams {
@@ -80,7 +80,7 @@ interface ImageAdapterParams {
 export function adaptImageToFile({ image }: ImageAdapterParams): File {
   if (image instanceof File) return image;
   if (image instanceof FileList) return image[0];
-  if (typeof image === 'string') {
+  if (typeof image === "string") {
     const base64 = getBase64StringFromDataURL(image);
     const blob = base64ToBlob(base64) as File;
     return blob;
@@ -98,7 +98,7 @@ export function getOldPuzzles(puzzles: Puzzles) {
 
 export function insertRandomAlphabetLetters(count: number) {
   const arr: string[] = [];
-  const alphabet = 'abcdefghijklmnopqurstuvwxyz';
+  const alphabet = "abcdefghijklmnopqurstuvwxyz";
   for (let i = 0; i < count; i++) {
     const randomIndex = _.random(0, alphabet.length - 1);
     arr.push(alphabet[randomIndex]);
@@ -109,7 +109,7 @@ export function insertRandomAlphabetLetters(count: number) {
 export class SlotHelper {
   public static getFirstEmptyIndex(slots: LetterSlot[]): number {
     for (let i = 0; i < slots.length; i++) {
-      if (slots[i].letter === '') {
+      if (slots[i].letter === "") {
         return i;
       }
     }
@@ -118,7 +118,7 @@ export class SlotHelper {
 
   public static getFirstNonEmptyIndex(slots: LetterSlot[]): number {
     for (let i = 0; i < slots.length; i++) {
-      if (slots[i].letter !== '') {
+      if (slots[i].letter !== "") {
         return i;
       }
     }
@@ -127,7 +127,7 @@ export class SlotHelper {
 
   public static getLastNonEmptyIndex(slots: LetterSlot[]): number {
     for (let i = slots.length - 1; i >= 0; i--) {
-      if (slots[i].letter !== '') {
+      if (slots[i].letter !== "") {
         return i;
       }
     }
@@ -138,7 +138,7 @@ export class SlotHelper {
     let nonEmptySlots = 0;
     const slotCount = slots.length;
     for (let i = 0; i < slotCount; i++) {
-      if (slots[i].letter !== '') nonEmptySlots++;
+      if (slots[i].letter !== "") nonEmptySlots++;
     }
     return nonEmptySlots === slotCount;
   }
@@ -153,7 +153,7 @@ export class SlotHelper {
   }
 
   public static toLetters(slots: LetterSlot[]): string {
-    let result = '';
+    let result = "";
     slots.forEach((slot: LetterSlot) => {
       result = result.concat(slot.letter);
     });
@@ -188,7 +188,7 @@ export class SlotHelper {
     if (index === -1) return;
     const targetSlot = targetSlots[index];
     pickerSlots[targetSlot.index] = { ...targetSlot, selected };
-    targetSlots[index] = { ...targetSlot, selected, letter: '' };
+    targetSlots[index] = { ...targetSlot, selected, letter: "" };
     const newGameSlots: LetterSlotsState = {
       targetSlots,
       pickerSlots,
@@ -196,10 +196,10 @@ export class SlotHelper {
     onLetterPushed(newGameSlots);
   }
 
-  public static setupCurrentPuzzle(puzzle: Puzzle, onPuzzleSetup: Function) {
+  public static setupCurrentPuzzle(puzzle: Puzzle, onPuzzleSetup: (arg: any) => void) {
     const { word } = puzzle;
-    const letters = word.split('');
-    const emptyLetters = Array(word.length).fill('');
+    const letters = word.split("");
+    const emptyLetters = Array(word.length).fill("");
     const targetSlots: LetterSlot[] = SlotHelper.toSlots(emptyLetters);
     const pickerSlots: LetterSlot[] = SlotHelper.toSlots(
       _.shuffle(insertRandomAlphabetLetters(letters.length).concat(letters)),
@@ -210,8 +210,8 @@ export class SlotHelper {
   public static checkIfResultIsCorrect(
     puzzle: Puzzle,
     targetSlots: Array<LetterSlot>,
-    onCorrect: Function,
-    onIncorrect: Function,
+    onCorrect: () => void,
+    onIncorrect: () => void,
   ) {
     const { word } = puzzle;
     const playerWord = SlotHelper.toLetters(targetSlots);

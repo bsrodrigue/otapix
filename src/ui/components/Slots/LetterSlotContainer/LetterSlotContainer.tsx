@@ -1,10 +1,10 @@
-import useGameState from '../../../../context/hooks/useGameState';
-import { SlotHelper } from '../../../../lib/utils';
-import { LetterSlot } from '../../../../types';
+import useGameState from "../../../../context/hooks/useGameState";
+import { SlotHelper } from "../../../../lib/utils";
+import { LetterSlot } from "../../../../types";
 
 interface Props {
   slot: LetterSlot;
-  role: 'picker' | 'target';
+  role: "picker" | "target";
 }
 
 export default function LetterSlotContainer({ slot, role }: Props) {
@@ -12,19 +12,19 @@ export default function LetterSlotContainer({ slot, role }: Props) {
   const { letter, selected } = slot;
 
   function isEmpty() {
-    if (role === 'picker') {
+    if (role === "picker") {
       if (selected) {
-        return 'empty';
+        return "empty";
       }
-      return '';
+      return "";
     }
   }
 
   function click() {
     switch (role) {
-      case 'target':
+      case "target":
         break;
-      case 'picker':
+      case "picker":
         if (isEmpty()) return;
         SlotHelper.pushLetter(gameSlots, slot, setGameSlots);
         break;
@@ -34,13 +34,13 @@ export default function LetterSlotContainer({ slot, role }: Props) {
   }
 
   function output() {
-    let output = '';
+    let output = "";
     switch (role) {
-      case 'target':
-        output = selected ? letter : '';
+      case "target":
+        output = selected ? letter : "";
         break;
-      case 'picker':
-        output = selected ? '' : letter;
+      case "picker":
+        output = selected ? "" : letter;
         break;
       default:
         break;

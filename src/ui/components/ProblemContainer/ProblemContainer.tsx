@@ -1,6 +1,6 @@
-import { Puzzle, LetterSlotsState } from '../../../types';
-import ProblemPictures from '../ProblemPictures/ProblemPictures';
-import { LetterSlotContainers } from '../Slots';
+import { Puzzle, LetterSlotsState } from "../../../types";
+import ProblemPictures from "../ProblemPictures/ProblemPictures";
+import { LetterSlotContainers } from "../Slots";
 
 interface Props {
   puzzle: Puzzle;

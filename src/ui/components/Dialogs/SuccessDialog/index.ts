@@ -1,1 +1,1 @@
-export { default as SuccessDialog } from './SuccessDialog';
+export { default as SuccessDialog } from "./SuccessDialog";

@@ -1,6 +1,6 @@
-import { BooleanSetter, NumberSetter, Packs, PacksSetter } from '../../../../types';
-import { Accordion } from '../../Accordion';
-import style from './DashboardSidePanel.module.css';
+import { BooleanSetter, NumberSetter, Packs, PacksSetter } from "../../../../types";
+import { Accordion } from "../../Accordion";
+import style from "./DashboardSidePanel.module.css";
 
 interface DashboardSidePanelProps {
   isOpen: boolean;

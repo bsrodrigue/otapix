@@ -1,1 +1,1 @@
-export { default as CircularDropzone } from './CircularDropzone';
+export { default as CircularDropzone } from "./CircularDropzone";

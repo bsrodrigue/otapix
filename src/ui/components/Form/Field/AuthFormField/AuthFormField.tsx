@@ -1,6 +1,6 @@
-import { UseFormRegister } from 'react-hook-form';
-import { FieldValues } from 'react-hook-form';
-import style from './AuthFormField.module.css';
+import { UseFormRegister } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
+import style from "./AuthFormField.module.css";
 
 export interface AuthFormFieldProps {
   label?: string;

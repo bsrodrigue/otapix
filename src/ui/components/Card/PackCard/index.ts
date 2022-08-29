@@ -1,1 +1,1 @@
-export { default as PackCard } from './PackCard';
+export { default as PackCard } from "./PackCard";

@@ -1,1 +1,1 @@
-export { default as RectangularDropzone } from './RectangularDropzone';
+export { default as RectangularDropzone } from "./RectangularDropzone";

@@ -1,1 +1,1 @@
-export { default as PuzzleCard } from './PuzzleCard';
+export { default as PuzzleCard } from "./PuzzleCard";

@@ -1,9 +1,9 @@
-import { Alert } from 'react-bootstrap';
-import useGameState from '../../../../context/hooks/useGameState';
-import { SlotHelper } from '../../../../lib/utils';
-import { LetterSlotsState, Puzzle } from '../../../../types';
-import { SuccessDialog } from '../../Dialogs/SuccessDialog';
-import { ProblemContainer } from '../../ProblemContainer';
+import { Alert } from "react-bootstrap";
+import useGameState from "../../../../context/hooks/useGameState";
+import { SlotHelper } from "../../../../lib/utils";
+import { LetterSlotsState, Puzzle } from "../../../../types";
+import { SuccessDialog } from "../../Dialogs/SuccessDialog";
+import { ProblemContainer } from "../../ProblemContainer";
 
 interface IProps {
   result: string;
@@ -18,9 +18,9 @@ export default function GameFragment({ result, puzzle, slots, isLastPuzzle, move
 
   function renderResult(result: string) {
     switch (result) {
-      case 'yes':
+      case "yes":
         return <SuccessDialog isLastPuzzle={isLastPuzzle()} moveToNextPuzzle={moveToNextPuzzle} />;
-      case 'no':
+      case "no":
         return <Alert variant="danger">Incorrect !</Alert>;
       default:
         return <></>;
@@ -29,7 +29,7 @@ export default function GameFragment({ result, puzzle, slots, isLastPuzzle, move
 
   return (
     <>
-      {result === 'yes' ? (
+      {result === "yes" ? (
         renderResult(result)
       ) : (
         <div className="wrapper">

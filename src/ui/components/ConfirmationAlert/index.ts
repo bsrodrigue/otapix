@@ -1,1 +1,1 @@
-export { default as ConfirmationAlert } from './ConfirmationAlert';
+export { default as ConfirmationAlert } from "./ConfirmationAlert";

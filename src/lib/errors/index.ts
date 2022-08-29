@@ -1,15 +1,15 @@
-import { FirebaseError } from 'firebase/app';
-import { logError } from '../logging';
-import { notifyError } from '../notifications';
+import { FirebaseError } from "firebase/app";
+import { logError } from "../logging";
+import { notifyError } from "../notifications";
 
 export enum RequestNames {
-  LOGIN = 'login',
-  REGISTER = 'register',
+  LOGIN = "login",
+  REGISTER = "register",
 }
 
 export const ErrorCodeMessage: Record<string, string> = {
-  'auth/user-not-found': "Cet utilisateur n'existe pas!",
-  'auth/email-already-in-use': 'Cet email est deja utilise',
+  "auth/user-not-found": "Cet utilisateur n'existe pas!",
+  "auth/email-already-in-use": "Cet email est deja utilise",
 };
 
 export function handleLoginError(error: unknown) {

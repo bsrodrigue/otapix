@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction } from 'react';
-import { Difficulty } from '../../../../enums';
-import DifficultyRadio from '../../Radio/DifficultyRadio/DifficultyRadio';
-import style from './DifficultyRadioGroup.module.css';
+import { Dispatch, SetStateAction } from "react";
+import { Difficulty } from "../../../../enums";
+import DifficultyRadio from "../../Radio/DifficultyRadio/DifficultyRadio";
+import style from "./DifficultyRadioGroup.module.css";
 
 interface DifficultyRadioGroupProps {
   difficulties?: Difficulty[];

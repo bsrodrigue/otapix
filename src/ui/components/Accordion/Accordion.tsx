@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { BsPlusCircleFill } from 'react-icons/bs';
-import { BooleanSetter, NumberSetter, Packs, PacksSetter } from '../../../types';
-import style from './Accordion.module.css';
+import { useState } from "react";
+import { BsPlusCircleFill } from "react-icons/bs";
+import { BooleanSetter, NumberSetter, Packs, PacksSetter } from "../../../types";
+import style from "./Accordion.module.css";
 
 export interface AccordionProps {
   packs: Packs;

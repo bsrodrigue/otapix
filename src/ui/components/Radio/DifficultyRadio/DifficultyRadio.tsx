@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
-import { Difficulty } from '../../../../enums';
-import style from './DifficultyRadio.module.css';
+import { Dispatch, SetStateAction } from "react";
+import { Difficulty } from "../../../../enums";
+import style from "./DifficultyRadio.module.css";
 
 interface DifficultyRadioProps {
   difficulty: string;

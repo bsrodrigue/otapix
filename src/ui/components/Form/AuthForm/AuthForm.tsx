@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
-import { SpinnerButton } from '../../Button/SpinnerButton';
-import style from './AuthForm.module.css';
+import { ReactNode } from "react";
+import { SpinnerButton } from "../../Button/SpinnerButton";
+import style from "./AuthForm.module.css";
 
 export interface AuthFormProps {
   id?: string;

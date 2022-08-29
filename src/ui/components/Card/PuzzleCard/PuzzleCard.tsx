@@ -1,6 +1,6 @@
-import { BsPen, BsTrash } from 'react-icons/bs';
-import { Puzzle } from '../../../../types';
-import style from './PuzzleCard.module.css';
+import { BsPen, BsTrash } from "react-icons/bs";
+import { Puzzle } from "../../../../types";
+import style from "./PuzzleCard.module.css";
 
 interface PuzzleCardProps {
   puzzle: Puzzle;

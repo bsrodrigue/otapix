@@ -1,16 +1,16 @@
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import useGameState from '../../context/hooks/useGameState';
-import { useFetchProblems } from '../../hooks/useFetchProblems';
-import { SlotHelper } from '../../lib/utils';
-import { LoadingDialog } from '../../ui/components/Dialogs/LoadingDialog';
-import { GameFragment } from '../../ui/components/Fragments/GameFragment';
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import useGameState from "../../context/hooks/useGameState";
+import { useFetchProblems } from "../../hooks/useFetchProblems";
+import { SlotHelper } from "../../lib/utils";
+import { LoadingDialog } from "../../ui/components/Dialogs/LoadingDialog";
+import { GameFragment } from "../../ui/components/Fragments/GameFragment";
 
 export default function GamePage() {
   const { currentProblemIndex, gameSlots, result, setCurrentProblemIndex, setGameSlots, setResult } = useGameState();
   const router = useRouter();
   let { packId } = router.query;
-  packId = typeof packId === 'string' ? packId : packId?.[0];
+  packId = typeof packId === "string" ? packId : packId?.[0];
   const { problems: puzzles, isLoading } = useFetchProblems(packId!);
 
   const puzzlesAreEmpty = puzzles.length === 0;
@@ -31,24 +31,24 @@ export default function GamePage() {
         puzzles[currentProblemIndex],
         gameSlots.targetSlots,
         () => {
-          setResult('yes');
+          setResult("yes");
         },
         () => {
-          setResult('no');
+          setResult("no");
         },
       );
     } else {
-      setResult('');
+      setResult("");
     }
   }, [currentProblemIndex, gameSlots.targetSlots, puzzles, puzzlesAreEmpty, setResult]);
 
   function moveToNextPuzzle() {
     if (isLastPuzzle()) {
       setCurrentProblemIndex(0);
-      setResult('');
+      setResult("");
     } else {
       setCurrentProblemIndex(currentProblemIndex + 1);
-      setResult('');
+      setResult("");
     }
   }
 

@@ -1,7 +1,7 @@
-import style from './PackCard.module.css';
-import { BsFillStarFill } from 'react-icons/bs';
-import { Pack } from '../../../../types';
-import Link from 'next/link';
+import style from "./PackCard.module.css";
+import { BsFillStarFill } from "react-icons/bs";
+import { Pack } from "../../../../types";
+import Link from "next/link";
 
 interface PackCardProps {
   pack: Pack;

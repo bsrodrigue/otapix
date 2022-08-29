@@ -1,10 +1,10 @@
-import { updateProfile } from 'firebase/auth';
-import { NextRouter } from 'next/router';
-import { Dispatch, SetStateAction } from 'react';
-import { signIn, signUp, uploadProfilePicture } from '../../../api/firebase';
-import { LoginParams, RegisterParams } from '../../../types';
-import { handleError, RequestNames } from '../../errors';
-import { notifySuccess } from '../../notifications';
+import { updateProfile } from "firebase/auth";
+import { NextRouter } from "next/router";
+import { Dispatch, SetStateAction } from "react";
+import { signIn, signUp, uploadProfilePicture } from "../../../api/firebase";
+import { LoginParams, RegisterParams } from "../../../types";
+import { handleError, RequestNames } from "../../errors";
+import { notifySuccess } from "../../notifications";
 
 export async function submitLogin(
   { email, password }: LoginParams,
@@ -14,8 +14,8 @@ export async function submitLogin(
   try {
     setIsLoading(true);
     await signIn({ email, password });
-    notifySuccess('Bon retour sur Otapix 🎉');
-    router.push('/');
+    notifySuccess("Bon retour sur Otapix 🎉");
+    router.push("/");
   } catch (error) {
     handleError(error, RequestNames.LOGIN);
   } finally {
@@ -32,8 +32,8 @@ export async function submitRegister(
     setIsLoading(true);
     const { user } = await signUp({ email, password });
     await Promise.all([updateProfile(user, { displayName: username }), uploadProfilePicture(avatar, user)]);
-    notifySuccess('Bienvenue sur Otapix 🎉');
-    router.push('/');
+    notifySuccess("Bienvenue sur Otapix 🎉");
+    router.push("/");
   } catch (error) {
     handleError(error, RequestNames.REGISTER);
   } finally {

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { getPack } from '../api/firebase';
-import { Puzzles } from '../types';
+import { useEffect, useState } from "react";
+import { getPack } from "../api/firebase";
+import { Puzzles } from "../types";
 
 export function useFetchProblems(packId: string) {
   const [problems, setProblems] = useState<Puzzles>([]);

@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
-import { string } from 'yup';
-import { Difficulty } from '../enums';
+import { Dispatch, SetStateAction } from "react";
+import { string } from "yup";
+import { Difficulty } from "../enums";
 
 export type Setter<T> = Dispatch<SetStateAction<T>>;
 export type BooleanSetter = Setter<boolean>;

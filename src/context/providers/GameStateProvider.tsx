@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { SlotHelper } from '../../lib/utils';
-import { LetterSlotsState } from '../../types';
-import { GameStateContext } from '../contexts/GameStateContext';
+import { useState } from "react";
+import { SlotHelper } from "../../lib/utils";
+import { LetterSlotsState } from "../../types";
+import { GameStateContext } from "../contexts/GameStateContext";
 
 export default function GameStateProvider({ children }: any) {
   const [currentProblemIndex, setCurrentProblemIndex] = useState<number>(0);
@@ -9,7 +9,7 @@ export default function GameStateProvider({ children }: any) {
     targetSlots: [],
     pickerSlots: [],
   });
-  const [result, setResult] = useState<string>('');
+  const [result, setResult] = useState<string>("");
   const slotsAreFull = SlotHelper.slotsAreFull(gameSlots.targetSlots);
 
   const data = {

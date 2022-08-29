@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { ChangeEvent, useRef } from 'react';
-import { UseFormRegister, FieldValues } from 'react-hook-form';
-import { setImagePreviewFromInput } from '../../../../lib/utils';
-import style from './CircularDropzone.module.css';
-import { useState } from 'react';
+import React, { useEffect } from "react";
+import { ChangeEvent, useRef } from "react";
+import { UseFormRegister, FieldValues } from "react-hook-form";
+import { setImagePreviewFromInput } from "../../../../lib/utils";
+import style from "./CircularDropzone.module.css";
+import { useState } from "react";
 
 interface CircularDropzoneProps {
   name?: string;
@@ -43,5 +43,5 @@ const CircularDropzone = React.forwardRef(({ name, label, onChange, ...rest }: C
   );
 });
 
-CircularDropzone.displayName = 'CircularDropzone';
+CircularDropzone.displayName = "CircularDropzone";
 export default CircularDropzone;

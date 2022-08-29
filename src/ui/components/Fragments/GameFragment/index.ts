@@ -1,1 +1,1 @@
-export { default as GameFragment } from './GameFragment';
+export { default as GameFragment } from "./GameFragment";
