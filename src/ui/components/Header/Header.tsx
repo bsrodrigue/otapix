@@ -21,15 +21,29 @@ export default function Header() {
           <div className={style.auth_links}>
             {user ? (
               <>
-                <img
-                  className={`${style.avatar} material-shadow`}
-                  src={user.photoURL || ""}
-                  onClick={(e: any) => {
-                    e.preventDefault();
-                    setModalIsOpen(!modalIsOpen);
-                  }}
-                  alt="avatar"
-                />
+                {
+                  user.photoURL ? (
+                    <img
+                      className={`${style.avatar} material-shadow`}
+                      src={user.photoURL}
+                      onClick={(e: any) => {
+                        e.preventDefault();
+                        setModalIsOpen(!modalIsOpen);
+                      }}
+                      alt="avatar"
+                    />
+                  ) : (
+                    <img
+                      className={`${style.avatar} material-shadow`}
+                      src={user.photoURL || ""}
+                      onClick={(e: any) => {
+                        e.preventDefault();
+                        setModalIsOpen(!modalIsOpen);
+                      }}
+                      alt="avatar"
+                    />
+                  )
+                }
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={() => setModalIsOpen(false)}
