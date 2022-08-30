@@ -8,7 +8,6 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../../config/firebase";
 import { Avatar } from "../Avatar";
 import { IconButton } from "../IconButton";
-import { CgCloseO } from "react-icons/cg";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
