@@ -8,6 +8,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../../config/firebase";
 import { Avatar } from "../Avatar";
 import { IconButton } from "../IconButton";
+import { Button } from "react-bootstrap";
+import { SpinnerButton } from "../Button/SpinnerButton";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -34,8 +36,8 @@ export default function Header() {
                       flexDirection: "column",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      padding: "2em 1.5em 1.5em 1.5em",
-                      margin: "-2em",
+                      padding: "10em 1.5em 1.5em 1.5em",
+                      margin: "-3em",
                       borderRadius: "2em",
                       textAlign: "center",
                     },
@@ -50,20 +52,14 @@ export default function Header() {
 
                   </div>
 
-                  <div className={style.modal_actions}>
-                    <Link href="/profile/dashboard">
-                      <a className={` ${style.modal_action}`}>Tableau de bord</a>
-                    </Link>
-                    <Link href="">
-                      <a
-                        onClick={() => {
-                          signOut(auth);
-                        }}
-                        className={` ${style.modal_action}`}
-                      >
-                        Deconnexion
-                      </a>
-                    </Link>
+                  <div style={{ width: "100%" }}>
+                    <SpinnerButton text="Modifier mon profil" />
+                    <div className={style.modal_actions}>
+                      <SpinnerButton type="error" onClick={() => signOut(auth)} text="Deconnexion" />
+                      <Link href="/profile/dashboard">
+                        <SpinnerButton text="Tableau de bord" />
+                      </Link>
+                    </div>
                   </div>
                 </Modal>
               </>

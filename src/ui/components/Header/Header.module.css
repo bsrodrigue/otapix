@@ -94,20 +94,6 @@
 
 .modal_actions {
   display: flex;
-  flex-direction: column;
   gap: 1em;
   width: 100%;
-}
-
-.modal_actions a {
-  color: white;
-  background-color: var(--primary-color);
-  font-weight: bold;
-  padding: 0.5em 1em;
-  border-radius: 1em;
-}
-
-.modal_actions :nth-child(2) {
-  background-color: white;
-  color: var(--primary-color);
 }
