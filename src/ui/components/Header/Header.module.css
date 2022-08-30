@@ -77,7 +77,19 @@
 
 .modal_username {
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 2em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+}
+
+.modal_email{
+  font-weight: bold;
+}
+
+.modal_bio{
+  font-weight: lighter;
+  font-size: 0.9em;
+  padding: 1em;
 }
 
 .modal_actions {

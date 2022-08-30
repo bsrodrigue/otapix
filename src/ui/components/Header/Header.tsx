@@ -6,7 +6,9 @@ import { useAuth } from "../../../hooks/index";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../config/firebase";
-import Avatar from "../Avatar/Avatar";
+import { Avatar } from "../Avatar";
+import { IconButton } from "../IconButton";
+import { CgCloseO } from "react-icons/cg";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -33,18 +35,20 @@ export default function Header() {
                       flexDirection: "column",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      padding: "3em 1.5em",
+                      padding: "2em 1.5em 1.5em 1.5em",
+                      margin: "-2em",
                       borderRadius: "2em",
-                      border: "none",
-                      boxShadow: "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)",
                       textAlign: "center",
                     },
                   }}
                 >
-                  <div>
-                    <Avatar src={user.photoURL} />
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <IconButton onClick={() => setModalIsOpen(false)} />
+                    <Avatar width={150} height={150} src={user.photoURL} />
                     <p className={style.modal_username}>{user.displayName}</p>
-                    <small>{user.email}</small>
+                    <small className={style.modal_email}>{user.email}</small>
+
+
                   </div>
 
                   <div className={style.modal_actions}>
