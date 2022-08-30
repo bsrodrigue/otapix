@@ -1,45 +1,45 @@
 .container {
-  width: 100%;
-  border: none;
-  border-radius: 0.5em;
-  padding: 0 1em;
-  margin: 1em 0;
-  height: 3em;
-  background-color: white;
-  font-weight: bold;
-  filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
+    width: 100%;
+    border: none;
+    border-radius: 0.5em;
+    margin: 1em 0;
+    height: 3em;
+    background-color: white;
+    font-weight: bold;
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
 }
 
 .container:hover {
-  cursor: pointer;
-  color: white;
-  background-color: black;
+    cursor: pointer;
+    color: white;
+    background-color: black;
 }
 
 .container:focus {
-  outline: none;
+    outline: none;
 }
 
 .container * {
-  height: 80%;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
+    height: 80%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
 }
 
 .container:disabled {
-  background-color: gray;
-  color: black;
+    background-color: gray;
+    color: black;
 }
 
 .loading {
-  background-color: black !important;
-  color: white !important;
+    background-color: black !important;
+    color: white !important;
 }
+
 
 /* Types */
 
 .error {
-  background-color: var(--primary-color);
-  color: white;
+    background-color: var(--primary-color);
+    color: white;
 }

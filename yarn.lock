@@ -2729,6 +2729,11 @@ react-modal@^3.15.1:
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
 
+react-tilt@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/react-tilt/-/react-tilt-0.1.4.tgz#0ac1f33674a3fff6c617cf411002d7ecdd2ebcb1"
+  integrity sha512-bVeRumg+RIn6QN8S92UmubGqX/BG6/QeQISBeAcrS/70dpo/jVj+sjikIawDl5wTuPdubFH8zH0EMulWIctsnw==
+
 react-toastify@^9.0.8:
   version "9.0.8"
   resolved "https://registry.npmjs.org/react-toastify/-/react-toastify-9.0.8.tgz"

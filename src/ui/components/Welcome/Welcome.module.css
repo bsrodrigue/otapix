@@ -1,0 +1,39 @@
+.container {
+    padding: 1em 0;
+    color: white;
+    background-color: var(--primary-color);
+    text-align: center;
+}
+
+.welcome {
+    font-size: 5em;
+    text-transform: uppercase;
+}
+
+.span {
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+.description {
+    margin: 3em auto;
+    gap: 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.description_left {
+    text-align: left;
+    width: clamp(300px, 40em, 400px);
+}
+
+@media screen and (max-width: 750px) {
+    .description {
+        flex-direction: column-reverse;
+    }
+    .description_left {
+        text-align: center;
+    }
+}
