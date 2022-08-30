@@ -26,21 +26,6 @@
   gap: 1em;
 }
 
-.avatar {
-  border-radius: 50%;
-  aspect-ratio: 1/1;
-  width: 4em;
-  object-fit: cover;
-}
-
-.avatar:hover {
-  cursor: pointer;
-}
-
-.modal_avatar {
-  width: 9em;
-}
-
 .search_form {
   width: 100%;
   /* position: absolute; */

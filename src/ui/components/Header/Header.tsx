@@ -6,6 +6,7 @@ import { useAuth } from "../../../hooks/index";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../config/firebase";
+import Avatar from "../Avatar/Avatar";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -21,29 +22,7 @@ export default function Header() {
           <div className={style.auth_links}>
             {user ? (
               <>
-                {
-                  user.photoURL ? (
-                    <img
-                      className={`${style.avatar} material-shadow`}
-                      src={user.photoURL}
-                      onClick={(e: any) => {
-                        e.preventDefault();
-                        setModalIsOpen(!modalIsOpen);
-                      }}
-                      alt="avatar"
-                    />
-                  ) : (
-                    <img
-                      className={`${style.avatar} material-shadow`}
-                      src={user.photoURL || ""}
-                      onClick={(e: any) => {
-                        e.preventDefault();
-                        setModalIsOpen(!modalIsOpen);
-                      }}
-                      alt="avatar"
-                    />
-                  )
-                }
+                <Avatar src={user.photoURL} width={50} height={50} onClick={() => setModalIsOpen(true)} />
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={() => setModalIsOpen(false)}
@@ -63,7 +42,7 @@ export default function Header() {
                   }}
                 >
                   <div>
-                    <img className={`${style.avatar} ${style.modal_avatar}`} src={user.photoURL || ""} alt="avatar" />
+                    <Avatar src={user.photoURL} />
                     <p className={style.modal_username}>{user.displayName}</p>
                     <small>{user.email}</small>
                   </div>
