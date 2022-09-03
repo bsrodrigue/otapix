@@ -1,14 +1,15 @@
-import style from './Header.module.css';
-import { BsSearch } from 'react-icons/bs';
-import Link from 'next/link';
-import Modal from 'react-modal';
-import { useAuth } from '../../../hooks/index';
-import { useState } from 'react';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../../config/firebase';
-import { Avatar } from '../Avatar';
-import { IconButton } from '../IconButton';
-import { SpinnerButton } from '../Button/SpinnerButton';
+import style from "./Header.module.css";
+import { BsSearch } from "react-icons/bs";
+import Link from "next/link";
+import Modal from "react-modal";
+import { useAuth } from "../../../hooks/index";
+import { useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../../config/firebase";
+import { Avatar } from "../Avatar";
+import { IconButton } from "../IconButton";
+import { SpinnerButton } from "../Button/SpinnerButton";
+import { headerLinks } from "../../../config/site";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -22,9 +23,11 @@ export default function Header() {
             <a className={style.header_logo}>Otapix</a>
           </Link>
           <div className={style.auth_links}>
-          <Link href="/"><a>Explorer</a></Link>
-          <Link href="/"><a>Github</a></Link>
-          <Link href="/"><a>Contact</a></Link>
+            {headerLinks.map((link, key) => (
+              <Link key={key} href={link.url}>
+                {link.label}
+              </Link>
+            ))}
             {user ? (
               <>
                 <Avatar src={user.photoURL} width={50} height={50} onClick={() => setModalIsOpen(true)} />
@@ -34,25 +37,25 @@ export default function Header() {
                   ariaHideApp={false}
                   style={{
                     content: {
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '10em 1.5em 1.5em 1.5em',
-                      margin: '-3em',
-                      borderRadius: '2em',
-                      textAlign: 'center',
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "10em 1.5em 1.5em 1.5em",
+                      margin: "-3em",
+                      borderRadius: "2em",
+                      textAlign: "center",
                     },
                   }}
                 >
-                  <div style={{ position: 'relative', width: '100%' }}>
+                  <div style={{ position: "relative", width: "100%" }}>
                     <IconButton onClick={() => setModalIsOpen(false)} />
                     <Avatar width={150} height={150} src={user.photoURL} />
                     <p className={style.modal_username}>{user.displayName}</p>
                     <small className={style.modal_email}>{user.email}</small>
                   </div>
 
-                  <div style={{ width: '100%' }}>
+                  <div style={{ width: "100%" }}>
                     <SpinnerButton text="Modifier mon profil" />
                     <div className={style.modal_actions}>
                       <SpinnerButton type="error" onClick={() => signOut(auth)} text="Deconnexion" />

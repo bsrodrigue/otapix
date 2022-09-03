@@ -63,3 +63,7 @@ export interface RegisterParams {
   email: string;
   password: string;
 }
+export interface UrlLink {
+  label: string;
+  url: string;
+}
