@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from "react";
-import { string } from "yup";
 import { Difficulty } from "../enums";
 
 export type Setter<T> = Dispatch<SetStateAction<T>>;
