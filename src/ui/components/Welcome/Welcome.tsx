@@ -18,15 +18,15 @@ export default function Welcome() {
           <div className={style.description_left}>
             <h1>Les règles du jeu sont simples 😄</h1>
             <h1>Devine le bon mot ou le nom du personnage!</h1>
-            <h1>Crée et partage tes propres niveaux! (packs)</h1>
-            <div style={{ display: "flex", gap: "1em" }}>
-              <SpinnerButton text="Jouer à un pack" style={{ height: "5em" }} />
+            <h1>Crée et partage tes propres niveaux!</h1>
+            <div className={style.call_to_action}>
+              <SpinnerButton type="error" text="Jouer à un pack" style={{ height: "5em" }} />
               <SpinnerButton text="Créer mon propre pack" style={{ height: "5em" }} />
             </div>
           </div>
           <div>
             <Tilt data-tilt>
-              <div style={{ position: "relative", height: "30em" }}>
+              <div className={style.phones}>
                 <img
                   style={{ position: "absolute", left: "3em", transform: "rotate(10deg)" }}
                   height={500}

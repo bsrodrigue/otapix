@@ -16,7 +16,7 @@
 }
 
 .description {
-    margin: 1em auto;
+    margin: 1em;
     gap: 1em;
     display: flex;
     flex-direction: row;
@@ -26,7 +26,6 @@
 
 .description_left {
     text-align: left;
-    width: clamp(300px, 40em, 400px);
 }
 
 @media screen and (max-width: 750px) {
@@ -35,5 +34,8 @@
     }
     .description_left {
         text-align: center;
+    }
+    .phones {
+        margin-right: 4.1em;
     }
 }
