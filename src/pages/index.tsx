@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { getAllPacks } from '../api/firebase';
-import { Pack } from '../types';
-import { Header, PackCard } from '../ui/components';
-import { Welcome } from '../ui/components/Welcome';
+import { useEffect, useState } from "react";
+import { getAllPacks } from "../api/firebase";
+import { Pack } from "../types";
+import { Header, PackCard } from "../ui/components";
+import { Welcome } from "../ui/components/Welcome";
 
 export default function Home() {
   const [packs, setPacks] = useState<Array<Pack>>([]);
@@ -21,7 +21,7 @@ export default function Home() {
     <>
       <Header />
       <Welcome />
-      <div style={{ padding: '1em' }} className="wrapper">
+      <div style={{ padding: "1em" }} className="wrapper">
         <div className="packcard-grid">
           {packs?.map((pack, key) => (
             <PackCard key={key} pack={pack} />
