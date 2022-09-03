@@ -34,8 +34,8 @@ export default function Home() {
         </div>
       </Section>
       <Section title="Pourquoi ce projet?">
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          <div style={{ color: "white", flex: "1", fontSize: "1.3em", paddingRight: "1em" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "3em" }}>
+          <div style={{ color: "white", flex: "1", fontSize: "1.3em",  }}>
             <p>
               The goal of this project was quite simple: Challenging myself! But also, the idea of building a game like
               4 pics 1 word targeted at a more geeky and weebish players persisted somewhere in the back of my mind. It
@@ -54,7 +54,7 @@ export default function Home() {
               </a>{" "}
             </p>
           </div>
-          <img style={{ width: "40em", borderRadius: "3em", flex: "1" }} src="img/code-girl.png" alt="" />
+          <img style={{ width: "100%", height: "22em", borderRadius: "1em", flex: "1", objectFit: "cover", objectPosition: "0 -1em" }} src="img/code-girl.png" alt="" />
         </div>
       </Section>
       <Footer />
