@@ -12,10 +12,11 @@
 .span {
     text-transform: uppercase;
     font-style: italic;
+    color: var(--primary-color);
 }
 
 .description {
-    margin: 3em auto;
+    margin: 1em auto;
     gap: 1em;
     display: flex;
     flex-direction: row;
