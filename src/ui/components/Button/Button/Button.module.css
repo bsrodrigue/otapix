@@ -1,13 +1,13 @@
 .container {
-    color: white;
-    background-color: var(--primary-color);
-    font-weight: bold;
-    padding: 1em;
-    width: 100%;
+  color: white;
+  background-color: var(--primary-color);
+  font-weight: bold;
+  padding: 1em;
+  width: 100%;
 }
 
 .container:hover {
-    cursor: pointer;
-    color: white !important;
-    background-color: black !important;
+  cursor: pointer;
+  color: white !important;
+  background-color: black !important;
 }

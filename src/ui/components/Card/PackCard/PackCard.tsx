@@ -1,20 +1,17 @@
 import style from "./PackCard.module.css";
 import { BsFillStarFill } from "react-icons/bs";
-import { GenericPuzzlePack } from "../../../../types/puzzle_pack";
+import { Pack } from "../../../../types";
+import Link from "next/link";
 
 interface PackCardProps {
-  pack: GenericPuzzlePack;
+  pack: Pack;
 }
 
 export default function PackCard({ pack }: PackCardProps) {
-  const { title, cover, puzzles, difficulty } = pack;
+  const { id, title, cover, puzzles, difficulty } = pack;
   return (
-    <div className={style.packcard_container}>
-      <img
-        className={`${style.packcard_cover} material-shadow`}
-        src={cover}
-        alt="Pack cover"
-      />
+    <div className={`${style.packcard_container} material-shadow`}>
+      <img className={`${style.packcard_cover}`} src={cover} alt="Pack cover" />
       <div className={style.packcard_content}>
         <div className={style.packcard_infos}>
           <div>
@@ -24,21 +21,21 @@ export default function PackCard({ pack }: PackCardProps) {
               <span>doomer_coder</span>
             </small>
             <p className={style.packcard_puzzle_count}>
-              {puzzles.length}
+              {puzzles?.length}
               <span> puzzles</span>
             </p>
             <div className={style.packcard_rating}>
-              {[1, 2, 3, 4, 5].map((item: any, key: number) => (
+              {[1, 2, 3, 4, 5].map((_item: any, key: number) => (
                 <BsFillStarFill key={key} />
               ))}
             </div>
           </div>
-          <div className={`${style.packcard_level} material-shadow`}>
-            {difficulty}
-          </div>
+          <div className={`${style.packcard_level} `}>{difficulty}</div>
         </div>
         <div className={style.packcard_actions}>
-          <button className={`${style.packcard_action} button`}>Play</button>
+          <Link href={`/game/${id}`}>
+            <button className={`${style.packcard_action} button`}>Play</button>
+          </Link>
           <button disabled className={`${style.packcard_action} button`}>
             Add to collection
           </button>

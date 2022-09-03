@@ -14,9 +14,9 @@
 .header_content {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
 }
-
 
 .header_logo {
     font-size: 2em;
@@ -24,22 +24,10 @@
 
 .auth_links {
     display: flex;
-    gap: 1em;
-}
-
-.avatar {
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-    width: 4em;
-    object-fit: cover;
-}
-
-.avatar:hover {
-    cursor: pointer;
-}
-
-.modal_avatar {
-    width: 9em;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
 }
 
 .search_form {
@@ -95,25 +83,23 @@
 
 .modal_username {
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 2em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+}
+
+.modal_email {
+    font-weight: bold;
+}
+
+.modal_bio {
+    font-weight: lighter;
+    font-size: 0.9em;
+    padding: 1em;
 }
 
 .modal_actions {
     display: flex;
-    flex-direction: column;
     gap: 1em;
     width: 100%;
-}
-
-.modal_actions a {
-    color: white;
-    background-color: var(--primary-color);
-    font-weight: bold;
-    padding: 0.5em 1em;
-    border-radius: 1em;
-}
-
-.modal_actions :nth-child(2) {
-    background-color: white;
-    color: var(--primary-color);
 }

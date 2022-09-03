@@ -3,28 +3,28 @@ import { CgMenuRound } from "react-icons/cg";
 import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
 import { notifyError } from "../../lib/notifications";
-import { GlobalPacks } from "../../types";
+import { createPuzzlePack } from "../../lib/utils";
+import { Pack, Packs } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
 import { PackEditor } from "../../ui/components/Editor/PackEditor";
 import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSidePanel";
 
-const initial: GlobalPacks = {
-  local: [],
-  remote: [],
-};
-
 export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
+  const [packs, setPacks] = useState<Packs>([]);
   const [currentPackIndex, setCurrentPackIndex] = useState(0);
-  const [packs, setPacks] = useState<GlobalPacks>(initial);
-  const [loading, setIsloading] = useState<boolean>(true);
+  const [loading, setIsloading] = useState(true);
   const { user } = useAuth();
 
-  function appPacksToArr(appPacks: GlobalPacks) {
-    return [...appPacks.remote, ...appPacks.local];
+  function addPuzzlePack() {
+    if (!user) return;
+    const pack: Pack = createPuzzlePack(user.uid);
+    setPacks((prev) => {
+      setCurrentPackIndex(prev.length);
+      return [...prev, pack];
+    });
+    setIsOpen(false);
   }
-
-  const packsArr = appPacksToArr(packs);
 
   useEffect(() => {
     async function getPacks() {
@@ -32,10 +32,7 @@ export default function DashboardPage() {
       try {
         setIsloading(true);
         const result = await getPacksFromUser(user.uid);
-        setPacks((prev) => {
-          prev.remote = result;
-          return prev;
-        });
+        setPacks(result);
       } catch (error) {
         notifyError("Erreur lors du chargement des packs");
         console.error(error);
@@ -50,23 +47,20 @@ export default function DashboardPage() {
     <div className="dashboard-page">
       <DashboardSidePanel
         isOpen={isOpen}
-        setSideBarIsOpen={setIsOpen}
-        packs={packsArr}
+        packs={packs}
         setPacks={setPacks}
         currentPackIndex={currentPackIndex}
-        setCurrentPackIndex={setCurrentPackIndex}
         loading={loading}
+        setSideBarIsOpen={setIsOpen}
+        setCurrentPackIndex={setCurrentPackIndex}
+        onCreatePackClick={addPuzzlePack}
       />
 
-      {packsArr.length !== 0 && packsArr[currentPackIndex] && (
-        <PackEditor
-          currentPack={packsArr[currentPackIndex]}
-          currentPackIndex={currentPackIndex}
-          setPacks={setPacks}
-        />
+      {packs.length !== 0 && packs[currentPackIndex] && (
+        <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
       )}
 
-      {packsArr.length === 0 && (
+      {packs.length === 0 && (
         <div
           style={{
             display: "flex",
@@ -78,7 +72,7 @@ export default function DashboardPage() {
           }}
         >
           <div>
-            <h1>Vous n'avez pas de packs...</h1>
+            <h1>Vous n&apos;avez pas de packs...</h1>
             <small>Ouvrez le panneau pour creer un pack</small>
           </div>
         </div>

@@ -1,41 +1,68 @@
-import { LocalPuzzlePack, RemotePuzzlePack } from "./puzzle_pack";
+import { Dispatch, SetStateAction } from "react";
+import { Difficulty } from "../enums";
 
-// export interface Puzzle {
-//   word: string;
-//   universe?: string;
-//   pictures: Array<string>;
-//   order?: number;
-// }
+export type Setter<T> = Dispatch<SetStateAction<T>>;
+export type BooleanSetter = Setter<boolean>;
+export type StringSetter = Setter<string>;
+export type NumberSetter = Setter<number>;
 
-// export interface LocalPuzzlePack extends HasTitle, HasID, HasCover {
-//   local: boolean;
-//   difficulty: Difficulty;
-//   puzzles: Array<{ word: string; pictures: Array<string> }>;
-// }
+export type PackSetter = Setter<Pack>;
+export type PacksSetter = Setter<Packs>;
 
-// export interface PuzzlePack extends IdentifiableCreation, HasCover, HasTitle {
-//   difficulty: Difficulty;
-//   // rating: number;
-//   // playCount: number;
-//   puzzles: Array<Puzzle>;
-// }
+export type Packs = Array<Pack>;
+export type Puzzles = Array<Puzzle>;
+export interface Pack {
+  id: string;
+  authorId: string;
+  title: string;
+  cover: string;
+  difficulty: Difficulty;
+  online?: boolean;
+  puzzles?: Puzzles;
+}
+export interface Puzzle {
+  id: string;
+  packId: string;
+  word: string;
+  pictures: Array<string>;
+  online?: boolean;
+}
+export interface FormField {
+  label: string;
+  placeholder: string;
+  type: string;
+  name?: string;
+  className?: string;
+}
 
-// export interface UsePackIndexState {
-//   currentPackIndex: number;
-//   setCurrentPackIndex: Dispatch<SetStateAction<number>>;
-// }
+export interface LetterSlot {
+  letter: string;
+  index: number;
+  selected: boolean;
+}
 
-// export interface UsePackArrayState {
-//   packs: Array<PuzzlePack | LocalPuzzlePack>;
-//   setPacks: Dispatch<SetStateAction<AppPacks>>;
-// }
+export interface GameState {
+  puzzles: Array<Puzzle>;
+  currentLevelIndex: number;
+  letterSlotsState: LetterSlotsState;
+}
 
-// export interface UseDifficultyState {
-//   checkedDifficulty: string;
-//   setCheckedDifficulty: Dispatch<SetStateAction<Difficulty>>;
-// }
+export interface LetterSlotsState {
+  targetSlots: LetterSlot[];
+  pickerSlots: LetterSlot[];
+}
 
-export interface GlobalPacks {
-  local: Array<LocalPuzzlePack>;
-  remote: Array<RemotePuzzlePack>;
+export interface LoginParams {
+  email: string;
+  password: string;
+}
+export interface RegisterParams {
+  avatar: Blob;
+  username: string;
+  email: string;
+  password: string;
+}
+export interface UrlLink {
+  label: string;
+  url: string;
 }

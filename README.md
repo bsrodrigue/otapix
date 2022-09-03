@@ -4,24 +4,24 @@ Otapix is a small web platform built with [Next.js](https://nextjs.org) and [Fir
 
 The goal is to provide geeks and anime fans with tools to create their own puzzles, share them and have fun together.
 
-
 ---
+
 ⭐️ If you enjoy this project and want to show some support, please give us a star! ⭐️
 
-🚀 Quickstart 
----
+## 🚀 Quickstart
+
 Clone the project where you want move inside before running:
+
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-🕹️ Official game clients
----
+## 🕹️ Official game clients
+
 - [Otapic](https://otapic.netlify.app) - Github: https://github.com/bsrodrigue/four-pics
 
-🕹️ Non-official game clients
----
-- Contribute ;')
+## 🕹️ Non-official game clients
 
+- Contribute ;')

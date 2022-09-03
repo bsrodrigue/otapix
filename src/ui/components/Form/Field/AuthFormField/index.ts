@@ -1,1 +1,1 @@
-export { default as AuthFormField } from './AuthFormField';
+export { default as AuthFormField } from "./AuthFormField";

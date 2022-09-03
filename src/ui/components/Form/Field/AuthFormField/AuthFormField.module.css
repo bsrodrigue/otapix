@@ -1,32 +1,32 @@
 /* AuthForm Field */
 
 .authform_field_container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .authform_label {
-    font-weight: bold;
-    margin-bottom: 0.5em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
 }
 
 .authform_field {
-    border: none;
-    border-radius: 0.5em;
-    padding: 1.5em 2em;
-    background-color: var(--primary-color);
-    color: white;
+  border: none;
+  border-radius: 0.5em;
+  padding: 1.5em 2em;
+  background-color: var(--primary-color);
+  color: white;
 }
 
-.authform_field_error{
+.authform_field_error {
   color: red;
   font-weight: bold;
 }
 
 .authform_field:focus {
-    outline: none;
+  outline: none;
 }
 
 .authform_field::placeholder {
-    color: rgba(255, 255, 255, 0.479);
+  color: rgba(255, 255, 255, 0.479);
 }

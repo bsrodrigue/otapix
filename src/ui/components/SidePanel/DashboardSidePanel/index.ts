@@ -1,1 +1,1 @@
-export { default as DashboardSidePanel } from './DashboardSidePanel';
+export { default as DashboardSidePanel } from "./DashboardSidePanel";

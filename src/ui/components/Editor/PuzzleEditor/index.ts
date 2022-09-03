@@ -1,1 +1,1 @@
-export { default as PuzzleEditor } from './PuzzleEditor';
+export { default as PuzzleEditor } from "./PuzzleEditor";

@@ -1,0 +1,15 @@
+.container{
+  padding: 0.1em;
+  font-size: 2em;
+  position: absolute;
+  right: -0.1em;
+  top: -4.2em;
+  display: flex;
+  color: white;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+}
+
+.container:hover{
+  cursor: pointer;
+}

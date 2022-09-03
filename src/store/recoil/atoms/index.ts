@@ -1,17 +1,16 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 const defaultUserState: {
-    username?: string | null;
-    avatar?: string | null;
-    email?: string | null;
+  username?: string | null;
+  avatar?: string | null;
+  email?: string | null;
 } = {
-    username: '',
-    avatar: '',
-    email: '',
-}
+  username: "",
+  avatar: "",
+  email: "",
+};
 
 export const userState = atom({
-    key: "USER_STATE",
-    default: defaultUserState,
+  key: "USER_STATE",
+  default: defaultUserState,
 });
-

@@ -9,18 +9,9 @@ interface ButtonProps {
   type?: "button" | "reset" | "submit" | undefined;
 }
 
-export default function Button({
-  children,
-  className,
-  type,
-  ...rest
-}: ButtonProps) {
+export default function Button({ children, className, type, ...rest }: ButtonProps) {
   return (
-    <button
-      type={type || "button"}
-      className={`${styleSheet.container} ${className}`}
-      {...rest}
-    >
+    <button type={type || "button"} className={`${styleSheet.container} ${className}`} {...rest}>
       {children}
     </button>
   );

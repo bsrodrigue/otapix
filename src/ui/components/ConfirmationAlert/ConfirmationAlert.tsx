@@ -7,11 +7,7 @@ interface ConfirmationAlertProps {
   isLoading?: boolean;
 }
 
-export default function ConfirmationAlert({
-  onConfirm,
-  onCancel,
-  isLoading,
-}: ConfirmationAlertProps) {
+export default function ConfirmationAlert({ onConfirm, onCancel, isLoading }: ConfirmationAlertProps) {
   return (
     <div className={styleSheet.container}>
       <p className={styleSheet.title}>Attention</p>
@@ -20,11 +16,7 @@ export default function ConfirmationAlert({
 
       <div style={{ display: "flex", gap: "1em" }}>
         <SpinnerButton onClick={onCancel} type="error" text="Annuler" />
-        <SpinnerButton
-          isLoading={isLoading}
-          onClick={onConfirm}
-          text="Confirmer"
-        />
+        <SpinnerButton isLoading={isLoading} onClick={onConfirm} text="Confirmer" />
       </div>
     </div>
   );

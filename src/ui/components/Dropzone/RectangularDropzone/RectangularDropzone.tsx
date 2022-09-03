@@ -1,8 +1,5 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import {
-  readFileAsDataURL,
-  setImagePreviewFromInput,
-} from "../../../../lib/utils";
+import { readFileAsDataURL, setImagePreviewFromInput } from "../../../../lib/utils";
 import style from "./RectangularDropzone.module.css";
 
 interface CircularDropzoneProps {
@@ -14,13 +11,11 @@ interface CircularDropzoneProps {
   value?: any;
   src?: string | File;
   isSquare?: boolean;
+  multiple?: boolean;
 }
 
 const CircularDropzone = React.forwardRef(
-  (
-    { name, label, onChange, src, isSquare, ...rest }: CircularDropzoneProps,
-    ref: any
-  ) => {
+  ({ name, label, onChange, src, isSquare, ...rest }: CircularDropzoneProps, ref: any) => {
     const [imageSrc, setImageSrc] = useState<string>("");
     const previewRef = useRef<any>();
 
@@ -31,10 +26,14 @@ const CircularDropzone = React.forwardRef(
           return;
         }
         if (typeof src === "string") setImageSrc(src);
-        else {
-          if (src instanceof FileList) {
-            src = src[0];
+        else if (src instanceof FileList) {
+          if (src.length === 0) {
+            setImageSrc("");
+            return;
+          } else if (src.length > 1) {
+            console.log("Aye");
           }
+          src = src[0];
           const dataURL = (await readFileAsDataURL(src)) as string;
           setImageSrc(dataURL);
         }
@@ -43,22 +42,12 @@ const CircularDropzone = React.forwardRef(
     }, [name, src]);
 
     return (
-      <label
-        className={`${style.circular_dropzone} ${isSquare && style.is_square}`}
-        htmlFor={`dropzone-${name}`}
-      >
+      <label className={`${style.circular_dropzone} ${isSquare && style.is_square}`} htmlFor={`dropzone-${name}`}>
         {label}
         {imageSrc ? (
-          <img
-            ref={previewRef}
-            className={`${style.image_preview} ${isSquare && style.is_square}`}
-            src={imageSrc}
-          />
+          <img ref={previewRef} className={`${style.image_preview} ${isSquare && style.is_square}`} src={imageSrc} />
         ) : (
-          <img
-            ref={previewRef}
-            className={`${style.image_preview} ${isSquare && style.is_square}`}
-          />
+          <img ref={previewRef} className={`${style.image_preview} ${isSquare && style.is_square}`} />
         )}
         <input
           id={`dropzone-${name}`}
@@ -75,7 +64,7 @@ const CircularDropzone = React.forwardRef(
         />
       </label>
     );
-  }
+  },
 );
 
 CircularDropzone.displayName = "CircularDropzone";

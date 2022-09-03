@@ -11,10 +11,7 @@ interface DifficultyRadioGroupProps {
 
 const baseDifficulties = Object.values(Difficulty);
 
-export default function DifficultyRadioGroup({
-  difficulties,
-  ...rest
-}: DifficultyRadioGroupProps) {
+export default function DifficultyRadioGroup({ difficulties, ...rest }: DifficultyRadioGroupProps) {
   difficulties = difficulties || baseDifficulties;
   return (
     <div className={style.difficulty_radio_group}>

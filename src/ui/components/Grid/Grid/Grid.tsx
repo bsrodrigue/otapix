@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import style from './Grid.module.css';
+import { ReactNode } from "react";
+import style from "./Grid.module.css";
 
 interface GridProps {
   children?: ReactNode;
@@ -7,10 +7,5 @@ interface GridProps {
 }
 
 export default function Grid({ children, className }: GridProps) {
-
-  return (
-    <div className={`${style.container} ${className}`}>
-      {children}
-    </div>
-  )
+  return <div className={`${style.container} ${className}`}>{children}</div>;
 }

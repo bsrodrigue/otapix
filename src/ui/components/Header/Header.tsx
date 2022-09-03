@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import style from "./Header.module.css";
 import { BsSearch } from "react-icons/bs";
 import Link from "next/link";
@@ -7,6 +6,10 @@ import { useAuth } from "../../../hooks/index";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../config/firebase";
+import { Avatar } from "../Avatar";
+import { IconButton } from "../IconButton";
+import { SpinnerButton } from "../Button/SpinnerButton";
+import { headerLinks } from "../../../config/site";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -20,17 +23,14 @@ export default function Header() {
             <a className={style.header_logo}>Otapix</a>
           </Link>
           <div className={style.auth_links}>
+            {headerLinks.map((link, key) => (
+              <Link key={key} href={link.url}>
+                {link.label}
+              </Link>
+            ))}
             {user ? (
               <>
-                <img
-                  className={`${style.avatar} material-shadow`}
-                  src={user.photoURL || ""}
-                  onClick={(e: any) => {
-                    e.preventDefault();
-                    setModalIsOpen(!modalIsOpen);
-                  }}
-                  alt="avatar"
-                />
+                <Avatar src={user.photoURL} width={50} height={50} onClick={() => setModalIsOpen(true)} />
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={() => setModalIsOpen(false)}
@@ -41,41 +41,28 @@ export default function Header() {
                       flexDirection: "column",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      padding: "3em 1.5em",
+                      padding: "10em 1.5em 1.5em 1.5em",
+                      margin: "-3em",
                       borderRadius: "2em",
-                      border: "none",
-                      boxShadow:
-                        "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)",
                       textAlign: "center",
                     },
                   }}
                 >
-                  <div>
-                    <img
-                      className={`${style.avatar} ${style.modal_avatar}`}
-                      src={user.photoURL || ""}
-                      alt="avatar"
-                    />
+                  <div style={{ position: "relative", width: "100%" }}>
+                    <IconButton onClick={() => setModalIsOpen(false)} />
+                    <Avatar width={150} height={150} src={user.photoURL} />
                     <p className={style.modal_username}>{user.displayName}</p>
-                    <small>{user.email}</small>
+                    <small className={style.modal_email}>{user.email}</small>
                   </div>
 
-                  <div className={style.modal_actions}>
-                    <Link href="/profile/dashboard">
-                      <a className={` ${style.modal_action}`}>
-                        Tableau de bord
-                      </a>
-                    </Link>
-                    <Link href="">
-                      <a
-                        onClick={() => {
-                          signOut(auth);
-                        }}
-                        className={` ${style.modal_action}`}
-                      >
-                        Deconnexion
-                      </a>
-                    </Link>
+                  <div style={{ width: "100%" }}>
+                    <SpinnerButton text="Modifier mon profil" />
+                    <div className={style.modal_actions}>
+                      <SpinnerButton type="error" onClick={() => signOut(auth)} text="Deconnexion" />
+                      <Link href="/profile/dashboard">
+                        <SpinnerButton text="Tableau de bord" />
+                      </Link>
+                    </div>
                   </div>
                 </Modal>
               </>
@@ -90,7 +77,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
 
       <div className="wrapper">
         <div className={style.search_form}>
@@ -108,7 +94,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
     </header>
   );
 }
