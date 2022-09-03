@@ -10,8 +10,8 @@ interface PackCardProps {
 export default function PackCard({ pack }: PackCardProps) {
   const { id, title, cover, puzzles, difficulty } = pack;
   return (
-    <div className={style.packcard_container}>
-      <img className={`${style.packcard_cover} material-shadow`} src={cover} alt="Pack cover" />
+    <div className={`${style.packcard_container} material-shadow`}>
+      <img className={`${style.packcard_cover}`} src={cover} alt="Pack cover" />
       <div className={style.packcard_content}>
         <div className={style.packcard_infos}>
           <div>
@@ -30,7 +30,7 @@ export default function PackCard({ pack }: PackCardProps) {
               ))}
             </div>
           </div>
-          <div className={`${style.packcard_level} material-shadow`}>{difficulty}</div>
+          <div className={`${style.packcard_level} `}>{difficulty}</div>
         </div>
         <div className={style.packcard_actions}>
           <Link href={`/game/${id}`}>

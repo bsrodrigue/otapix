@@ -1,0 +1,11 @@
+.container {
+    padding: 1em 0;
+}
+
+.title {
+    margin: 1em 0;
+    padding: 1em;
+    border-radius: 0.2em 10em 10em 0.2em;
+    text-transform: uppercase;
+    background-color: white;
+}
