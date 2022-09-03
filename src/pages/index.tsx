@@ -12,7 +12,6 @@ export default function Home() {
   useEffect(() => {
     async function getPacks() {
       const result = await getAllPacks();
-      console.log(result);
       setPacks(result);
     }
 

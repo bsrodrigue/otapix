@@ -2,8 +2,10 @@ import { SpinnerButton } from "../Button/SpinnerButton";
 import Tilt from "react-tilt";
 import style from "./Welcome.module.css";
 import Link from "next/link";
+import { useAuth } from "../../../hooks";
 
 export default function Welcome() {
+  const { user } = useAuth();
   return (
     <div className={style.container}>
       <div className="wrapper">
@@ -20,15 +22,30 @@ export default function Welcome() {
             <h1>Devine le bon mot ou le nom du personnage!</h1>
             <h1>Crée et partage tes propres niveaux!</h1>
             <div className={style.call_to_action}>
-              <SpinnerButton type="error" text="Jouer à un pack" style={{ height: "5em" }} />
-              <SpinnerButton text="Créer mon propre pack" style={{ height: "5em" }} />
+              <Link href="#recommendations">
+                <SpinnerButton
+                  type="error"
+                  text="Jouer à un pack"
+                  style={{ height: "5em" }}
+                />
+              </Link>
+              <Link href={user ? "/profile/dashboard" : "/auth/login"}>
+                <SpinnerButton
+                  text="Créer mon propre pack"
+                  style={{ height: "5em" }}
+                />
+              </Link>
             </div>
           </div>
           <div>
             <Tilt data-tilt>
               <div className={style.phones}>
                 <img
-                  style={{ position: "absolute", left: "3em", transform: "rotate(10deg)" }}
+                  style={{
+                    position: "absolute",
+                    left: "3em",
+                    transform: "rotate(10deg)",
+                  }}
                   height={500}
                   src="img/otapix-phone-2.png"
                   alt=""
