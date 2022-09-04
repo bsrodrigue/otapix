@@ -1,9 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { signIn } from "../../api/firebase";
+import { RequestNames, useApi } from "../../lib/errors";
 import { loginFormFields } from "../../lib/forms/auth/fields";
-import { submitLogin } from "../../lib/forms/auth/submit";
 import { loginSchema } from "../../lib/forms/auth/validationSchemas";
 import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
@@ -15,8 +15,8 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(loginSchema) });
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [doSignIn, signInIsLoading] = useApi(signIn, RequestNames.LOGIN, () => router.push("/"));
 
   return (
     <div className="auth-page">
@@ -24,12 +24,12 @@ export default function LoginPage() {
         id="login-form"
         title="Connexion"
         comment="Bon retour sur Otapix"
-        isLoading={isLoading}
+        isLoading={signInIsLoading}
         subComment="Veuillez renseigner les informations de votre compte pour vous connecter"
         message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
         alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
         onSubmit={handleSubmit(async (data: FieldValues) => {
-          submitLogin({ email: data.email, password: data.password }, setIsLoading, router);
+          await doSignIn({ ...data })
         })}
       >
         {loginFormFields.map((field: FormField, key: number) => (

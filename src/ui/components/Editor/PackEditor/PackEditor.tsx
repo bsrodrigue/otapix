@@ -37,17 +37,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const values = watch();
   const { user } = useAuth();
 
-  function redistributeImagesAmongInputs() {
-    const pp1 = values["puzzle-pic-1"];
-    if (pp1 instanceof FileList) {
-      if (pp1.length > 1) {
-        for (let i = 0; i < pp1.length; i++) {
-          console.log("Working?: ", pp1);
-          setValue(`puzzle-pic-${i + 1}`, pp1[i]);
-        }
-      }
-    }
-  }
 
   function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: Pack; cover: File }) {
     const tasks: Array<Promise<void>> = [];
@@ -70,10 +59,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     );
     return tasks;
   }
-
-  useEffect(() => {
-    redistributeImagesAmongInputs();
-  }, [values["puzzle-pic-1"]]);
 
   useEffect(() => {
     reset();
