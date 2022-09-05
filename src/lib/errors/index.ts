@@ -16,6 +16,7 @@ export const SuccessMessages: Record<RequestNames, string> = {
 
 export const ErrorCodeMessage: Record<string, string> = {
   "auth/user-not-found": "This user does not exist",
+  "auth/weak-password": "Please type a stronger password",
   "auth/email-already-in-use": "This email is already taken",
 };
 
@@ -34,29 +35,4 @@ export function handleSuccess(operationName: RequestNames) {
   notifySuccess(SuccessMessages[operationName]);
 }
 
-
-export function useApi(func: (...args: any) => any, operationName: RequestNames, onSuccess?: () => void) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<any>();
-  const [data, setData] = useState<any>();
-
-  const apiCall = useCallback(
-    async (args: Parameters<typeof func>) => {
-      try {
-        setIsLoading(true);
-        const result: ReturnType<typeof func> = await func(args);
-        setData(result);
-        handleSuccess(operationName);
-        onSuccess?.();
-      } catch (error) {
-        setError(error);
-        handleError(error, operationName);
-      } finally {
-        setIsLoading(false);
-      }
-    }, [func]
-  )
-
-  return [apiCall, isLoading, data, error];
-}
 

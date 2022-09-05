@@ -3,7 +3,8 @@ import { updateProfile } from "firebase/auth";
 import { useRouter } from "next/router";
 import { FieldValues, useForm } from "react-hook-form";
 import { signUp, uploadProfilePicture } from "../../api/firebase";
-import { RequestNames, useApi } from "../../lib/errors";
+import { useApi } from "../../hooks/useApi";
+import { RequestNames } from "../../lib/errors";
 import { registerFormFields } from "../../lib/forms/auth/fields";
 import { registerSchema } from "../../lib/forms/auth/validationSchemas";
 import { FormField } from "../../types";
@@ -11,11 +12,16 @@ import { AuthForm } from "../../ui/components/";
 import { CircularDropzone } from "../../ui/components/Dropzone/CircularDropzone";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
 
-async function submit(data: FieldValues) {
+async function submitRegister(data: FieldValues) {
   const tasks: Array<Promise<string | void>> = [];
-  const { user } = await signUp({ email: data.email, password: data.password });
-  data.avatar && tasks.push(uploadProfilePicture(data.avatar, user));
-  await Promise.all([updateProfile(user, { displayName: data.username }), ...tasks]);
+  const { email, password, username, avatar } = data;
+  const { user } = await signUp({ email, password });
+
+  tasks.push(updateProfile(user, { displayName: username }));
+  if (avatar instanceof FileList && avatar.length !== 0) {
+    tasks.push(uploadProfilePicture(avatar[0], user));
+  }
+  await Promise.all(tasks);
 }
 
 export default function RegisterPage() {
@@ -25,7 +31,7 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(registerSchema) });
   const avatarRegister = register("avatar");
-  const [doRegister, registerIsLoading] = useApi(submit, RequestNames.REGISTER, () => router.push("/"));
+  const [doRegister, registerIsLoading] = useApi(submitRegister, RequestNames.REGISTER, () => router.push("/"));
   const router = useRouter();
 
   return (
