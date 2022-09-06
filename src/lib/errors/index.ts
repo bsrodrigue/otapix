@@ -1,14 +1,13 @@
 import { FirebaseError } from "firebase/app";
-import { useCallback, useState } from "react";
 import { notifyError, notifySuccess } from "../notifications";
-
 
 export enum RequestNames {
   LOGIN = "login",
   REGISTER = "register",
+  GET_ALL_PACKS = "get_all_packs",
 }
 
-export const SuccessMessages: Record<RequestNames, string> = {
+export const SuccessMessages: Record<string, string> = {
   "login": "Welcome back to otapix 🎉",
   "register": "Welcome to otapix 🎉",
 }
@@ -32,7 +31,7 @@ export function handleError(error: unknown, operationName: RequestNames) {
 }
 
 export function handleSuccess(operationName: RequestNames) {
-  notifySuccess(SuccessMessages[operationName]);
+  notifySuccess(SuccessMessages[operationName]!);
 }
 
 

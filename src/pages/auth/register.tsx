@@ -1,8 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { updateProfile } from "firebase/auth";
 import { useRouter } from "next/router";
 import { FieldValues, useForm } from "react-hook-form";
-import { signUp, uploadProfilePicture } from "../../api/firebase";
+import { submitRegister } from "../../api/app";
 import { useApi } from "../../hooks/useApi";
 import { RequestNames } from "../../lib/errors";
 import { registerFormFields } from "../../lib/forms/auth/fields";
@@ -11,18 +10,6 @@ import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
 import { CircularDropzone } from "../../ui/components/Dropzone/CircularDropzone";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
-
-async function submitRegister(data: FieldValues) {
-  const tasks: Array<Promise<string | void>> = [];
-  const { email, password, username, avatar } = data;
-  const { user } = await signUp({ email, password });
-
-  tasks.push(updateProfile(user, { displayName: username }));
-  if (avatar instanceof FileList && avatar.length !== 0) {
-    tasks.push(uploadProfilePicture(avatar[0], user));
-  }
-  await Promise.all(tasks);
-}
 
 export default function RegisterPage() {
   const {
