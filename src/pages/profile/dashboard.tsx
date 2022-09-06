@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
 import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
+import { useApi } from "../../hooks/useApi";
+import { RequestNames } from "../../lib/errors";
 import { notifyError } from "../../lib/notifications";
 import { createPuzzlePack } from "../../lib/utils";
 import { Pack, Packs } from "../../types";
@@ -13,6 +15,7 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [packs, setPacks] = useState<Packs>([]);
   const [currentPackIndex, setCurrentPackIndex] = useState(0);
+  const [doGetUserPacks, getUserPacksIsLoading, userPacks] = useApi<typeof getPacksFromUser, Packs>(getPacksFromUser, RequestNames.GET_USER_PACKS);
   const [loading, setIsloading] = useState(true);
   const { user } = useAuth();
 
@@ -27,21 +30,12 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    async function getPacks() {
-      if (!user) return;
-      try {
-        setIsloading(true);
-        const result = await getPacksFromUser(user.uid);
-        setPacks(result);
-      } catch (error) {
-        notifyError("Erreur lors du chargement des packs");
-        console.error(error);
-      } finally {
-        setIsloading(false);
-      }
-    }
-    getPacks();
-  }, [user]);
+    userPacks && setPacks(userPacks);
+  }, [userPacks]);
+
+  useEffect(() => {
+    user && doGetUserPacks(user.uid);
+  }, [user, doGetUserPacks]);
 
   return (
     <div className="dashboard-page">

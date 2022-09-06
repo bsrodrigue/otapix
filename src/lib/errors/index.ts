@@ -5,6 +5,7 @@ export enum RequestNames {
   LOGIN = "login",
   REGISTER = "register",
   GET_ALL_PACKS = "get_all_packs",
+  GET_USER_PACKS = "get_user_packs",
 }
 
 export const SuccessMessages: Record<string, string> = {
@@ -15,8 +16,8 @@ export const SuccessMessages: Record<string, string> = {
 
 export const ErrorCodeMessage: Record<string, string> = {
   "auth/user-not-found": "This user does not exist",
-  "auth/weak-password": "Please type a stronger password",
   "auth/email-already-in-use": "This email is already taken",
+  "auth/weak-password": "Please type a stronger password",
 };
 
 
