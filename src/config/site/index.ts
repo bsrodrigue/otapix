@@ -6,3 +6,5 @@ export const headerLinks: Array<UrlLink> = [
     url: "https://github.com/bsrodrigue/otapix",
   },
 ];
+
+export const successEmoji = "🎉";

@@ -1,4 +1,5 @@
 import { FirebaseError } from "firebase/app";
+import { successEmoji } from "../../config/site";
 import { notifyError, notifySuccess } from "../notifications";
 
 export enum RequestNames {
@@ -6,11 +7,15 @@ export enum RequestNames {
   REGISTER = "register",
   GET_ALL_PACKS = "get_all_packs",
   GET_USER_PACKS = "get_user_packs",
+  DELETE_PACK = "delete_pack",
+  DELETE_PUZZLE = "delete_puzzle",
 }
 
 export const SuccessMessages: Record<string, string> = {
-  "login": "Welcome back to otapix 🎉",
-  "register": "Welcome to otapix 🎉",
+  "login": "Welcome back to otapix " + successEmoji,
+  "register": "Welcome to otapix " + successEmoji,
+  "delete_pack": "Pack deleted with success " + successEmoji,
+  "delete_puzzle": "Puzzle deleted with success " + successEmoji,
 }
 
 

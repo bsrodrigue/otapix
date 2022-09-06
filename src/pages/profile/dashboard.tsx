@@ -4,7 +4,6 @@ import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
 import { useApi } from "../../hooks/useApi";
 import { RequestNames } from "../../lib/errors";
-import { notifyError } from "../../lib/notifications";
 import { createPuzzlePack } from "../../lib/utils";
 import { Pack, Packs } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
@@ -16,7 +15,6 @@ export default function DashboardPage() {
   const [packs, setPacks] = useState<Packs>([]);
   const [currentPackIndex, setCurrentPackIndex] = useState(0);
   const [doGetUserPacks, getUserPacksIsLoading, userPacks] = useApi<typeof getPacksFromUser, Packs>(getPacksFromUser, RequestNames.GET_USER_PACKS);
-  const [loading, setIsloading] = useState(true);
   const { user } = useAuth();
 
   function addPuzzlePack() {
@@ -44,7 +42,7 @@ export default function DashboardPage() {
         packs={packs}
         setPacks={setPacks}
         currentPackIndex={currentPackIndex}
-        loading={loading}
+        loading={getUserPacksIsLoading}
         setSideBarIsOpen={setIsOpen}
         setCurrentPackIndex={setCurrentPackIndex}
         onCreatePackClick={addPuzzlePack}
@@ -66,8 +64,8 @@ export default function DashboardPage() {
           }}
         >
           <div>
-            <h1>Vous n&apos;avez pas de packs...</h1>
-            <small>Ouvrez le panneau pour creer un pack</small>
+            <h1>You do not have any packs...</h1>
+            <small>Open the dashboard to create a pack</small>
           </div>
         </div>
       )}

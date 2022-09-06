@@ -1,10 +1,13 @@
-import { FirebaseError } from "firebase/app";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { createPack, deletePack, deletePuzzle, editPack, editPackCover } from "../../../../api/firebase";
+import { submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
+import { createPack, editPack, editPackCover } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
+import { useApi } from "../../../../hooks/useApi";
+import { RequestNames } from "../../../../lib/errors";
+import { removePackFromState, removePuzzleFromPackState } from "../../../../lib/forms/editor";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { Pack, PacksSetter, Puzzle, Puzzles } from "../../../../types";
 import { Button } from "../../Button/Button";
@@ -14,7 +17,6 @@ import { RectangularDropzone } from "../../Dropzone/RectangularDropzone";
 import { PuzzleGrid } from "../../Grid/PuzzleGrid";
 import { DifficultyRadioGroup } from "../../RadioGroup/DifficultyRadioGroup";
 import { EditorWrapper } from "../EditorWrapper";
-
 import { PuzzleEditor } from "../PuzzleEditor";
 
 interface PackEditorProps {
@@ -27,15 +29,24 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(currentPack.difficulty);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [deleteIsLoading, setDeleteIsLoading] = useState<boolean>(false);
   const [puzzleToDelete, setPuzzleToDelete] = useState<Puzzle>();
-  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] = useState<boolean>(false);
   const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] = useState<boolean>(false);
+  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] = useState<boolean>(false);
   const [backup, setBackup] = useState<Pack>();
+
+  const [doDeletePack, deletePackIsLoading] =
+    useApi<typeof submitDeletePack, void>(submitDeletePack,
+      RequestNames.DELETE_PACK, () => removePackFromState(setPacks, currentPack.id));
+
+  const [doDeletePuzzle, deletePuzzleIsLoading] = useApi<typeof submitDeletePuzzle, void>(submitDeletePuzzle, RequestNames.DELETE_PUZZLE, () => {
+    puzzleToDelete && removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
+  });
+
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { user } = useAuth();
+
 
 
   function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: Pack; cover: File }) {
@@ -75,7 +86,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     setValue("title", currentPack.title);
     setValue("difficulty", currentPack.difficulty);
     setBackup(currentPack);
-  }, [currentPack, reset, setValue]);
+  }, [currentPack, reset, setValue, register]);
+
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
@@ -226,8 +238,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
               <SpinnerButton
                 type="error"
                 text="Supprimer"
-                disabled={deleteIsLoading || isLoading}
-                isLoading={deleteIsLoading}
+                disabled={deletePackIsLoading || deletePuzzleIsLoading}
+                isLoading={deletePackIsLoading}
                 onClick={() => setPackDeleteConfirmIsOpen(true)}
               />
 
@@ -242,57 +254,21 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
 
         {packDeleteConfirmIsOpen && (
           <ConfirmationAlert
-            isLoading={deleteIsLoading}
+            isLoading={deletePackIsLoading}
             onCancel={() => {
               setPackDeleteConfirmIsOpen(false);
             }}
-            onConfirm={async () => {
-              try {
-                setDeleteIsLoading(true);
-                currentPack.online && (await deletePack(currentPack.id.toString()));
-                setPacks((packs) => packs.filter((pack) => pack.id !== currentPack.id));
-                notifySuccess("Pack supprime avec succes");
-              } catch (error) {
-                if (error instanceof FirebaseError) notifySuccess(error.message);
-                console.error(error);
-              } finally {
-                setDeleteIsLoading(false);
-              }
-            }}
+            onConfirm={() => doDeletePack(currentPack)}
           />
         )}
 
         {puzzleDeleteConfirmIsOpen && (
           <ConfirmationAlert
-            isLoading={deleteIsLoading}
+            isLoading={deletePuzzleIsLoading}
             onCancel={() => {
               setPuzzleDeleteConfirmIsOpen(false);
             }}
-            onConfirm={async () => {
-              try {
-                setDeleteIsLoading(true);
-                puzzleToDelete?.online && (await deletePuzzle(puzzleToDelete.id));
-                setPacks((packs) => {
-                  for (let i = 0; i < packs.length; i++) {
-                    if (packs[i].id === currentPack.id) {
-                      const pack = packs[i];
-                      pack.puzzles = pack.puzzles?.filter((puzzle) => puzzle.id !== puzzleToDelete?.id);
-                      packs[i] = pack;
-                      setValue("puzzles", pack.puzzles);
-                      setBackup(packs[i]);
-                    }
-                  }
-                  return packs;
-                });
-                notifySuccess("Puzzle supprime avec succes");
-                setPuzzleDeleteConfirmIsOpen(false);
-              } catch (error) {
-                if (error instanceof FirebaseError) notifySuccess(error.message);
-                console.error(error);
-              } finally {
-                setDeleteIsLoading(false);
-              }
-            }}
+            onConfirm={() => doDeletePuzzle(puzzleToDelete!)}
           />
         )}
       </FormProvider>
