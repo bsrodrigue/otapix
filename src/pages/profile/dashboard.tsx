@@ -4,10 +4,11 @@ import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
 import { useApi } from "../../hooks/useApi";
 import { RequestNames } from "../../lib/errors";
-import { createPuzzlePack } from "../../lib/utils";
+import { createPuzzlePackDraft } from "../../lib/utils";
 import { Pack, Packs } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
 import { PackEditor } from "../../ui/components/Editor/PackEditor";
+import { EmptyPacks } from "../../ui/components/Misc/EmptyPacks";
 import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSidePanel";
 
 export default function DashboardPage() {
@@ -19,7 +20,7 @@ export default function DashboardPage() {
 
   function addPuzzlePack() {
     if (!user) return;
-    const pack: Pack = createPuzzlePack(user.uid);
+    const pack: Pack = createPuzzlePackDraft(user.uid);
     setPacks((prev) => {
       setCurrentPackIndex(prev.length);
       return [...prev, pack];
@@ -52,23 +53,7 @@ export default function DashboardPage() {
         <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
       )}
 
-      {packs.length === 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          <div>
-            <h1>You do not have any packs...</h1>
-            <small>Open the dashboard to create a pack</small>
-          </div>
-        </div>
-      )}
+      {packs.length === 0 && <EmptyPacks />}
       <Fab onClick={() => setIsOpen(!isOpen)}>
         <CgMenuRound />
       </Fab>

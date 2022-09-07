@@ -50,7 +50,7 @@ export function getBase64StringFromDataURL(dataURL: string) {
   return dataURL.replace("data:", "").replace(/^.+,/, "");
 }
 
-export function createPuzzlePack(uid: string): Required<Pack> {
+export function createPuzzlePackDraft(uid: string): Required<Pack> {
   return {
     id: uuidv4(),
     title: "New pack",

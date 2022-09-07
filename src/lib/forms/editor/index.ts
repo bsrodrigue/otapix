@@ -1,4 +1,6 @@
-import { Packs, PacksSetter, Puzzles } from "../../../types";
+import _ from "lodash";
+import { editPackCover, editPack } from "../../../api/firebase";
+import { Pack, Packs, PacksSetter, Puzzles } from "../../../types";
 
 export function removePackFromState(setPacks: PacksSetter, packId: string) {
     setPacks((packs) => deletePackById(packs, packId));
@@ -26,3 +28,26 @@ export function removePuzzleFromPackState(setPacks: PacksSetter, packId: string,
         return packs;
     });
 }
+
+export function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: Pack; cover: File }) {
+    const tasks: Array<Promise<void>> = [];
+    if (!_.isEqual(backup.cover, pack.cover)) {
+        tasks.push(
+            editPackCover({
+                id: pack.id,
+                packTitle: pack.title,
+                cover,
+            }),
+        );
+    }
+
+    tasks.push(
+        editPack({
+            id: pack.id,
+            title: pack.title,
+            difficulty: pack.difficulty,
+        }),
+    );
+    return tasks;
+}
+

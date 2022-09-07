@@ -30,7 +30,10 @@ export default function LoginPage() {
         message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
         alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
         onSubmit={handleSubmit(async (data: FieldValues) => {
-          await doSignIn({ ...data })
+          await doSignIn({
+            email: data.email,
+            password: data.password,
+          })
         })}
       >
         {loginFormFields.map((field: FormField, key: number) => (

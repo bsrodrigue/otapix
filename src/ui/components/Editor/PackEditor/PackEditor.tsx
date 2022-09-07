@@ -7,7 +7,7 @@ import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
 import { RequestNames } from "../../../../lib/errors";
-import { removePackFromState, removePuzzleFromPackState } from "../../../../lib/forms/editor";
+import { getPackModificationTasksToPerform, removePackFromState, removePuzzleFromPackState } from "../../../../lib/forms/editor";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { Pack, PacksSetter, Puzzle, Puzzles } from "../../../../types";
 import { Button } from "../../Button/Button";
@@ -49,37 +49,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
 
 
 
-  function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: Pack; cover: File }) {
-    const tasks: Array<Promise<void>> = [];
-    if (!_.isEqual(backup.cover, pack.cover)) {
-      tasks.push(
-        editPackCover({
-          id: pack.id,
-          packTitle: pack.title,
-          cover,
-        }),
-      );
-    }
-
-    tasks.push(
-      editPack({
-        id: pack.id,
-        title: pack.title,
-        difficulty: pack.difficulty,
-      }),
-    );
-    return tasks;
-  }
-
   useEffect(() => {
     reset();
     setPackDeleteConfirmIsOpen(false);
     setPuzzleDeleteConfirmIsOpen(false);
-    register("difficulty");
-    register("puzzle-online-edit");
-    register("puzzle-editor-mode");
-    register("puzzle-id");
-    register("puzzles");
     setValue("puzzles", currentPack.puzzles);
     setValue("packId", currentPack.id);
     setValue("cover", currentPack.cover);
@@ -187,6 +160,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             }
           })}
         >
+          {
+            ["difficulty", "puzzle-online-edit", "puzzle-editor-mode", "puzzle-id", "puzzles"].map((hiddenField, key) => (
+              <input key={key} type="text" hidden {...(register(hiddenField))} />
+            ))
+          }
           <p>Couverture</p>
           <RectangularDropzone label="Telecharger une image" src={values.cover} {...register("cover")} />
 

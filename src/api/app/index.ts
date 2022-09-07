@@ -1,7 +1,21 @@
 import { updateProfile } from "firebase/auth";
 import { FieldValues } from "react-hook-form";
-import { Pack, Puzzle } from "../../types";
-import { deletePack, deletePuzzle, signUp, uploadProfilePicture } from "../firebase";
+import { Difficulty } from "../../enums";
+import { notifySuccess } from "../../lib/notifications";
+import { Pack, Puzzle, Puzzles } from "../../types";
+import { createPack, deletePack, deletePuzzle, signUp, uploadProfilePicture } from "../firebase";
+interface SubmitCreatePackParams {
+    pack: {
+        title: string;
+        authorId: string;
+        difficulty: Difficulty;
+    };
+    cover: File;
+    puzzles: Puzzles;
+}
+
+
+// API Calls
 
 export async function submitRegister(data: FieldValues) {
     const tasks: Array<Promise<string | void>> = [];
@@ -22,4 +36,14 @@ export async function submitDeletePack(pack: Pack) {
 
 export async function submitDeletePuzzle(puzzle: Puzzle) {
     puzzle?.online && (await deletePuzzle(puzzle.id));
+}
+
+
+export async function submitCreatePack({ pack, cover, puzzles }: SubmitCreatePackParams) {
+    const result = await createPack({
+        pack,
+        cover,
+        puzzles,
+    });
+    return result;
 }

@@ -7,6 +7,8 @@ export enum RequestNames {
   REGISTER = "register",
   GET_ALL_PACKS = "get_all_packs",
   GET_USER_PACKS = "get_user_packs",
+  CREATE_PACK = "create_pack",
+  CREATE_PUZZLE = "create_puzzle",
   DELETE_PACK = "delete_pack",
   DELETE_PUZZLE = "delete_puzzle",
 }
@@ -16,6 +18,8 @@ export const SuccessMessages: Record<string, string> = {
   "register": "Welcome to otapix " + successEmoji,
   "delete_pack": "Pack deleted with success " + successEmoji,
   "delete_puzzle": "Puzzle deleted with success " + successEmoji,
+  "create_pack": "Pack created with success " + successEmoji,
+  "create_puzzle": "Puzzle created with success " + successEmoji,
 }
 
 
