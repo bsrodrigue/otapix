@@ -5,7 +5,6 @@ import { addPuzzle, editPuzzle } from "../../../../api/firebase";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { getSrcFromFile } from "../../../../lib/utils";
 import { Puzzle } from "../../../../types";
-import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { RectangularDropzone } from "../../Dropzone";
 import style from "./PuzzleEditor.module.css";
@@ -17,7 +16,8 @@ interface PuzzleEditorProps {
 
 export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
   const { setValue, watch, register } = useFormContext();
-  const [puzzleOperationIsLoading, setPuzzleOperationIsLoading] = useState(false);
+  const [puzzleOperationIsLoading, setPuzzleOperationIsLoading] =
+    useState(false);
   const values = watch();
 
   function resetPictures() {
@@ -30,7 +30,8 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
     const pictures: Array<string> = [];
     for (let i = 0; i < 4; i++) {
       const value = values[`puzzle-pic-${i + 1}`];
-      if (!(value instanceof FileList) || value.length === 0) throw Error("Image(s) manquante(s)");
+      if (!(value instanceof FileList) || value.length === 0)
+        throw Error("Missing File(s)");
       const file: File = value[0];
       const result = await getSrcFromFile(file);
       pictures.push(result);
@@ -76,19 +77,25 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
           <input
             className={style.title_input}
             type="text"
-            placeholder="Entrez le nom que les joueurs doivent deviner..."
+            placeholder="Enter the word or name players have to guess..."
             value={values.puzzleTitle}
             {...register("puzzleTitle")}
           />
           <div style={{ display: "flex", marginTop: "1em", gap: "1em" }}>
-            <SpinnerButton type="error" buttonType="button" text="Annuler" onClick={() => setIsOpen?.(false)} />
+            <SpinnerButton
+              type="error"
+              buttonType="button"
+              text="Annuler"
+              onClick={() => setIsOpen?.(false)}
+            />
             <SpinnerButton
               buttonType="button"
               text="Valider"
               isLoading={puzzleOperationIsLoading}
               onClick={async () => {
                 try {
-                  if (!values.puzzleTitle) throw new Error("Veuillez donner un nom a deviner");
+                  if (!values.puzzleTitle)
+                    throw new Error("Please provide a word or name to guess");
                   setPuzzleOperationIsLoading(true);
                   if (values["puzzle-editor-mode"] === "create-offline") {
                     const puzzle = await createPuzzleFromInputs();
@@ -112,16 +119,24 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
                     notifySuccess("Puzzle created with success");
                     setValue("puzzles", [...values.puzzles, puzzle]);
                     onSuccess();
-                  } else if (values["puzzle-editor-mode"] === "update-offline") {
+                  } else if (
+                    values["puzzle-editor-mode"] === "update-offline"
+                  ) {
                     const puzzle = await createPuzzleFromInputs();
-                    const puzzles = values.puzzles.filter((puzzle: Puzzle) => puzzle.id !== values["puzzle-id"]);
+                    const puzzles = values.puzzles.filter(
+                      (puzzle: Puzzle) => puzzle.id !== values["puzzle-id"]
+                    );
                     setValue("puzzles", [...puzzles, puzzle]);
                     onSuccess();
                   } else if (values["puzzle-editor-mode"] === "update-online") {
-                    const puzzle = await createPuzzleFromInputs(values["puzzle-id"]);
+                    const puzzle = await createPuzzleFromInputs(
+                      values["puzzle-id"]
+                    );
                     await editPuzzle({ packTitle: values.title, puzzle });
                     notifySuccess("Puzzle modified with success");
-                    const puzzles = values.puzzles.filter((puzzle: Puzzle) => puzzle.id !== values["puzzle-id"]);
+                    const puzzles = values.puzzles.filter(
+                      (puzzle: Puzzle) => puzzle.id !== values["puzzle-id"]
+                    );
                     setValue("puzzles", [...puzzles, puzzle]);
                     onSuccess();
                   }

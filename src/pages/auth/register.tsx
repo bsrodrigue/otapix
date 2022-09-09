@@ -18,25 +18,36 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(registerSchema) });
   const avatarRegister = register("avatar");
-  const [doRegister, registerIsLoading] = useApi(submitRegister, RequestNames.REGISTER, () => router.push("/"));
+  const [doRegister, registerIsLoading] = useApi(
+    submitRegister,
+    RequestNames.REGISTER,
+    () => router.push("/")
+  );
   const router = useRouter();
 
   return (
     <div className="auth-page">
       <AuthForm
         id="register-form"
-        title="Inscription"
-        comment="Bienvenue sur Otapix"
+        title="Registration"
+        comment="Welcome to otapix 🥳"
         isLoading={registerIsLoading}
-        subComment="Veuillez remplir les champs ci-dessous pour creer un compte"
-        alternative={["Vous avez deja un compte?", "Connectez-vous!", "/auth/login"]}
-        onSubmit={handleSubmit(async (data: FieldValues) => await doRegister(data))}
+        subComment="Please, fill those fields to create an account"
+        alternative={["Already have an account?", "Login!", "/auth/login"]}
+        onSubmit={handleSubmit(
+          async (data: FieldValues) => await doRegister(data)
+        )}
       >
-        <CircularDropzone label="Photo de profil" {...avatarRegister} />
+        <CircularDropzone label="Avatar" {...avatarRegister} />
         {registerFormFields.map((field: FormField, key: number) => (
-          <AuthFormField key={key} register={register} errors={errors} {...field} />
+          <AuthFormField
+            key={key}
+            register={register}
+            errors={errors}
+            {...field}
+          />
         ))}
       </AuthForm>
-    </div >
+    </div>
   );
 }

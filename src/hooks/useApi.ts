@@ -1,8 +1,16 @@
 import { useState, useCallback } from "react";
 import { RequestNames, handleSuccess, handleError } from "../lib/errors";
 
-export function useApi<F extends (...args: any) => any, R>(func: F, operationName: RequestNames, onSuccess?: () => void):
-  [func: (...args: Parameters<F>) => Promise<void>, isLoading: boolean, data: R | undefined, error: string] {
+export function useApi<F extends (...args: any) => any, R>(
+  func: F,
+  operationName: RequestNames,
+  onSuccess?: () => void
+): [
+  func: (...args: Parameters<F>) => Promise<void>,
+  isLoading: boolean,
+  data: R | undefined,
+  error: string
+] {
   const [data, setData] = useState<R>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -11,7 +19,7 @@ export function useApi<F extends (...args: any) => any, R>(func: F, operationNam
     async (...args: Parameters<F>) => {
       try {
         setIsLoading(true);
-        const result: R = await func(args);
+        const result: R = await func(...args);
         setData(result);
         handleSuccess(operationName);
         onSuccess?.();
@@ -23,9 +31,9 @@ export function useApi<F extends (...args: any) => any, R>(func: F, operationNam
       } finally {
         setIsLoading(false);
       }
-    }, [func, onSuccess, operationName]
-  )
+    },
+    [func, onSuccess, operationName]
+  );
 
   return [apiCall, isLoading, data, error];
 }
-

@@ -2,14 +2,14 @@ import { FormField } from "../../../types";
 
 export const loginFormFields: Array<FormField> = [
   {
-    label: "Adresse mail",
-    placeholder: "Entrez votre adresse mail",
+    label: "Email address",
+    placeholder: "Enter your email address",
     type: "mail",
     name: "email",
   },
   {
-    label: "Mot de passe",
-    placeholder: "Entrez votre mot de passe",
+    label: "Password",
+    placeholder: "Enter your password",
     type: "password",
     name: "password",
   },
@@ -17,20 +17,20 @@ export const loginFormFields: Array<FormField> = [
 
 export const registerFormFields: Array<FormField> = [
   {
-    label: "Nom d'utilisateur",
-    placeholder: "Entrez votre nom d'utilisateur",
+    label: "Username",
+    placeholder: "Enter your username",
     type: "text",
     name: "username",
   },
   {
-    label: "Adresse mail",
-    placeholder: "Entrez votre adresse mail",
+    label: "Email address",
+    placeholder: "Enter your email address",
     type: "email",
     name: "email",
   },
   {
-    label: "Mot de passe",
-    placeholder: "Entrez votre mot de passe",
+    label: "Password",
+    placeholder: "Create your password",
     type: "password",
     name: "password",
   },

@@ -2,12 +2,16 @@ import _ from "lodash";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
-import { createPack, editPack, editPackCover } from "../../../../api/firebase";
+import { createPack } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
 import { RequestNames } from "../../../../lib/errors";
-import { getPackModificationTasksToPerform, removePackFromState, removePuzzleFromPackState } from "../../../../lib/forms/editor";
+import {
+  getPackModificationTasksToPerform,
+  removePackFromState,
+  removePuzzleFromPackState,
+} from "../../../../lib/forms/editor";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { Pack, PacksSetter, Puzzle, Puzzles } from "../../../../types";
 import { Button } from "../../Button/Button";
@@ -26,28 +30,37 @@ interface PackEditorProps {
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
-  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(currentPack.difficulty);
+  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
+    currentPack.difficulty
+  );
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [puzzleToDelete, setPuzzleToDelete] = useState<Puzzle>();
-  const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] = useState<boolean>(false);
-  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] = useState<boolean>(false);
+  const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] =
+    useState<boolean>(false);
+  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] =
+    useState<boolean>(false);
   const [backup, setBackup] = useState<Pack>();
 
-  const [doDeletePack, deletePackIsLoading] =
-    useApi<typeof submitDeletePack, void>(submitDeletePack,
-      RequestNames.DELETE_PACK, () => removePackFromState(setPacks, currentPack.id));
+  const [doDeletePack, deletePackIsLoading] = useApi<
+    typeof submitDeletePack,
+    void
+  >(submitDeletePack, RequestNames.DELETE_PACK, () =>
+    removePackFromState(setPacks, currentPack.id)
+  );
 
-  const [doDeletePuzzle, deletePuzzleIsLoading] = useApi<typeof submitDeletePuzzle, void>(submitDeletePuzzle, RequestNames.DELETE_PUZZLE, () => {
-    puzzleToDelete && removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
+  const [doDeletePuzzle, deletePuzzleIsLoading] = useApi<
+    typeof submitDeletePuzzle,
+    void
+  >(submitDeletePuzzle, RequestNames.DELETE_PUZZLE, () => {
+    puzzleToDelete &&
+      removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });
 
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { user } = useAuth();
-
-
 
   useEffect(() => {
     reset();
@@ -60,7 +73,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     setValue("difficulty", currentPack.difficulty);
     setBackup(currentPack);
   }, [currentPack, reset, setValue, register]);
-
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
@@ -86,14 +98,18 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     puzzles: Puzzles;
   }
 
-  async function submitCreatePack({ pack, cover, puzzles }: SubmitCreatePackParams) {
+  async function submitCreatePack({
+    pack,
+    cover,
+    puzzles,
+  }: SubmitCreatePackParams) {
     const result = await createPack({
       pack,
       cover,
       puzzles,
     });
     onSuccess({ ...pack, ...result });
-    notifySuccess("Pack cree avec succes");
+    notifySuccess("Pack created with success");
   }
 
   return (
@@ -123,7 +139,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   throw new Error("No modifications provided");
                 }
 
-                if (!newPuzzlePack.puzzles || newPuzzlePack.puzzles.length === 0) {
+                if (
+                  !newPuzzlePack.puzzles ||
+                  newPuzzlePack.puzzles.length === 0
+                ) {
                   throw new Error("No puzzle created");
                 }
 
@@ -149,7 +168,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   });
                   await Promise.all([Promise.all(tasks)]);
                   onSuccess({ ...newPuzzlePack });
-                  notifySuccess("Pack modifie avec succes");
+                  notifySuccess("Pack edited with success");
                 }
               }
             } catch (error) {
@@ -160,75 +179,101 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             }
           })}
         >
-          {
-            ["difficulty", "puzzle-online-edit", "puzzle-editor-mode", "puzzle-id", "puzzles"].map((hiddenField, key) => (
-              <input key={key} type="text" hidden {...(register(hiddenField))} />
-            ))
-          }
-          <p>Couverture</p>
-          <RectangularDropzone label="Telecharger une image" src={values.cover} {...register("cover")} />
+          {[
+            "difficulty",
+            "puzzle-online-edit",
+            "puzzle-editor-mode",
+            "puzzle-id",
+            "puzzles",
+          ].map((hiddenField, key) => (
+            <input key={key} type="text" hidden {...register(hiddenField)} />
+          ))}
+          <p>Pack cover</p>
+          <RectangularDropzone
+            label="Download a pack cover"
+            src={values.cover}
+            {...register("cover")}
+          />
 
-          <p>Titre</p>
+          <p>Title</p>
           <input
             type="text"
-            placeholder="Trouvez un titre pour votre pack..."
+            placeholder="Find a title for your pack"
             value={values.title}
             {...register("title")}
           />
 
-          <p>Difficulte</p>
-          <small>Veuillez choisir une difficulte pour votre pack</small>
-          <DifficultyRadioGroup checkedDifficulty={checkedDifficulty} setCheckedDifficulty={setCheckedDifficulty} />
+          <p>Difficulty</p>
+          <small>Please determine a difficulty level for your pack</small>
+          <DifficultyRadioGroup
+            checkedDifficulty={checkedDifficulty}
+            setCheckedDifficulty={setCheckedDifficulty}
+          />
 
-          {!puzzleEditorIsOpen && !packDeleteConfirmIsOpen && !puzzleDeleteConfirmIsOpen && (
-            <>
-              <p>Liste des énigmes</p>
-              <PuzzleGrid
-                onDelete={(puzzle: Puzzle) => {
-                  setPuzzleToDelete(puzzle);
-                  setPuzzleDeleteConfirmIsOpen(true);
-                }}
-                onEdit={(puzzle: Puzzle) => {
-                  setValue("puzzle-editor-mode", currentPack.online ? "update-online" : "update-offline");
-                  setValue("puzzle-id", puzzle.id);
-                  setValue("puzzle-pic-1", puzzle.pictures[0]);
-                  setValue("puzzle-pic-2", puzzle.pictures[1]);
-                  setValue("puzzle-pic-3", puzzle.pictures[2]);
-                  setValue("puzzle-pic-4", puzzle.pictures[3]);
-                  setPuzzleEditorIsOpen(true);
-                }}
-                puzzles={values.puzzles}
-              />
-              <Button
-                onClick={() => {
-                  setValue("puzzle-editor-mode", currentPack.online ? "create-online" : "create-offline");
-                  setPuzzleEditorIsOpen(true);
-                }}
-              >
-                Ajouter un puzzle
-              </Button>
-            </>
-          )}
+          {!puzzleEditorIsOpen &&
+            !packDeleteConfirmIsOpen &&
+            !puzzleDeleteConfirmIsOpen && (
+              <>
+                <p>Puzzles</p>
+                <PuzzleGrid
+                  onDelete={(puzzle: Puzzle) => {
+                    setPuzzleToDelete(puzzle);
+                    setPuzzleDeleteConfirmIsOpen(true);
+                  }}
+                  onEdit={(puzzle: Puzzle) => {
+                    setValue(
+                      "puzzle-editor-mode",
+                      currentPack.online ? "update-online" : "update-offline"
+                    );
+                    setValue("puzzle-id", puzzle.id);
+                    setValue("puzzle-pic-1", puzzle.pictures[0]);
+                    setValue("puzzle-pic-2", puzzle.pictures[1]);
+                    setValue("puzzle-pic-3", puzzle.pictures[2]);
+                    setValue("puzzle-pic-4", puzzle.pictures[3]);
+                    setPuzzleEditorIsOpen(true);
+                  }}
+                  puzzles={values.puzzles}
+                />
+                <Button
+                  onClick={() => {
+                    setValue(
+                      "puzzle-editor-mode",
+                      currentPack.online ? "create-online" : "create-offline"
+                    );
+                    setPuzzleEditorIsOpen(true);
+                  }}
+                >
+                  Create a puzzle
+                </Button>
+              </>
+            )}
 
-          {!puzzleEditorIsOpen && !packDeleteConfirmIsOpen && !puzzleDeleteConfirmIsOpen && (
-            <div style={{ display: "flex", gap: "1em" }}>
-              {/* Delete Pack */}
-              <SpinnerButton
-                type="error"
-                text="Supprimer"
-                disabled={deletePackIsLoading || deletePuzzleIsLoading}
-                isLoading={deletePackIsLoading}
-                onClick={() => setPackDeleteConfirmIsOpen(true)}
-              />
+          {!puzzleEditorIsOpen &&
+            !packDeleteConfirmIsOpen &&
+            !puzzleDeleteConfirmIsOpen && (
+              <div style={{ display: "flex", gap: "1em" }}>
+                {/* Delete Pack */}
+                <SpinnerButton
+                  type="error"
+                  text="Delete pack"
+                  disabled={deletePackIsLoading || deletePuzzleIsLoading}
+                  isLoading={deletePackIsLoading}
+                  onClick={() => setPackDeleteConfirmIsOpen(true)}
+                />
 
-              {/* Submit Pack */}
-              <SpinnerButton buttonType="submit" isLoading={isLoading} />
-            </div>
-          )}
+                {/* Submit Pack */}
+                <SpinnerButton buttonType="submit" isLoading={isLoading} />
+              </div>
+            )}
         </form>
 
         {/* Puzzle Editor */}
-        {puzzleEditorIsOpen && <PuzzleEditor isOpen={puzzleEditorIsOpen} setIsOpen={setPuzzleEditorIsOpen} />}
+        {puzzleEditorIsOpen && (
+          <PuzzleEditor
+            isOpen={puzzleEditorIsOpen}
+            setIsOpen={setPuzzleEditorIsOpen}
+          />
+        )}
 
         {packDeleteConfirmIsOpen && (
           <ConfirmationAlert

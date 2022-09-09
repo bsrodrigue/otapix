@@ -12,16 +12,26 @@ export interface SpinnerButton {
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export default function SpinnerButton({ text, style, type, buttonType, isLoading, disabled, onClick }: SpinnerButton) {
+export default function SpinnerButton({
+  text,
+  style,
+  type,
+  buttonType,
+  isLoading,
+  disabled,
+  onClick,
+}: SpinnerButton) {
   return (
     <button
       type={buttonType || "button"}
       disabled={disabled || isLoading}
-      className={`${styleSheet.container} ${isLoading && styleSheet.loading} ${type === "error" && styleSheet.error}`}
+      className={`${styleSheet.container} ${isLoading && styleSheet.loading} ${
+        type === "error" && styleSheet.error
+      }`}
       style={style}
       onClick={onClick}
     >
-      {isLoading ? <TailSpin color="white" /> : text || "Valider"}
+      {isLoading ? <TailSpin color="white" /> : text || "Submit"}
     </button>
   );
 }

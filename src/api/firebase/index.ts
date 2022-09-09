@@ -1,4 +1,9 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  User,
+} from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -31,12 +36,20 @@ interface LoginParams {
 
 // Auth
 export async function signUp({ email, password }: LoginParams) {
-  const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+  const userCredentials = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
   return userCredentials;
 }
 
 export async function signIn({ email, password }: LoginParams) {
-  const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+  const userCredentials = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
   return userCredentials;
 }
 
@@ -54,7 +67,10 @@ export async function uploadUserFile(fileName: string, file: Blob) {
 }
 
 export async function uploadProfilePicture(file: Blob, user: User) {
-  const fileName = `profile-pictures/${user.email}avatar.${file.type.replace("image/", "")}`;
+  const fileName = `profile-pictures/${user.email}avatar.${file.type.replace(
+    "image/",
+    ""
+  )}`;
   const photoURL = await uploadUserFile(fileName, file);
   await updateProfile(user, {
     photoURL,
@@ -87,12 +103,24 @@ interface UploadPuzzlePictureParams {
   file: Blob;
 }
 
-export async function uploadPuzzlePicture({ packTitle, word, index, file }: UploadPuzzlePictureParams) {
-  const path = `pack_data/${packTitle}/${word}/picture_${index}.${getImageExtensionFromFile(file)}`;
+export async function uploadPuzzlePicture({
+  packTitle,
+  word,
+  index,
+  file,
+}: UploadPuzzlePictureParams) {
+  const path = `pack_data/${packTitle}/${word}/picture_${index}.${getImageExtensionFromFile(
+    file
+  )}`;
   return await uploadFile(path, file);
 }
 
-export async function uploadPuzzlePicturesFromPuzzle(id: string, packId: string, puzzle: Puzzle, packTitle: string) {
+export async function uploadPuzzlePicturesFromPuzzle(
+  id: string,
+  packId: string,
+  puzzle: Puzzle,
+  packTitle: string
+) {
   const destinationPuzzle: Puzzle = {
     id,
     packId,
@@ -110,7 +138,7 @@ export async function uploadPuzzlePicturesFromPuzzle(id: string, packId: string,
         word: puzzle.word,
         index: i,
         file: dataURLToBlob(picturesToBeUploaded[i]),
-      }),
+      })
     );
   }
 
@@ -147,7 +175,7 @@ export async function editPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
         word: puzzle.word,
         index: i,
         file: dataURLToBlob(puzzle.pictures[i]),
-      }),
+      })
     );
   }
   const urls = await Promise.all(tasks);
@@ -187,7 +215,11 @@ interface EditPackCoverParams {
   cover: File;
 }
 
-export async function editPackCover({ id, packTitle, cover }: EditPackCoverParams) {
+export async function editPackCover({
+  id,
+  packTitle,
+  cover,
+}: EditPackCoverParams) {
   const docRef = doc(db, "packs", id.toString());
   const url = await uploadPackCover(packTitle, cover);
   await updateDoc(docRef, { cover: url });
@@ -201,7 +233,7 @@ export async function deletePuzzle(puzzleId: string) {
 export async function createPuzzle(
   puzzle: { word: string; pictures: Array<string> },
   packRef: DocumentReference,
-  packTitle: string,
+  packTitle: string
 ): Promise<Required<Puzzle>> {
   const { pictures, word } = puzzle;
   const puzzleRef = await createDocument({
@@ -216,7 +248,7 @@ export async function createPuzzle(
         word,
         index: j,
         file: dataURLToBlob(pictures[j]),
-      }),
+      })
     );
   }
   const urls = await Promise.all(puzzlePicturesUploadTasks);
@@ -236,7 +268,11 @@ interface CreatePackParams {
   puzzles: Puzzles;
 }
 
-export async function createPack({ pack, cover, puzzles }: CreatePackParams): Promise<Required<Pack>> {
+export async function createPack({
+  pack,
+  cover,
+  puzzles,
+}: CreatePackParams): Promise<Required<Pack>> {
   const puzzleDocCreationTasks: Array<Promise<Puzzle>> = [];
   const { title, difficulty, authorId } = pack;
   const packRef = await createDocument({

@@ -17,27 +17,36 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(loginSchema) });
   const router = useRouter();
-  const [doSignIn, signInIsLoading] = useApi(signIn, RequestNames.LOGIN, () => router.push("/"));
+  const [doSignIn, signInIsLoading] = useApi<typeof signIn, void>(
+    signIn,
+    RequestNames.LOGIN,
+    () => router.push("/")
+  );
 
   return (
     <div className="auth-page">
       <AuthForm
         id="login-form"
-        title="Connexion"
-        comment="Bon retour sur Otapix"
+        title="Login"
+        comment="Welcome back to otapix 🥳"
         isLoading={signInIsLoading}
-        subComment="Veuillez renseigner les informations de votre compte pour vous connecter"
-        message={["Vous avez oublie votre mot de passe?", "/auth/reset_password"]}
-        alternative={["Vous n'avez pas de compte?", "Inscrivez-vous!", "/auth/register"]}
+        subComment="Please enter your login informations"
+        message={["Forgot your password?", "/auth/reset_password"]}
+        alternative={["Don't have an account?", "Register!", "/auth/register"]}
         onSubmit={handleSubmit(async (data: FieldValues) => {
           await doSignIn({
             email: data.email,
             password: data.password,
-          })
+          });
         })}
       >
         {loginFormFields.map((field: FormField, key: number) => (
-          <AuthFormField key={key} register={register} errors={errors} {...field} />
+          <AuthFormField
+            key={key}
+            register={register}
+            errors={errors}
+            {...field}
+          />
         ))}
       </AuthForm>
     </div>
