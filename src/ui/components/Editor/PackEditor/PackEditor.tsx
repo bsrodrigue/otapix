@@ -2,7 +2,8 @@ import _ from "lodash";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { submitCreatePack, submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
-import { Difficulty } from "../../../../enums";
+import usePuzzleEditor from "../../../../context/hooks/usePuzzleEditor";
+import { Difficulty, EditorState } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
 import { RequestNames } from "../../../../lib/errors";
@@ -29,6 +30,7 @@ interface PackEditorProps {
 }
 
 export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
+  const [editorState, setEditorState] = usePuzzleEditor();
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
     currentPack.difficulty
   );
@@ -192,10 +194,11 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                     setPuzzleDeleteConfirmIsOpen(true);
                   }}
                   onEdit={(puzzle: Puzzle) => {
-                    setValue(
-                      "puzzle-editor-mode",
-                      currentPack.online ? "update-online" : "update-offline"
-                    );
+                    if (puzzle.online) {
+                      setEditorState(EditorState.EDIT_ONLINE)
+                    } else {
+                      setEditorState(EditorState.EDIT_OFFLINE)
+                    }
                     setValue("puzzle-id", puzzle.id);
                     setValue("puzzle-pic-1", puzzle.pictures[0]);
                     setValue("puzzle-pic-2", puzzle.pictures[1]);

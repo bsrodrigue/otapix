@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
 import { getPacksFromUser } from "../../api/firebase";
+import PuzzleEditorProvider from "../../context/providers/editor/PuzzleEditorProvider";
 import { useAuth } from "../../hooks";
 import { useApi } from "../../hooks/useApi";
 import { RequestNames } from "../../lib/errors";
@@ -50,7 +51,9 @@ export default function DashboardPage() {
       />
 
       {packs.length !== 0 && packs[currentPackIndex] && (
-        <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
+        <PuzzleEditorProvider>
+          <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
+        </PuzzleEditorProvider>
       )}
 
       {packs.length === 0 && <EmptyPacks />}
