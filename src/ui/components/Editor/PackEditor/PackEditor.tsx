@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
-import { createPack } from "../../../../api/firebase";
+import { submitCreatePack, submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
@@ -10,10 +9,10 @@ import { RequestNames } from "../../../../lib/errors";
 import {
   getPackModificationTasksToPerform,
   removePackFromState,
-  removePuzzleFromPackState,
+  removePuzzleFromPackState
 } from "../../../../lib/forms/editor";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
-import { Pack, PacksSetter, Puzzle, Puzzles } from "../../../../types";
+import { Pack, PacksSetter, Puzzle } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { ConfirmationAlert } from "../../ConfirmationAlert";
@@ -57,6 +56,12 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });
 
+  const [doCreatePack, createPackIsLoading] = useApi<
+    typeof submitCreatePack,
+    void
+  >(submitCreatePack, RequestNames.CREATE_PACK, () => {
+  });
+
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
@@ -88,30 +93,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     });
   }
 
-  interface SubmitCreatePackParams {
-    pack: {
-      title: string;
-      authorId: string;
-      difficulty: Difficulty;
-    };
-    cover: File;
-    puzzles: Puzzles;
-  }
-
-  async function submitCreatePack({
-    pack,
-    cover,
-    puzzles,
-  }: SubmitCreatePackParams) {
-    const result = await createPack({
-      pack,
-      cover,
-      puzzles,
-    });
-    onSuccess({ ...pack, ...result });
-    notifySuccess("Pack created with success");
-  }
-
   return (
     <EditorWrapper>
       <FormProvider {...methods}>
@@ -139,19 +120,8 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   throw new Error("No modifications provided");
                 }
 
-                if (
-                  !newPuzzlePack.puzzles ||
-                  newPuzzlePack.puzzles.length === 0
-                ) {
-                  throw new Error("No puzzle created");
-                }
-
-                if (!cover) {
-                  throw new Error("No cover set");
-                }
-
                 if (!newPuzzlePack.online) {
-                  await submitCreatePack({
+                  await doCreatePack({
                     pack: {
                       title: newPuzzlePack.title,
                       authorId: newPuzzlePack.authorId,
@@ -160,6 +130,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                     cover,
                     puzzles: data.puzzles,
                   });
+                  onSuccess(newPuzzlePack);
                 } else {
                   const tasks = getPackModificationTasksToPerform({
                     pack: newPuzzlePack,

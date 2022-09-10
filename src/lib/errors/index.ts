@@ -1,6 +1,12 @@
 import { FirebaseError } from "firebase/app";
 import { successEmoji } from "../../config/site";
 import { notifyError, notifySuccess } from "../notifications";
+import { OtapixError } from "./classes";
+
+export enum ErrorCodes {
+  NO_PUZZLE_CREATED = "pack-creation/no-puzzle-created",
+  NO_COVER_PROVIDED = "pack-creation/no-cover-provided",
+}
 
 export enum RequestNames {
   LOGIN = "login",
@@ -22,17 +28,24 @@ export const SuccessMessages: Record<string, string> = {
   "create_puzzle": "Puzzle created with success " + successEmoji,
 }
 
-
-export const ErrorCodeMessage: Record<string, string> = {
+export const FirebaseErrorMessages: Record<string, string> = {
   "auth/user-not-found": "This user does not exist",
   "auth/email-already-in-use": "This email is already taken",
   "auth/weak-password": "Please type a stronger password",
 };
 
+export const OtapixErrorMessages: Record<ErrorCodes, string> = {
+  "pack-creation/no-cover-provided": "Please, upload a cover for this pack",
+  "pack-creation/no-puzzle-created": "Please, create a least one puzzle for this pack"
+}
 
 export function handleError(error: unknown, operationName: RequestNames) {
   if (error instanceof FirebaseError) {
-    notifyError(ErrorCodeMessage[error.code] || error.message);
+    notifyError(FirebaseErrorMessages[error.code] || error.message);
+  }
+  else if (error instanceof OtapixError) {
+    const code = error.code as ErrorCodes;
+    notifyError(OtapixErrorMessages[code] || error.message);
   }
   else {
     notifyError("An error occured");

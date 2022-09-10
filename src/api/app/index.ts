@@ -1,7 +1,8 @@
 import { updateProfile } from "firebase/auth";
 import { FieldValues } from "react-hook-form";
 import { Difficulty } from "../../enums";
-import { notifySuccess } from "../../lib/notifications";
+import { ErrorCodes } from "../../lib/errors";
+import { PackCreationError } from "../../lib/errors/classes";
 import { Pack, Puzzle, Puzzles } from "../../types";
 import { createPack, deletePack, deletePuzzle, signUp, uploadProfilePicture } from "../firebase";
 interface SubmitCreatePackParams {
@@ -13,7 +14,6 @@ interface SubmitCreatePackParams {
     cover: File;
     puzzles: Puzzles;
 }
-
 
 // API Calls
 
@@ -38,8 +38,15 @@ export async function submitDeletePuzzle(puzzle: Puzzle) {
     puzzle?.online && (await deletePuzzle(puzzle.id));
 }
 
-
 export async function submitCreatePack({ pack, cover, puzzles }: SubmitCreatePackParams) {
+    if (puzzles.length === 0) {
+        throw new PackCreationError(ErrorCodes.NO_PUZZLE_CREATED);
+    }
+
+    if (!cover) {
+        throw new PackCreationError(ErrorCodes.NO_COVER_PROVIDED);
+    }
+
     const result = await createPack({
         pack,
         cover,
