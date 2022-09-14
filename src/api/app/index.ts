@@ -63,6 +63,7 @@ export const submitRegister: APICall<(data: FieldValues) => void> = {
     const { email, password, username, avatar } = data;
     const { user } = await signUp({ email, password });
 
+    tasks.push(sendEmailVerification(user));
     tasks.push(updateProfile(user, { displayName: username }));
 
     if (avatar instanceof FileList && avatar.length !== 0) {
