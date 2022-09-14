@@ -1,5 +1,6 @@
 import {
   sendEmailVerification,
+  sendPasswordResetEmail,
   updateProfile,
   User,
   UserCredential,
@@ -112,4 +113,13 @@ export const submitCreatePack: APICall<typeof createPack> = {
   },
 
   requestName: RequestNames.CREATE_PACK,
+};
+
+export const submitSendPasswordResetEmail: APICall<
+  (...params: Parameters<typeof sendPasswordResetEmail>) => void
+> = {
+  call: async (...params: Parameters<typeof sendPasswordResetEmail>) => {
+    await sendPasswordResetEmail(...params);
+  },
+  requestName: RequestNames.SEND_PASSWORD_RESET_MAIL,
 };

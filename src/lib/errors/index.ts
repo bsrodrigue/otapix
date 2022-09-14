@@ -12,6 +12,7 @@ export enum RequestNames {
   DELETE_PACK = "delete_pack",
   DELETE_PUZZLE = "delete_puzzle",
   SEND_EMAIL_VERIFICATION = "send_email_verification",
+  SEND_PASSWORD_RESET_MAIL = "send_password_reset_mail",
 }
 
 export const SuccessMessages: Record<string, string> = {
@@ -21,6 +22,8 @@ export const SuccessMessages: Record<string, string> = {
   delete_puzzle: "Puzzle deleted with success " + successEmoji,
   create_pack: "Pack created with success " + successEmoji,
   create_puzzle: "Puzzle created with success " + successEmoji,
+  send_password_reset_mail:
+    "A password reset link has been sent to mail, please check",
 };
 
 export const ErrorCodeMessage: Record<string, string> = {
