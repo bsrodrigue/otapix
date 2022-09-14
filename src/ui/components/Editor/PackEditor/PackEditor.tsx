@@ -6,13 +6,14 @@ import usePuzzleEditor from "../../../../context/hooks/usePuzzleEditor";
 import { Difficulty, EditorState } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
+import { OtapixError } from "../../../../lib/errors/classes";
 import {
   getPackModificationTasksToPerform,
   removePackFromState,
   removePuzzleFromPackState
 } from "../../../../lib/forms/editor";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
-import { Pack, PacksSetter, Puzzle } from "../../../../types";
+import { Pack, Packs, PacksSetter, Puzzle } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { ConfirmationAlert } from "../../ConfirmationAlert";
@@ -55,10 +56,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });
 
-  const [doCreatePack, createPackIsLoading] = useApi<
-    typeof submitCreatePack,
-    void
-  >(submitCreatePack, RequestNames.CREATE_PACK, () => {
+  const [doCreatePack, createPackIsLoading] = useApi(submitCreatePack, () => {
   });
 
   const methods = useForm();
@@ -67,6 +65,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log(currentPack);
     reset();
     setPackDeleteConfirmIsOpen(false);
     setPuzzleDeleteConfirmIsOpen(false);
@@ -82,13 +81,17 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
 
+  function replacePackById(packId: string, packs: Packs, pack: Pack) {
+    const index = packs.findIndex((pack) => pack.id === packId);
+    if (index === -1) throw new OtapixError("An error occured while replace pack", "pack/replace_error");
+    packs[index] = pack;
+    return packs;
+  }
+
   function onSuccess(newPack: Pack) {
     newPack.online = true;
-    setBackup(newPack);
     setPacks((packs) => {
-      packs = packs.filter((pack) => pack.id !== currentPack.id);
-      packs.push(newPack);
-      return packs;
+      return replacePackById(currentPack.id, packs, newPack);
     });
   }
 
@@ -105,7 +108,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   cover = cover.item(0);
                 }
 
-                const newPuzzlePack: Pack = {
+                const puzzlePackDraft: Pack = {
                   cover,
                   id: data.packId,
                   authorId: currentPack.authorId,
@@ -115,29 +118,29 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   online: currentPack.online,
                 };
 
-                if (_.isEqual(backup, newPuzzlePack)) {
+                if (_.isEqual(backup, puzzlePackDraft)) {
                   throw new Error("No modifications provided");
                 }
 
-                if (!newPuzzlePack.online) {
+                if (!puzzlePackDraft.online) {
                   await doCreatePack({
                     pack: {
-                      title: newPuzzlePack.title,
-                      authorId: newPuzzlePack.authorId,
-                      difficulty: newPuzzlePack.difficulty,
+                      title: puzzlePackDraft.title,
+                      authorId: puzzlePackDraft.authorId,
+                      difficulty: puzzlePackDraft.difficulty,
                     },
                     cover,
                     puzzles: data.puzzles,
                   });
-                  onSuccess(newPuzzlePack);
+                  onSuccess(puzzlePackDraft);
                 } else {
                   const tasks = getPackModificationTasksToPerform({
-                    pack: newPuzzlePack,
+                    pack: puzzlePackDraft,
                     backup,
                     cover,
                   });
                   await Promise.all([Promise.all(tasks)]);
-                  onSuccess({ ...newPuzzlePack });
+                  onSuccess({ ...puzzlePackDraft });
                   notifySuccess("Pack edited with success");
                 }
               }
@@ -207,10 +210,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 />
                 <Button
                   onClick={() => {
-                    setValue(
-                      "puzzle-editor-mode",
-                      currentPack.online ? "create-online" : "create-offline"
-                    );
+                    currentPack.online ? setEditorState(EditorState.CREATE_ONLINE) : setEditorState(EditorState.CREATE_OFFLINE)
                     setPuzzleEditorIsOpen(true);
                   }}
                 >

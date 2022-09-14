@@ -12,3 +12,4 @@ export class PackCreationError extends OtapixError {
         super("An error occured while creating a pack", code);
     }
 }
+

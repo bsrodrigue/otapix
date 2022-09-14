@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { addPuzzle, editPuzzle } from "../../../../api/firebase";
+import usePuzzleEditor from "../../../../context/hooks/usePuzzleEditor";
+import { EditorState } from "../../../../enums";
 import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { getSrcFromFile } from "../../../../lib/utils";
 import { Puzzle } from "../../../../types";
@@ -16,6 +18,8 @@ interface PuzzleEditorProps {
 
 export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
   const { setValue, watch, register } = useFormContext();
+  const [editorState, setEditorState] = usePuzzleEditor();
+  console.log(editorState);
   const [puzzleOperationIsLoading, setPuzzleOperationIsLoading] =
     useState(false);
   const values = watch();
@@ -97,7 +101,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
                   if (!values.puzzleTitle)
                     throw new Error("Please provide a word or name to guess");
                   setPuzzleOperationIsLoading(true);
-                  if (values["puzzle-editor-mode"] === "create-offline") {
+                  if (editorState === EditorState.CREATE_OFFLINE) {
                     const puzzle = await createPuzzleFromInputs();
                     setValue("puzzles", [...values.puzzles, puzzle]);
                     onSuccess();

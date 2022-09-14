@@ -7,7 +7,8 @@ import {
 } from "firebase/auth";
 import { FieldValues } from "react-hook-form";
 import { Difficulty } from "../../enums";
-import { RequestNames } from "../../lib/errors";
+import { OtapixErrorCodes, RequestNames } from "../../lib/errors";
+import { PackCreationError } from "../../lib/errors/classes";
 import { LoginParams, Pack, Puzzle, Puzzles } from "../../types";
 import {
   createPack,
@@ -51,12 +52,12 @@ export const submitGetUserPacks: APICall<typeof getPacksFromUser> = {
 };
 
 export const submitSendVerificationMail: APICall<typeof sendEmailVerification> =
-  {
-    call: async (user: User) => {
-      await sendEmailVerification(user);
-    },
-    requestName: RequestNames.SEND_EMAIL_VERIFICATION,
-  };
+{
+  call: async (user: User) => {
+    await sendEmailVerification(user);
+  },
+  requestName: RequestNames.SEND_EMAIL_VERIFICATION,
+};
 
 export const submitRegister: APICall<(data: FieldValues) => void> = {
   call: async (data: FieldValues) => {
@@ -104,6 +105,10 @@ export const submitDeletePuzzle: APICall<(puzzle: Puzzle) => void> = {
 
 export const submitCreatePack: APICall<typeof createPack> = {
   call: async ({ pack, cover, puzzles }: SubmitCreatePackParams) => {
+    if (!pack.title) throw new PackCreationError(OtapixErrorCodes.NO_PACK_TITLE_PROVIDED);
+    if (!pack.difficulty) throw new PackCreationError(OtapixErrorCodes.NO_PACK_DIFFICULTY_PROVIDED);
+    if (!cover) throw new PackCreationError(OtapixErrorCodes.NO_COVER_PROVIDED);
+    if (puzzles.length === 0) throw new PackCreationError(OtapixErrorCodes.NO_PUZZLE_CREATED);
     const result = await createPack({
       pack,
       cover,
