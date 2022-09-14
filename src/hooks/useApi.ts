@@ -1,12 +1,12 @@
-import { useState, useCallback } from "react";
-import { RequestNames, handleSuccess, handleError } from "../lib/errors";
+import { useCallback, useState } from "react";
+import { APICall } from "../api/app";
+import { handleError, handleSuccess } from "../lib/errors";
 
 export function useApi<F extends (...args: any) => any, R>(
-  func: F,
-  operationName: RequestNames,
+  apiCall: APICall<F>,
   onSuccess?: () => void
 ): [
-  func: (...args: Parameters<F>) => Promise<void>,
+  call: (...args: Parameters<F>) => Promise<void>,
   isLoading: boolean,
   data: R | undefined,
   error: string
@@ -15,25 +15,25 @@ export function useApi<F extends (...args: any) => any, R>(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const apiCall = useCallback(
+  const call = useCallback(
     async (...args: Parameters<F>) => {
       try {
         setIsLoading(true);
-        const result: R = await func(...args);
+        const result: R = await apiCall.call(...args);
         setData(result);
-        handleSuccess(operationName);
+        handleSuccess(apiCall.requestName);
         onSuccess?.();
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
         }
-        handleError(error, operationName);
+        handleError(error, apiCall.requestName);
       } finally {
         setIsLoading(false);
       }
     },
-    [func, onSuccess, operationName]
+    [apiCall, onSuccess]
   );
 
-  return [apiCall, isLoading, data, error];
+  return [call, isLoading, data, error];
 }

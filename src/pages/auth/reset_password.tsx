@@ -1,11 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { FieldValues, useForm } from "react-hook-form";
-import { submitLogin } from "../../api/app";
-import { signIn } from "../../api/firebase";
+import { submitSendPasswordResetEmail } from "../../api/app";
+import { auth } from "../../config/firebase";
 import { useApi } from "../../hooks/useApi";
-import { loginFormFields } from "../../lib/forms/auth/fields";
-import { loginSchema } from "../../lib/forms/auth/validationSchemas";
+import { passwordForgotFormFields } from "../../lib/forms/auth/fields";
+import { forgotPasswordSchema } from "../../lib/forms/auth/validationSchemas";
 import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
 import { AuthFormField } from "../../ui/components/Form/Field/AuthFormField";
@@ -15,31 +15,28 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(loginSchema) });
+  } = useForm({ resolver: yupResolver(forgotPasswordSchema) });
   const router = useRouter();
-  const [doSignIn, signInIsLoading] = useApi<typeof signIn, void>(
-    submitLogin,
-    () => router.push("/")
+  const [doSendPasswordResetEmail, sendPasswordResetEmailIsLoading] = useApi(
+    submitSendPasswordResetEmail,
+    () => router.push("/auth/login")
   );
 
   return (
     <div className="auth-page">
       <AuthForm
         id="login-form"
-        title="Login"
-        comment="Welcome back to otapix 🥳"
-        isLoading={signInIsLoading}
-        subComment="Please enter your login informations"
-        message={["Forgot your password?", "/auth/reset_password"]}
+        title="Password Reset"
+        comment="Did you forget your password?"
+        isLoading={sendPasswordResetEmailIsLoading}
+        subComment="Do not worry, it happens to everyone. Please enter your email to receive a password reset link!"
+        message={["Remember your password again?", "/auth/login"]}
         alternative={["Don't have an account?", "Register!", "/auth/register"]}
         onSubmit={handleSubmit(async (data: FieldValues) => {
-          await doSignIn({
-            email: data.email,
-            password: data.password,
-          });
+          await doSendPasswordResetEmail(auth, data.email);
         })}
       >
-        {loginFormFields.map((field: FormField, key: number) => (
+        {passwordForgotFormFields.map((field: FormField, key: number) => (
           <AuthFormField
             key={key}
             register={register}

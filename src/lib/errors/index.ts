@@ -17,21 +17,26 @@ export enum RequestNames {
   CREATE_PUZZLE = "create_puzzle",
   DELETE_PACK = "delete_pack",
   DELETE_PUZZLE = "delete_puzzle",
+  SEND_EMAIL_VERIFICATION = "send_email_verification",
+  SEND_PASSWORD_RESET_MAIL = "send_password_reset_mail",
 }
 
 export const SuccessMessages: Record<string, string> = {
-  "login": "Welcome back to otapix " + successEmoji,
-  "register": "Welcome to otapix " + successEmoji,
-  "delete_pack": "Pack deleted with success " + successEmoji,
-  "delete_puzzle": "Puzzle deleted with success " + successEmoji,
-  "create_pack": "Pack created with success " + successEmoji,
-  "create_puzzle": "Puzzle created with success " + successEmoji,
-}
+  login: "Welcome back to otapix " + successEmoji,
+  register: "Welcome to otapix " + successEmoji,
+  delete_pack: "Pack deleted with success " + successEmoji,
+  delete_puzzle: "Puzzle deleted with success " + successEmoji,
+  create_pack: "Pack created with success " + successEmoji,
+  create_puzzle: "Puzzle created with success " + successEmoji,
+  send_password_reset_mail:
+    "A password reset link has been sent to mail, please check",
+};
 
 export const FirebaseErrorMessages: Record<string, string> = {
   "auth/user-not-found": "This user does not exist",
   "auth/email-already-in-use": "This email is already taken",
   "auth/weak-password": "Please type a stronger password",
+  "auth/wrong-password": "Your password is wrong",
 };
 
 export const OtapixErrorMessages: Record<ErrorCodes, string> = {
@@ -56,5 +61,3 @@ export function handleError(error: unknown, operationName: RequestNames) {
 export function handleSuccess(operationName: RequestNames) {
   notifySuccess(SuccessMessages[operationName]!);
 }
-
-

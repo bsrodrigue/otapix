@@ -18,10 +18,8 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(registerSchema) });
   const avatarRegister = register("avatar");
-  const [doRegister, registerIsLoading] = useApi(
-    submitRegister,
-    RequestNames.REGISTER,
-    () => router.push("/")
+  const [doRegister, registerIsLoading] = useApi(submitRegister, () =>
+    router.push("/")
   );
   const router = useRouter();
 
