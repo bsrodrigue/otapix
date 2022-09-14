@@ -1,9 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { FieldValues, useForm } from "react-hook-form";
+import { submitLogin } from "../../api/app";
 import { signIn } from "../../api/firebase";
 import { useApi } from "../../hooks/useApi";
-import { RequestNames } from "../../lib/errors";
 import { loginFormFields } from "../../lib/forms/auth/fields";
 import { loginSchema } from "../../lib/forms/auth/validationSchemas";
 import { FormField } from "../../types";
@@ -18,8 +18,7 @@ export default function LoginPage() {
   } = useForm({ resolver: yupResolver(loginSchema) });
   const router = useRouter();
   const [doSignIn, signInIsLoading] = useApi<typeof signIn, void>(
-    signIn,
-    RequestNames.LOGIN,
+    submitLogin,
     () => router.push("/")
   );
 

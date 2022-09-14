@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
+import { submitGetUserPacks } from "../../api/app";
 import { getPacksFromUser } from "../../api/firebase";
 import { useAuth } from "../../hooks";
 import { useApi } from "../../hooks/useApi";
-import { RequestNames } from "../../lib/errors";
 import { createPuzzlePackDraft } from "../../lib/utils";
 import { Pack, Packs } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
@@ -15,7 +15,10 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [packs, setPacks] = useState<Packs>([]);
   const [currentPackIndex, setCurrentPackIndex] = useState(0);
-  const [doGetUserPacks, getUserPacksIsLoading, userPacks] = useApi<typeof getPacksFromUser, Packs>(getPacksFromUser, RequestNames.GET_USER_PACKS);
+  const [doGetUserPacks, getUserPacksIsLoading, userPacks] = useApi<
+    typeof getPacksFromUser,
+    Packs
+  >(submitGetUserPacks);
   const { user } = useAuth();
 
   function addPuzzlePack() {
@@ -50,7 +53,11 @@ export default function DashboardPage() {
       />
 
       {packs.length !== 0 && packs[currentPackIndex] && (
-        <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
+        <PackEditor
+          currentPack={packs[currentPackIndex]}
+          currentPackIndex={currentPackIndex}
+          setPacks={setPacks}
+        />
       )}
 
       {packs.length === 0 && <EmptyPacks />}

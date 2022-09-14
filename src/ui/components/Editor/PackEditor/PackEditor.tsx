@@ -6,7 +6,6 @@ import { createPack } from "../../../../api/firebase";
 import { Difficulty } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
-import { RequestNames } from "../../../../lib/errors";
 import {
   getPackModificationTasksToPerform,
   removePackFromState,
@@ -43,16 +42,14 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   const [backup, setBackup] = useState<Pack>();
 
   const [doDeletePack, deletePackIsLoading] = useApi<
-    typeof submitDeletePack,
+    (pack: Pack) => void,
     void
-  >(submitDeletePack, RequestNames.DELETE_PACK, () =>
-    removePackFromState(setPacks, currentPack.id)
-  );
+  >(submitDeletePack, () => removePackFromState(setPacks, currentPack.id));
 
   const [doDeletePuzzle, deletePuzzleIsLoading] = useApi<
-    typeof submitDeletePuzzle,
+    (puzzle: Puzzle) => void,
     void
-  >(submitDeletePuzzle, RequestNames.DELETE_PUZZLE, () => {
+  >(submitDeletePuzzle, () => {
     puzzleToDelete &&
       removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });

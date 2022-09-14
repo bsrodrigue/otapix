@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import { submitGetAllPacks } from "../api/app";
 import { getAllPacks } from "../api/firebase";
 import { useApi } from "../hooks/useApi";
-import { RequestNames } from "../lib/errors";
 import { Packs } from "../types";
 import { Header, PackCard } from "../ui/components";
 import { Footer } from "../ui/components/Footer";
@@ -12,7 +12,7 @@ export default function Home() {
   const [doGetAllPacks, getAllPacksIsLoading, packs] = useApi<
     typeof getAllPacks,
     Packs
-  >(getAllPacks, RequestNames.GET_ALL_PACKS);
+  >(submitGetAllPacks);
 
   useEffect(() => {
     doGetAllPacks();
