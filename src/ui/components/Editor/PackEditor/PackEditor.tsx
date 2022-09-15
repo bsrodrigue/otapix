@@ -1,7 +1,8 @@
 import _ from "lodash";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { submitCreatePack, submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
+import { createPack } from "../../../../api/firebase";
 import usePuzzleEditor from "../../../../context/hooks/usePuzzleEditor";
 import { Difficulty, EditorState } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
@@ -35,7 +36,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     currentPack.difficulty
   );
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [puzzleToDelete, setPuzzleToDelete] = useState<Puzzle>();
   const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] =
     useState<boolean>(false);
@@ -56,30 +56,45 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });
 
-  const [doCreatePack, createPackIsLoading] = useApi(submitCreatePack, () => {
+  const [doCreatePack, createPackIsLoading, pack] = useApi<typeof createPack, Pack>(submitCreatePack, () => {
   });
 
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { user } = useAuth();
+  const isLoading = createPackIsLoading;
+
+  const updateEditorFields = useCallback((pack: Pack) => {
+    reset();
+    setValue("puzzles", pack.puzzles);
+    setValue("packId", pack.id);
+    setValue("cover", pack.cover);
+    setValue("title", pack.title);
+    setValue("difficulty", pack.difficulty);
+  }, [setValue, reset]);
 
   useEffect(() => {
-    console.log(currentPack);
     reset();
     setPackDeleteConfirmIsOpen(false);
     setPuzzleDeleteConfirmIsOpen(false);
-    setValue("puzzles", currentPack.puzzles);
-    setValue("packId", currentPack.id);
-    setValue("cover", currentPack.cover);
-    setValue("title", currentPack.title);
-    setValue("difficulty", currentPack.difficulty);
+    updateEditorFields(currentPack);
     setBackup(currentPack);
-  }, [currentPack, reset, setValue, register]);
+  }, [currentPack, reset, setValue, register, updateEditorFields]);
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
+
+  useEffect(() => {
+    if (pack) {
+      setBackup(pack);
+      updateEditorFields(pack);
+      setPacks((packs) => {
+        return replacePackById(currentPack.id, packs, pack);
+      });
+    }
+  }, [pack]);
 
   function replacePackById(packId: string, packs: Packs, pack: Pack) {
     const index = packs.findIndex((pack) => pack.id === packId);
@@ -89,10 +104,6 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
   }
 
   function onSuccess(newPack: Pack) {
-    newPack.online = true;
-    setPacks((packs) => {
-      return replacePackById(currentPack.id, packs, newPack);
-    });
   }
 
   return (
@@ -100,55 +111,48 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(async (data) => {
-            try {
-              if (user && backup) {
-                setIsLoading(true);
-                let cover = data.cover;
-                if (cover instanceof FileList) {
-                  cover = cover.item(0);
-                }
-
-                const puzzlePackDraft: Pack = {
-                  cover,
-                  id: data.packId,
-                  authorId: currentPack.authorId,
-                  title: data.title,
-                  difficulty: data.difficulty,
-                  puzzles: data.puzzles,
-                  online: currentPack.online,
-                };
-
-                if (_.isEqual(backup, puzzlePackDraft)) {
-                  throw new Error("No modifications provided");
-                }
-
-                if (!puzzlePackDraft.online) {
-                  await doCreatePack({
-                    pack: {
-                      title: puzzlePackDraft.title,
-                      authorId: puzzlePackDraft.authorId,
-                      difficulty: puzzlePackDraft.difficulty,
-                    },
-                    cover,
-                    puzzles: data.puzzles,
-                  });
-                  onSuccess(puzzlePackDraft);
-                } else {
-                  const tasks = getPackModificationTasksToPerform({
-                    pack: puzzlePackDraft,
-                    backup,
-                    cover,
-                  });
-                  await Promise.all([Promise.all(tasks)]);
-                  onSuccess({ ...puzzlePackDraft });
-                  notifySuccess("Pack edited with success");
-                }
+            if (user && backup) {
+              let cover = data.cover;
+              if (cover instanceof FileList) {
+                cover = cover.item(0);
               }
-            } catch (error) {
-              console.error(error);
-              if (error instanceof Error) notifyError(error.message);
-            } finally {
-              setIsLoading(false);
+
+              const puzzlePackDraft: Pack = {
+                cover,
+                id: data.packId,
+                authorId: backup.authorId,
+                title: data.title,
+                difficulty: data.difficulty,
+                puzzles: data.puzzles,
+                online: backup.online,
+              };
+
+              if (_.isEqual(backup, puzzlePackDraft)) {
+                notifyError("No modification provided");
+                return;
+              }
+
+              if (!puzzlePackDraft.online) {
+                const success = await doCreatePack({
+                  pack: {
+                    title: puzzlePackDraft.title,
+                    authorId: puzzlePackDraft.authorId,
+                    difficulty: puzzlePackDraft.difficulty,
+                  },
+                  cover,
+                  puzzles: data.puzzles,
+                });
+                success && onSuccess(puzzlePackDraft);
+              } else {
+                const tasks = getPackModificationTasksToPerform({
+                  pack: puzzlePackDraft,
+                  backup,
+                  cover,
+                });
+                await Promise.all([Promise.all(tasks)]);
+                onSuccess({ ...puzzlePackDraft });
+                notifySuccess("Pack edited with success");
+              }
             }
           })}
         >

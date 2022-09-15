@@ -19,7 +19,6 @@ interface PuzzleEditorProps {
 export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
   const { setValue, watch, register } = useFormContext();
   const [editorState, setEditorState] = usePuzzleEditor();
-  console.log(editorState);
   const [puzzleOperationIsLoading, setPuzzleOperationIsLoading] =
     useState(false);
   const values = watch();
@@ -64,20 +63,19 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
     <>
       {isOpen ? (
         <div className={style.container}>
-          <p>Images d&apos;indices</p>
+          <p>Clue images</p>
           <div className={style.picture_fields}>
             {[1, 2, 3, 4].map((value, key) => (
               <RectangularDropzone
                 key={key}
                 src={values[`puzzle-pic-${value}`]}
-                multiple
                 {...register(`puzzle-pic-${value}`)}
                 isSquare
               />
             ))}
           </div>
 
-          <p>Nom a deviner</p>
+          <p>Word or name to guess</p>
           <input
             className={style.title_input}
             type="text"
