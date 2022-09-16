@@ -4,7 +4,7 @@ import { handleError, handleSuccess } from "../lib/errors";
 
 export function useApi<F extends (...args: any) => any, R>(
   apiCall: APICall<F>,
-  onSuccess?: () => void
+  onSuccess?: (result?: R) => void
 ): [
     call: (...args: Parameters<F>) => Promise<boolean>,
     isLoading: boolean,
@@ -22,7 +22,7 @@ export function useApi<F extends (...args: any) => any, R>(
         const result: R = await apiCall.call(...args);
         setData(result);
         handleSuccess(apiCall.requestName);
-        onSuccess?.();
+        onSuccess?.(result);
         return true;
       } catch (error) {
         if (error instanceof Error) {

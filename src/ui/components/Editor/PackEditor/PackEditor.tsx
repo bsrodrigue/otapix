@@ -27,11 +27,13 @@ import { PuzzleEditor } from "../PuzzleEditor";
 interface PackEditorProps {
   currentPack: Pack;
   currentPackIndex: number;
+  packs: Packs;
   setPacks: PacksSetter;
 }
 
-export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
+export default function PackEditor({ packs, currentPack, setPacks }: PackEditorProps) {
   const [editorState, setEditorState] = usePuzzleEditor();
+  const [packIsCreated, setPackIsCreated] = useState(false);
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
     currentPack.difficulty
   );
@@ -56,7 +58,15 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
       removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });
 
-  const [doCreatePack, createPackIsLoading, pack] = useApi<typeof createPack, Pack>(submitCreatePack, () => {
+  const [doCreatePack, createPackIsLoading] = useApi<typeof createPack, Pack>(submitCreatePack, (pack) => {
+    if (pack) {
+      setBackup(pack);
+      updateEditorFields(pack);
+      setPackIsCreated(true);
+      setPacks((packs) => {
+        return replacePackById(currentPack.id, packs, pack);
+      });
+    }
   });
 
   const methods = useForm();
@@ -80,30 +90,18 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
     setPuzzleDeleteConfirmIsOpen(false);
     updateEditorFields(currentPack);
     setBackup(currentPack);
-  }, [currentPack, reset, setValue, register, updateEditorFields]);
+    setPackIsCreated(Boolean(currentPack.online));
+  }, [packs, currentPack, reset, setValue, register, updateEditorFields]);
 
   useEffect(() => {
     checkedDifficulty && setValue("difficulty", checkedDifficulty);
   }, [checkedDifficulty, setValue]);
-
-  useEffect(() => {
-    if (pack) {
-      setBackup(pack);
-      updateEditorFields(pack);
-      setPacks((packs) => {
-        return replacePackById(currentPack.id, packs, pack);
-      });
-    }
-  }, [pack]);
 
   function replacePackById(packId: string, packs: Packs, pack: Pack) {
     const index = packs.findIndex((pack) => pack.id === packId);
     if (index === -1) throw new OtapixError("An error occured while replace pack", "pack/replace_error");
     packs[index] = pack;
     return packs;
-  }
-
-  function onSuccess(newPack: Pack) {
   }
 
   return (
@@ -123,26 +121,19 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 authorId: backup.authorId,
                 title: data.title,
                 difficulty: data.difficulty,
-                puzzles: data.puzzles,
+                puzzles: [],
                 online: backup.online,
               };
 
-              if (_.isEqual(backup, puzzlePackDraft)) {
-                notifyError("No modification provided");
-                return;
-              }
-
               if (!puzzlePackDraft.online) {
-                const success = await doCreatePack({
+                await doCreatePack({
                   pack: {
                     title: puzzlePackDraft.title,
                     authorId: puzzlePackDraft.authorId,
                     difficulty: puzzlePackDraft.difficulty,
                   },
                   cover,
-                  puzzles: data.puzzles,
                 });
-                success && onSuccess(puzzlePackDraft);
               } else {
                 const tasks = getPackModificationTasksToPerform({
                   pack: puzzlePackDraft,
@@ -150,7 +141,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                   cover,
                 });
                 await Promise.all([Promise.all(tasks)]);
-                onSuccess({ ...puzzlePackDraft });
+                // onSuccess({ ...puzzlePackDraft });
                 notifySuccess("Pack edited with success");
               }
             }
@@ -187,7 +178,29 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
             setCheckedDifficulty={setCheckedDifficulty}
           />
 
+
+
           {!puzzleEditorIsOpen &&
+            !packDeleteConfirmIsOpen &&
+            !puzzleDeleteConfirmIsOpen && (
+              <div style={{ display: "flex", gap: "1em" }}>
+                {/* Delete Pack */}
+                <SpinnerButton
+                  type="error"
+                  text="Delete pack"
+                  disabled={deletePackIsLoading || deletePuzzleIsLoading}
+                  isLoading={deletePackIsLoading}
+                  onClick={() => setPackDeleteConfirmIsOpen(true)}
+                />
+
+                {/* Submit Pack */}
+                <SpinnerButton text={packIsCreated ? "Edit" : "Create"} buttonType="submit" isLoading={isLoading} />
+              </div>
+            )}
+
+          {
+            packIsCreated &&
+            !puzzleEditorIsOpen &&
             !packDeleteConfirmIsOpen &&
             !puzzleDeleteConfirmIsOpen && (
               <>
@@ -222,28 +235,10 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
                 </Button>
               </>
             )}
-
-          {!puzzleEditorIsOpen &&
-            !packDeleteConfirmIsOpen &&
-            !puzzleDeleteConfirmIsOpen && (
-              <div style={{ display: "flex", gap: "1em" }}>
-                {/* Delete Pack */}
-                <SpinnerButton
-                  type="error"
-                  text="Delete pack"
-                  disabled={deletePackIsLoading || deletePuzzleIsLoading}
-                  isLoading={deletePackIsLoading}
-                  onClick={() => setPackDeleteConfirmIsOpen(true)}
-                />
-
-                {/* Submit Pack */}
-                <SpinnerButton buttonType="submit" isLoading={isLoading} />
-              </div>
-            )}
         </form>
 
         {/* Puzzle Editor */}
-        {puzzleEditorIsOpen && (
+        {packIsCreated && puzzleEditorIsOpen && (
           <PuzzleEditor
             isOpen={puzzleEditorIsOpen}
             setIsOpen={setPuzzleEditorIsOpen}
@@ -260,7 +255,7 @@ export default function PackEditor({ currentPack, setPacks }: PackEditorProps) {
           />
         )}
 
-        {puzzleDeleteConfirmIsOpen && (
+        {packIsCreated && puzzleDeleteConfirmIsOpen && (
           <ConfirmationAlert
             isLoading={deletePuzzleIsLoading}
             onCancel={() => {

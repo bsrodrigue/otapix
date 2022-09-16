@@ -27,7 +27,6 @@ interface SubmitCreatePackParams {
     difficulty: Difficulty;
   };
   cover: File;
-  puzzles: Puzzles;
 }
 
 // API Calls
@@ -104,16 +103,16 @@ export const submitDeletePuzzle: APICall<(puzzle: Puzzle) => void> = {
 };
 
 export const submitCreatePack: APICall<typeof createPack> = {
-  call: async ({ pack, cover, puzzles }: SubmitCreatePackParams) => {
+  call: async ({ pack, cover }: SubmitCreatePackParams) => {
     if (!pack.title) throw new PackCreationError(OtapixErrorCodes.NO_PACK_TITLE_PROVIDED);
     if (!pack.difficulty) throw new PackCreationError(OtapixErrorCodes.NO_PACK_DIFFICULTY_PROVIDED);
     if (!cover) throw new PackCreationError(OtapixErrorCodes.NO_COVER_PROVIDED);
-    if (puzzles.length === 0) throw new PackCreationError(OtapixErrorCodes.NO_PUZZLE_CREATED);
+
     const result = await createPack({
       pack,
       cover,
-      puzzles,
     });
+
     return result;
   },
 

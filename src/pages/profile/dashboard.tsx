@@ -55,7 +55,11 @@ export default function DashboardPage() {
 
       {packs.length !== 0 && packs[currentPackIndex] && (
         <PuzzleEditorProvider>
-          <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
+          <PackEditor
+            packs={packs}
+            currentPack={packs[currentPackIndex]}
+            currentPackIndex={currentPackIndex}
+            setPacks={setPacks} />
         </PuzzleEditorProvider>
       )}
 

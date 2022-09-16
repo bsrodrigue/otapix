@@ -265,29 +265,20 @@ export async function createPuzzle(
 interface CreatePackParams {
   pack: Omit<Pack, "id" | "online" | "puzzles" | "cover">;
   cover: File;
-  puzzles: Puzzles;
 }
 
 export async function createPack({
   pack,
   cover,
-  puzzles,
 }: CreatePackParams): Promise<Required<Pack>> {
-  const puzzleDocCreationTasks: Array<Promise<Puzzle>> = [];
   const { title, difficulty, authorId } = pack;
+
   const packRef = await createDocument({
     document: { title, difficulty, authorId },
     path: "packs",
   });
 
-  for (let i = 0; i < puzzles.length; i++) {
-    const puzzle = puzzles[i];
-    puzzleDocCreationTasks.push(createPuzzle(puzzle, packRef, pack.title));
-  }
-  const [coverUrl, ...createdPuzzles] = await Promise.all([
-    uploadPackCover(pack.title, cover),
-    ...puzzleDocCreationTasks,
-  ]);
+  const coverUrl = await uploadPackCover(pack.title, cover);
 
   await setDoc(packRef, { cover: coverUrl }, { merge: true });
 
@@ -297,7 +288,7 @@ export async function createPack({
     difficulty: pack.difficulty,
     authorId: pack.authorId,
     cover: coverUrl,
-    puzzles: createdPuzzles,
+    puzzles: [],
     online: true,
   };
 }
