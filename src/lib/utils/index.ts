@@ -1,16 +1,30 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { Difficulty } from "../../enums";
-import { LetterSlot, LetterSlotsState, Pack, Puzzle, Puzzles } from "../../types";
+import {
+  HasId,
+  LetterSlot,
+  LetterSlotsState,
+  Pack,
+  Puzzle,
+  Puzzles,
+} from "../../types";
+import { OtapixError } from "../errors/classes";
 
-export function setImagePreviewFromInput(sourceInput: HTMLInputElement, targetImage: HTMLImageElement) {
+export function setImagePreviewFromInput(
+  sourceInput: HTMLInputElement,
+  targetImage: HTMLImageElement
+) {
   if (!sourceInput.files || !sourceInput.files[0]) return;
   const file = sourceInput.files[0];
 
   setImagePreviewFromFile(file, targetImage);
 }
 
-export function setImagePreviewFromFile(file: File, targetImage: HTMLImageElement) {
+export function setImagePreviewFromFile(
+  file: File,
+  targetImage: HTMLImageElement
+) {
   const reader = new FileReader();
 
   reader.onload = function (e) {
@@ -144,11 +158,13 @@ export class SlotHelper {
   }
 
   public static toSlots(arr: string[], selected = false): LetterSlot[] {
-    const slotLetters: LetterSlot[] = arr.map((slotLetter: string, index: number) => ({
-      letter: slotLetter,
-      index,
-      selected,
-    }));
+    const slotLetters: LetterSlot[] = arr.map(
+      (slotLetter: string, index: number) => ({
+        letter: slotLetter,
+        index,
+        selected,
+      })
+    );
     return slotLetters;
   }
 
@@ -163,7 +179,7 @@ export class SlotHelper {
   public static pushLetter(
     gameSlots: LetterSlotsState,
     slot: LetterSlot,
-    onLetterPushed: (newGameSlots: LetterSlotsState) => void,
+    onLetterPushed: (newGameSlots: LetterSlotsState) => void
   ) {
     const targetSlots = [...gameSlots.targetSlots];
     const pickerSlots = [...gameSlots.pickerSlots];
@@ -180,7 +196,10 @@ export class SlotHelper {
     onLetterPushed(newGameSlots);
   }
 
-  public static popLetter(gameSlots: LetterSlotsState, onLetterPushed: (newGameSlots: LetterSlotsState) => void) {
+  public static popLetter(
+    gameSlots: LetterSlotsState,
+    onLetterPushed: (newGameSlots: LetterSlotsState) => void
+  ) {
     const targetSlots = [...gameSlots.targetSlots];
     const pickerSlots = [...gameSlots.pickerSlots];
     const selected = false;
@@ -196,13 +215,16 @@ export class SlotHelper {
     onLetterPushed(newGameSlots);
   }
 
-  public static setupCurrentPuzzle(puzzle: Puzzle, onPuzzleSetup: (arg: any) => void) {
+  public static setupCurrentPuzzle(
+    puzzle: Puzzle,
+    onPuzzleSetup: (arg: any) => void
+  ) {
     const { word } = puzzle;
     const letters = word.split("");
     const emptyLetters = Array(word.length).fill("");
     const targetSlots: LetterSlot[] = SlotHelper.toSlots(emptyLetters);
     const pickerSlots: LetterSlot[] = SlotHelper.toSlots(
-      _.shuffle(insertRandomAlphabetLetters(letters.length).concat(letters)),
+      _.shuffle(insertRandomAlphabetLetters(letters.length).concat(letters))
     );
     onPuzzleSetup({ targetSlots, pickerSlots });
   }
@@ -211,7 +233,7 @@ export class SlotHelper {
     puzzle: Puzzle,
     targetSlots: Array<LetterSlot>,
     onCorrect: () => void,
-    onIncorrect: () => void,
+    onIncorrect: () => void
   ) {
     const { word } = puzzle;
     const playerWord = SlotHelper.toLetters(targetSlots);
@@ -221,4 +243,19 @@ export class SlotHelper {
       onIncorrect();
     }
   }
+}
+
+export function replaceById<T extends HasId>(
+  id: string,
+  objs: Array<T>,
+  obj: T
+) {
+  const index = objs.findIndex((element: T) => element.id === id);
+  if (index === -1)
+    throw new OtapixError(
+      "An error occured while replacing element",
+      "otapix/replace_error"
+    );
+  objs[index] = obj;
+  return objs;
 }

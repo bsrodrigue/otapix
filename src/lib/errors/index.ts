@@ -9,6 +9,8 @@ export enum OtapixErrorCodes {
   PACK_REPLACEMENT_FAILED = "pack-replacement/error",
   NO_PACK_TITLE_PROVIDED = "pack-creation/no-pack-title-provided",
   NO_PACK_DIFFICULTY_PROVIDED = "pack-creation/no-pack-difficulty-provided",
+  NO_PUZZLE_PICTURES_PROVIDED = "puzzle-creation/no-puzzle-pictures-provided",
+  NO_PUZZLE_WORD_PROVIDED = "puzzle-creation/no-puzzle-word-provided",
 }
 
 export enum RequestNames {
@@ -18,8 +20,9 @@ export enum RequestNames {
   GET_USER_PACKS = "get_user_packs",
   CREATE_PACK = "create_pack",
   EDIT_PACK = "edit_pack",
-  CREATE_PUZZLE = "create_puzzle",
   DELETE_PACK = "delete_pack",
+  CREATE_PUZZLE = "create_puzzle",
+  EDIT_PUZZLE = "edit_puzzle",
   DELETE_PUZZLE = "delete_puzzle",
   SEND_EMAIL_VERIFICATION = "send_email_verification",
   SEND_PASSWORD_RESET_MAIL = "send_password_reset_mail",
@@ -35,6 +38,7 @@ export const SuccessMessages: Record<string, string> = {
   send_password_reset_mail:
     "A password reset link has been sent to mail, please check",
   edit_pack: "Pack edited with success " + successEmoji,
+  edit_puzzle: "Puzzle edited with success " + successEmoji,
 };
 
 export const FirebaseErrorMessages: Record<string, string> = {
@@ -47,20 +51,25 @@ export const FirebaseErrorMessages: Record<string, string> = {
 export const OtapixErrorMessages: Record<OtapixErrorCodes, string> = {
   "pack-replacement/error": "An error occured while replacing the pack",
   "pack-creation/no-cover-provided": "Please, upload a cover for this pack",
-  "pack-creation/no-puzzle-created": "Please, create a least one puzzle for this pack",
-  "pack-creation/no-pack-title-provided": "Please, provide a title for your pack",
-  "pack-creation/no-pack-difficulty-provided": "Please, select a difficulty for your pack",
-}
+  "pack-creation/no-puzzle-created":
+    "Please, create a least one puzzle for this pack",
+  "pack-creation/no-pack-title-provided":
+    "Please, provide a title for your pack",
+  "pack-creation/no-pack-difficulty-provided":
+    "Please, select a difficulty for your pack",
+  "puzzle-creation/no-puzzle-pictures-provided":
+    "Please, select four pictures for your puzzle",
+  "puzzle-creation/no-puzzle-word-provided":
+    "Please, enter the word or name to guess",
+};
 
 export function handleError(error: unknown, operationName: RequestNames) {
   if (error instanceof FirebaseError) {
     notifyError(FirebaseErrorMessages[error.code] || error.message);
-  }
-  else if (error instanceof OtapixError) {
+  } else if (error instanceof OtapixError) {
     const code = error.code as OtapixErrorCodes;
     notifyError(OtapixErrorMessages[code] || error.message);
-  }
-  else {
+  } else {
     notifyError("An error occured");
     console.error(operationName, "===>", error);
   }
