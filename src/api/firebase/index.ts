@@ -23,6 +23,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
 import { Difficulty } from "../../enums";
 import { getPackModificationTasksToPerform } from "../../lib/forms/editor";
+import { notifyError } from "../../lib/notifications";
 import {
   dataURLToBlob,
   getImageExtensionFromFile,
@@ -164,27 +165,46 @@ interface AddPuzzleParams {
   puzzle: Puzzle;
 }
 
+interface EditPuzzleParams {
+  packTitle: string;
+  puzzle: Puzzle;
+}
+
 export async function addPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
   const docRef = doc(db, "puzzles", puzzle.packId);
   return await createPuzzle(puzzle, docRef, packTitle);
 }
 
-export async function editPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
+export async function editPuzzle({ packTitle, puzzle }: EditPuzzleParams) {
   const docRef = doc(db, "puzzles", puzzle.id);
   const tasks: Array<Promise<string>> = [];
+  const alreadyUploadedPictures: Array<string> = [];
   for (let i = 0; i < 4; i++) {
-    tasks.push(
-      uploadPuzzlePicture({
-        packTitle,
-        word: puzzle.word,
-        index: i,
-        file: dataURLToBlob(puzzle.pictures[i]),
-      })
-    );
+    const picture = puzzle.pictures[i];
+    let file: Blob | string;
+
+    try {
+      file = dataURLToBlob(picture);
+      tasks.push(
+        uploadPuzzlePicture({
+          packTitle,
+          word: puzzle.word,
+          index: i,
+          file,
+        })
+      );
+    } catch (error) {
+      if (typeof picture === "string") {
+        alreadyUploadedPictures.push(picture);
+      } else {
+        notifyError("Impossible de upload pictures...");
+      }
+    }
   }
   const urls = await Promise.all(tasks);
-  await updateDoc(docRef, { pictures: urls });
-  const p: Puzzle = { ...puzzle, pictures: urls };
+  urls.push(...alreadyUploadedPictures);
+  await updateDoc(docRef, { word: puzzle.word, pictures: urls });
+  const p: Puzzle = { ...puzzle, pictures: urls, online: true };
   return p;
 }
 

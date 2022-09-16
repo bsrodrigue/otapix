@@ -53,13 +53,29 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
 
   async function extractImageFilesAsSrc() {
     const pictures: Array<string> = [];
-    for (let i = 0; i < 4; i++) {
-      const value = values[`puzzle-pic-${i + 1}`];
-      if (!(value instanceof FileList) || value.length === 0)
-        throw Error("Missing File(s)");
-      const file: File = value[0];
-      const result = await getSrcFromFile(file);
-      pictures.push(result);
+    if (isEditMode) {
+      for (let i = 0; i < 4; i++) {
+        const value = values[`puzzle-pic-${i + 1}`];
+        if ((value instanceof FileList && value.length === 0) || !value) {
+          throw Error("Missing File(s)");
+        }
+        if (value instanceof FileList) {
+          const file: File = value[0];
+          const result = await getSrcFromFile(file);
+          pictures.push(result);
+        } else {
+          pictures.push(value);
+        }
+      }
+    } else {
+      for (let i = 0; i < 4; i++) {
+        const value = values[`puzzle-pic-${i + 1}`];
+        if (!(value instanceof FileList) || value.length === 0)
+          throw Error("Missing File(s)");
+        const file: File = value[0];
+        const result = await getSrcFromFile(file);
+        pictures.push(result);
+      }
     }
     return pictures;
   }

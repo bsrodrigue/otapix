@@ -13,7 +13,7 @@ import {
   PuzzleCreationError,
   PuzzleEditError,
 } from "../../lib/errors/classes";
-import { LoginParams, Pack, Puzzle, Puzzles } from "../../types";
+import { LoginParams, Pack, Puzzle } from "../../types";
 import {
   addPuzzle,
   createPack,

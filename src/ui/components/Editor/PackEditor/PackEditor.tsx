@@ -11,13 +11,9 @@ import usePuzzleEditor from "../../../../context/hooks/usePuzzleEditor";
 import { Difficulty, EditorState } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
-import { OtapixError } from "../../../../lib/errors/classes";
-import {
-  removePackFromState,
-  removePuzzleFromPackState,
-} from "../../../../lib/forms/editor";
+import { removePackFromState } from "../../../../lib/forms/editor";
 import { replaceById } from "../../../../lib/utils";
-import { Pack, Packs, PacksSetter, Puzzle } from "../../../../types";
+import { Pack, Packs, PacksSetter, Puzzle, Puzzles } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
 import { ConfirmationAlert } from "../../ConfirmationAlert";
@@ -40,7 +36,7 @@ export default function PackEditor({
 }: PackEditorProps) {
   const currentPack = packs[currentPackIndex];
   const [packIsCreated, setPackIsCreated] = useState(false);
-  const [puzzleEditorState, setPuzzleEditorState] = usePuzzleEditor();
+  const [_, setPuzzleEditorState] = usePuzzleEditor();
   const [backup, setBackup] = useState<Pack>();
   const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
     currentPack.difficulty
@@ -52,15 +48,18 @@ export default function PackEditor({
   const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] =
     useState<boolean>(false);
 
-  const [doDeletePack, deletePackIsLoading] = useApi(submitDeletePack, () =>
-    removePackFromState(setPacks, currentPack.id)
-  );
+  const [doDeletePack, deletePackIsLoading] = useApi(submitDeletePack, () => {
+    removePackFromState(setPacks, currentPack.id);
+    setPackDeleteConfirmIsOpen(false);
+  });
 
   const [doDeletePuzzle, deletePuzzleIsLoading] = useApi(
     submitDeletePuzzle,
     () => {
-      puzzleToDelete &&
-        removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
+      let puzzles: Puzzles = values.puzzles;
+      puzzles = puzzles.filter((puzzle) => puzzle.id !== puzzleToDelete?.id);
+      setValue("puzzles", puzzles);
+      setPuzzleDeleteConfirmIsOpen(false);
     }
   );
 
@@ -243,9 +242,7 @@ export default function PackEditor({
         {packDeleteConfirmIsOpen && (
           <ConfirmationAlert
             isLoading={deletePackIsLoading}
-            onCancel={() => {
-              setPackDeleteConfirmIsOpen(false);
-            }}
+            onCancel={() => setPackDeleteConfirmIsOpen(false)}
             onConfirm={() => doDeletePack(currentPack)}
           />
         )}
@@ -253,9 +250,7 @@ export default function PackEditor({
         {packIsCreated && puzzleDeleteConfirmIsOpen && (
           <ConfirmationAlert
             isLoading={deletePuzzleIsLoading}
-            onCancel={() => {
-              setPuzzleDeleteConfirmIsOpen(false);
-            }}
+            onCancel={() => setPuzzleDeleteConfirmIsOpen(false)}
             onConfirm={() => doDeletePuzzle(puzzleToDelete!)}
           />
         )}
