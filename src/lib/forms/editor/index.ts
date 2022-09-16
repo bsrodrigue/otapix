@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { editPackCover, editPack } from "../../../api/firebase";
+import { Difficulty } from "../../../enums";
 import { Pack, Packs, PacksSetter, Puzzles } from "../../../types";
 
 export function removePackFromState(setPacks: PacksSetter, packId: string) {
@@ -29,9 +30,9 @@ export function removePuzzleFromPackState(setPacks: PacksSetter, packId: string,
     });
 }
 
-export function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: Pack; cover: File }) {
+export function getPackModificationTasksToPerform({ backup, pack, cover }: { backup: Pack; pack: { id: string, title: string, difficulty: Difficulty }; cover: File }) {
     const tasks: Array<Promise<void>> = [];
-    if (!_.isEqual(backup.cover, pack.cover)) {
+    if (!_.isEqual(backup.cover, cover)) {
         tasks.push(
             editPackCover({
                 id: pack.id,

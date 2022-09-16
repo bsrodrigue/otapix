@@ -22,7 +22,8 @@ import {
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
 import { Difficulty } from "../../enums";
-import { dataURLToBlob, getImageExtensionFromFile } from "../../lib/utils";
+import { getPackModificationTasksToPerform } from "../../lib/forms/editor";
+import { dataURLToBlob, getImageExtensionFromFile, getSrcFromFile } from "../../lib/utils";
 import { Pack, Packs, Puzzle, Puzzles } from "../../types";
 import { hydratePack, hydratePuzzle } from "./hydrators";
 import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery } from "./queries";
@@ -291,6 +292,25 @@ export async function createPack({
     puzzles: [],
     online: true,
   };
+}
+
+export async function editPackFields({ backup, data, cover }: { backup: Pack, data: { title: string, difficulty: Difficulty }, cover: File }): Promise<Pack> {
+  const tasks = getPackModificationTasksToPerform({
+    pack: { id: backup.id, title: data.title, difficulty: data.difficulty },
+    backup,
+    cover,
+  });
+  await Promise.all([Promise.all(tasks)]);
+  const newCover = (typeof cover === "string") ? cover : await getSrcFromFile(cover);
+  return {
+    id: backup.id,
+    authorId: backup.authorId,
+    cover: newCover,
+    title: data.title,
+    difficulty: data.difficulty,
+    puzzles: backup.puzzles,
+    online: true,
+  }
 }
 
 export function getRef(documentPath: string) {

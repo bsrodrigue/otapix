@@ -1,19 +1,16 @@
-import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { submitCreatePack, submitDeletePack, submitDeletePuzzle } from "../../../../api/app";
-import { createPack } from "../../../../api/firebase";
+import { submitCreatePack, submitDeletePack, submitDeletePuzzle, submitEditPack } from "../../../../api/app";
+import { createPack, editPackFields } from "../../../../api/firebase";
 import usePuzzleEditor from "../../../../context/hooks/usePuzzleEditor";
 import { Difficulty, EditorState } from "../../../../enums";
 import { useAuth } from "../../../../hooks";
 import { useApi } from "../../../../hooks/useApi";
 import { OtapixError } from "../../../../lib/errors/classes";
 import {
-  getPackModificationTasksToPerform,
   removePackFromState,
   removePuzzleFromPackState
 } from "../../../../lib/forms/editor";
-import { notifyError, notifySuccess } from "../../../../lib/notifications";
 import { Pack, Packs, PacksSetter, Puzzle } from "../../../../types";
 import { Button } from "../../Button/Button";
 import { SpinnerButton } from "../../Button/SpinnerButton";
@@ -34,46 +31,41 @@ interface PackEditorProps {
 export default function PackEditor({ packs, currentPack, setPacks }: PackEditorProps) {
   const [editorState, setEditorState] = usePuzzleEditor();
   const [packIsCreated, setPackIsCreated] = useState(false);
-  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(
-    currentPack.difficulty
-  );
+  const [backup, setBackup] = useState<Pack>();
+  const [checkedDifficulty, setCheckedDifficulty] = useState<Difficulty>(currentPack.difficulty);
   const [puzzleEditorIsOpen, setPuzzleEditorIsOpen] = useState<boolean>(false);
   const [puzzleToDelete, setPuzzleToDelete] = useState<Puzzle>();
-  const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] =
-    useState<boolean>(false);
-  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] =
-    useState<boolean>(false);
-  const [backup, setBackup] = useState<Pack>();
+  const [puzzleDeleteConfirmIsOpen, setPuzzleDeleteConfirmIsOpen] = useState<boolean>(false);
+  const [packDeleteConfirmIsOpen, setPackDeleteConfirmIsOpen] = useState<boolean>(false);
 
-  const [doDeletePack, deletePackIsLoading] = useApi<
-    (pack: Pack) => void,
-    void
-  >(submitDeletePack, () => removePackFromState(setPacks, currentPack.id));
-
-  const [doDeletePuzzle, deletePuzzleIsLoading] = useApi<
-    (puzzle: Puzzle) => void,
-    void
-  >(submitDeletePuzzle, () => {
+  const [doDeletePack, deletePackIsLoading] = useApi(submitDeletePack, () => removePackFromState(setPacks, currentPack.id));
+  const [doDeletePuzzle, deletePuzzleIsLoading] = useApi(submitDeletePuzzle, () => {
     puzzleToDelete &&
       removePuzzleFromPackState(setPacks, currentPack.id, puzzleToDelete.id);
   });
 
   const [doCreatePack, createPackIsLoading] = useApi<typeof createPack, Pack>(submitCreatePack, (pack) => {
-    if (pack) {
-      setBackup(pack);
-      updateEditorFields(pack);
-      setPackIsCreated(true);
-      setPacks((packs) => {
-        return replacePackById(currentPack.id, packs, pack);
-      });
-    }
+    pack && updatePackEditor(pack);
   });
+
+  const [doEditPack, editPackIsLoading] = useApi<typeof editPackFields, Pack>(submitEditPack, (pack) => {
+    pack && updatePackEditor(pack);
+  });
+
+  function updatePackEditor(pack: Pack) {
+    setBackup(pack);
+    updateEditorFields(pack);
+    setPacks((packs) => {
+      return replacePackById(currentPack.id, packs, pack);
+    });
+    setPackIsCreated(true);
+  }
 
   const methods = useForm();
   const { register, handleSubmit, setValue, watch, reset } = methods;
   const values = watch();
   const { user } = useAuth();
-  const isLoading = createPackIsLoading;
+  const isLoading = createPackIsLoading || editPackIsLoading;
 
   const updateEditorFields = useCallback((pack: Pack) => {
     reset();
@@ -85,7 +77,6 @@ export default function PackEditor({ packs, currentPack, setPacks }: PackEditorP
   }, [setValue, reset]);
 
   useEffect(() => {
-    reset();
     setPackDeleteConfirmIsOpen(false);
     setPuzzleDeleteConfirmIsOpen(false);
     updateEditorFields(currentPack);
@@ -115,34 +106,17 @@ export default function PackEditor({ packs, currentPack, setPacks }: PackEditorP
                 cover = cover.item(0);
               }
 
-              const puzzlePackDraft: Pack = {
-                cover,
-                id: data.packId,
-                authorId: backup.authorId,
-                title: data.title,
-                difficulty: data.difficulty,
-                puzzles: [],
-                online: backup.online,
-              };
-
-              if (!puzzlePackDraft.online) {
+              if (!packIsCreated) {
                 await doCreatePack({
                   pack: {
-                    title: puzzlePackDraft.title,
-                    authorId: puzzlePackDraft.authorId,
-                    difficulty: puzzlePackDraft.difficulty,
+                    title: data.title,
+                    authorId: backup.authorId,
+                    difficulty: data.difficulty,
                   },
                   cover,
                 });
               } else {
-                const tasks = getPackModificationTasksToPerform({
-                  pack: puzzlePackDraft,
-                  backup,
-                  cover,
-                });
-                await Promise.all([Promise.all(tasks)]);
-                // onSuccess({ ...puzzlePackDraft });
-                notifySuccess("Pack edited with success");
+                await doEditPack({ backup, data: { title: data.title, difficulty: data.difficulty }, cover });
               }
             }
           })}
@@ -156,6 +130,7 @@ export default function PackEditor({ packs, currentPack, setPacks }: PackEditorP
           ].map((hiddenField, key) => (
             <input key={key} type="text" hidden {...register(hiddenField)} />
           ))}
+
           <p>Pack cover</p>
           <RectangularDropzone
             label="Download a pack cover"
@@ -178,8 +153,6 @@ export default function PackEditor({ packs, currentPack, setPacks }: PackEditorP
             setCheckedDifficulty={setCheckedDifficulty}
           />
 
-
-
           {!puzzleEditorIsOpen &&
             !packDeleteConfirmIsOpen &&
             !puzzleDeleteConfirmIsOpen && (
@@ -188,7 +161,7 @@ export default function PackEditor({ packs, currentPack, setPacks }: PackEditorP
                 <SpinnerButton
                   type="error"
                   text="Delete pack"
-                  disabled={deletePackIsLoading || deletePuzzleIsLoading}
+                  disabled={deletePackIsLoading || deletePuzzleIsLoading || isLoading}
                   isLoading={deletePackIsLoading}
                   onClick={() => setPackDeleteConfirmIsOpen(true)}
                 />

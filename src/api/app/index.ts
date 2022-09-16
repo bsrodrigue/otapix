@@ -14,6 +14,7 @@ import {
   createPack,
   deletePack,
   deletePuzzle,
+  editPackFields,
   getAllPacks,
   getPacksFromUser,
   signIn,
@@ -127,3 +128,12 @@ export const submitSendPasswordResetEmail: APICall<
   },
   requestName: RequestNames.SEND_PASSWORD_RESET_MAIL,
 };
+
+export const submitEditPack: APICall<typeof editPackFields> = {
+  call: async (...params: Parameters<typeof editPackFields>) => {
+    const result = await editPackFields(...params);
+    return result;
+  },
+  requestName: RequestNames.EDIT_PACK,
+
+}
