@@ -1,4 +1,9 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  User,
+} from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -17,7 +22,13 @@ import {
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../../config/firebase";
 import { Difficulty } from "../../enums";
-import { dataURLToBlob, getImageExtensionFromFile } from "../../lib/utils";
+import { getPackModificationTasksToPerform } from "../../lib/forms/editor";
+import { notifyError } from "../../lib/notifications";
+import {
+  dataURLToBlob,
+  getImageExtensionFromFile,
+  getSrcFromFile,
+} from "../../lib/utils";
 import { Pack, Packs, Puzzle, Puzzles } from "../../types";
 import { hydratePack, hydratePuzzle } from "./hydrators";
 import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery } from "./queries";
@@ -31,12 +42,20 @@ interface LoginParams {
 
 // Auth
 export async function signUp({ email, password }: LoginParams) {
-  const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+  const userCredentials = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
   return userCredentials;
 }
 
 export async function signIn({ email, password }: LoginParams) {
-  const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+  const userCredentials = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
   return userCredentials;
 }
 
@@ -54,7 +73,10 @@ export async function uploadUserFile(fileName: string, file: Blob) {
 }
 
 export async function uploadProfilePicture(file: Blob, user: User) {
-  const fileName = `profile-pictures/${user.email}avatar.${file.type.replace("image/", "")}`;
+  const fileName = `profile-pictures/${user.email}avatar.${file.type.replace(
+    "image/",
+    ""
+  )}`;
   const photoURL = await uploadUserFile(fileName, file);
   await updateProfile(user, {
     photoURL,
@@ -87,12 +109,24 @@ interface UploadPuzzlePictureParams {
   file: Blob;
 }
 
-export async function uploadPuzzlePicture({ packTitle, word, index, file }: UploadPuzzlePictureParams) {
-  const path = `pack_data/${packTitle}/${word}/picture_${index}.${getImageExtensionFromFile(file)}`;
+export async function uploadPuzzlePicture({
+  packTitle,
+  word,
+  index,
+  file,
+}: UploadPuzzlePictureParams) {
+  const path = `pack_data/${packTitle}/${word}/picture_${index}.${getImageExtensionFromFile(
+    file
+  )}`;
   return await uploadFile(path, file);
 }
 
-export async function uploadPuzzlePicturesFromPuzzle(id: string, packId: string, puzzle: Puzzle, packTitle: string) {
+export async function uploadPuzzlePicturesFromPuzzle(
+  id: string,
+  packId: string,
+  puzzle: Puzzle,
+  packTitle: string
+) {
   const destinationPuzzle: Puzzle = {
     id,
     packId,
@@ -110,7 +144,7 @@ export async function uploadPuzzlePicturesFromPuzzle(id: string, packId: string,
         word: puzzle.word,
         index: i,
         file: dataURLToBlob(picturesToBeUploaded[i]),
-      }),
+      })
     );
   }
 
@@ -131,27 +165,47 @@ interface AddPuzzleParams {
   puzzle: Puzzle;
 }
 
+interface EditPuzzleParams {
+  packTitle: string;
+  puzzle: Puzzle;
+}
+
 export async function addPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
   const docRef = doc(db, "puzzles", puzzle.packId);
   return await createPuzzle(puzzle, docRef, packTitle);
 }
 
-export async function editPuzzle({ packTitle, puzzle }: AddPuzzleParams) {
-  console.log(puzzle);
+export async function editPuzzle({ packTitle, puzzle }: EditPuzzleParams) {
   const docRef = doc(db, "puzzles", puzzle.id);
   const tasks: Array<Promise<string>> = [];
+  const alreadyUploadedPictures: Array<string> = [];
   for (let i = 0; i < 4; i++) {
-    tasks.push(
-      uploadPuzzlePicture({
-        packTitle,
-        word: puzzle.word,
-        index: i,
-        file: dataURLToBlob(puzzle.pictures[i]),
-      }),
-    );
+    const picture = puzzle.pictures[i];
+    let file: Blob | string;
+
+    try {
+      file = dataURLToBlob(picture);
+      tasks.push(
+        uploadPuzzlePicture({
+          packTitle,
+          word: puzzle.word,
+          index: i,
+          file,
+        })
+      );
+    } catch (error) {
+      if (typeof picture === "string") {
+        alreadyUploadedPictures.push(picture);
+      } else {
+        notifyError("Impossible de upload pictures...");
+      }
+    }
   }
   const urls = await Promise.all(tasks);
-  await updateDoc(docRef, { pictures: urls });
+  urls.push(...alreadyUploadedPictures);
+  await updateDoc(docRef, { word: puzzle.word, pictures: urls });
+  const p: Puzzle = { ...puzzle, pictures: urls, online: true };
+  return p;
 }
 
 interface AddPuzzlesParams {
@@ -187,7 +241,11 @@ interface EditPackCoverParams {
   cover: File;
 }
 
-export async function editPackCover({ id, packTitle, cover }: EditPackCoverParams) {
+export async function editPackCover({
+  id,
+  packTitle,
+  cover,
+}: EditPackCoverParams) {
   const docRef = doc(db, "packs", id.toString());
   const url = await uploadPackCover(packTitle, cover);
   await updateDoc(docRef, { cover: url });
@@ -201,7 +259,7 @@ export async function deletePuzzle(puzzleId: string) {
 export async function createPuzzle(
   puzzle: { word: string; pictures: Array<string> },
   packRef: DocumentReference,
-  packTitle: string,
+  packTitle: string
 ): Promise<Required<Puzzle>> {
   const { pictures, word } = puzzle;
   const puzzleRef = await createDocument({
@@ -216,7 +274,7 @@ export async function createPuzzle(
         word,
         index: j,
         file: dataURLToBlob(pictures[j]),
-      }),
+      })
     );
   }
   const urls = await Promise.all(puzzlePicturesUploadTasks);
@@ -233,25 +291,20 @@ export async function createPuzzle(
 interface CreatePackParams {
   pack: Omit<Pack, "id" | "online" | "puzzles" | "cover">;
   cover: File;
-  puzzles: Puzzles;
 }
 
-export async function createPack({ pack, cover, puzzles }: CreatePackParams): Promise<Required<Pack>> {
-  const puzzleDocCreationTasks: Array<Promise<Puzzle>> = [];
+export async function createPack({
+  pack,
+  cover,
+}: CreatePackParams): Promise<Required<Pack>> {
   const { title, difficulty, authorId } = pack;
+
   const packRef = await createDocument({
     document: { title, difficulty, authorId },
     path: "packs",
   });
 
-  for (let i = 0; i < puzzles.length; i++) {
-    const puzzle = puzzles[i];
-    puzzleDocCreationTasks.push(createPuzzle(puzzle, packRef, pack.title));
-  }
-  const [coverUrl, ...createdPuzzles] = await Promise.all([
-    uploadPackCover(pack.title, cover),
-    ...puzzleDocCreationTasks,
-  ]);
+  const coverUrl = await uploadPackCover(pack.title, cover);
 
   await setDoc(packRef, { cover: coverUrl }, { merge: true });
 
@@ -261,7 +314,35 @@ export async function createPack({ pack, cover, puzzles }: CreatePackParams): Pr
     difficulty: pack.difficulty,
     authorId: pack.authorId,
     cover: coverUrl,
-    puzzles: createdPuzzles,
+    puzzles: [],
+    online: true,
+  };
+}
+
+export async function editPackFields({
+  backup,
+  data,
+  cover,
+}: {
+  backup: Pack;
+  data: { title: string; difficulty: Difficulty };
+  cover: File;
+}): Promise<Pack> {
+  const tasks = getPackModificationTasksToPerform({
+    pack: { id: backup.id, title: data.title, difficulty: data.difficulty },
+    backup,
+    cover,
+  });
+  await Promise.all([Promise.all(tasks)]);
+  const newCover =
+    typeof cover === "string" ? cover : await getSrcFromFile(cover);
+  return {
+    id: backup.id,
+    authorId: backup.authorId,
+    cover: newCover,
+    title: data.title,
+    difficulty: data.difficulty,
+    puzzles: backup.puzzles,
     online: true,
   };
 }

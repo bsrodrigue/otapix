@@ -5,3 +5,8 @@ export enum Difficulty {
   A = "A",
   S = "S",
 }
+
+export enum EditorState {
+  DEFAULT = "default",
+  EDIT = "edit",
+}

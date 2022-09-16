@@ -16,7 +16,7 @@ interface DashboardSidePanelProps {
 export default function DashboardSidePanel({ isOpen, ...rest }: DashboardSidePanelProps) {
   return (
     <div className={`${style.container} ${!isOpen && style.closed}`}>
-      <Accordion {...rest} />
+      <Accordion label="My creations" {...rest} />
     </div>
   );
 }

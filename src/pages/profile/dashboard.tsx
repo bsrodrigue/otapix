@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
+import { submitGetUserPacks } from "../../api/app";
 import { getPacksFromUser } from "../../api/firebase";
+import PuzzleEditorProvider from "../../context/providers/editor/PuzzleEditorProvider";
 import { useAuth } from "../../hooks";
-import { notifyError } from "../../lib/notifications";
-import { createPuzzlePack } from "../../lib/utils";
+import { useApi } from "../../hooks/useApi";
+import { createPuzzlePackDraft } from "../../lib/utils";
 import { Pack, Packs } from "../../types";
 import { Fab } from "../../ui/components/Button/Fab";
 import { PackEditor } from "../../ui/components/Editor/PackEditor";
+import { EmptyPacks } from "../../ui/components/Misc/EmptyPacks";
 import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSidePanel";
 
 export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [packs, setPacks] = useState<Packs>([]);
   const [currentPackIndex, setCurrentPackIndex] = useState(0);
-  const [loading, setIsloading] = useState(true);
+  const [doGetUserPacks, getUserPacksIsLoading, userPacks] = useApi<
+    typeof getPacksFromUser,
+    Packs
+  >(submitGetUserPacks);
   const { user } = useAuth();
 
   function addPuzzlePack() {
     if (!user) return;
-    const pack: Pack = createPuzzlePack(user.uid);
+    const pack: Pack = createPuzzlePackDraft(user.uid);
     setPacks((prev) => {
       setCurrentPackIndex(prev.length);
       return [...prev, pack];
@@ -27,21 +33,12 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    async function getPacks() {
-      if (!user) return;
-      try {
-        setIsloading(true);
-        const result = await getPacksFromUser(user.uid);
-        setPacks(result);
-      } catch (error) {
-        notifyError("Erreur lors du chargement des packs");
-        console.error(error);
-      } finally {
-        setIsloading(false);
-      }
-    }
-    getPacks();
-  }, [user]);
+    userPacks && setPacks(userPacks);
+  }, [userPacks]);
+
+  useEffect(() => {
+    user && doGetUserPacks(user.uid);
+  }, [user, doGetUserPacks]);
 
   return (
     <div className="dashboard-page">
@@ -50,33 +47,23 @@ export default function DashboardPage() {
         packs={packs}
         setPacks={setPacks}
         currentPackIndex={currentPackIndex}
-        loading={loading}
+        loading={getUserPacksIsLoading}
         setSideBarIsOpen={setIsOpen}
         setCurrentPackIndex={setCurrentPackIndex}
         onCreatePackClick={addPuzzlePack}
       />
 
       {packs.length !== 0 && packs[currentPackIndex] && (
-        <PackEditor currentPack={packs[currentPackIndex]} currentPackIndex={currentPackIndex} setPacks={setPacks} />
+        <PuzzleEditorProvider>
+          <PackEditor
+            packs={packs}
+            currentPackIndex={currentPackIndex}
+            setPacks={setPacks}
+          />
+        </PuzzleEditorProvider>
       )}
 
-      {packs.length === 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          <div>
-            <h1>Vous n&apos;avez pas de packs...</h1>
-            <small>Ouvrez le panneau pour creer un pack</small>
-          </div>
-        </div>
-      )}
+      {packs.length === 0 && <EmptyPacks />}
       <Fab onClick={() => setIsOpen(!isOpen)}>
         <CgMenuRound />
       </Fab>

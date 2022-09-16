@@ -1,9 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { submitRegister } from "../../api/app";
+import { useApi } from "../../hooks/useApi";
+import { RequestNames } from "../../lib/errors";
 import { registerFormFields } from "../../lib/forms/auth/fields";
-import { submitRegister } from "../../lib/forms/auth/submit";
 import { registerSchema } from "../../lib/forms/auth/validationSchemas";
 import { FormField } from "../../types";
 import { AuthForm } from "../../ui/components/";
@@ -16,35 +17,33 @@ export default function RegisterPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(registerSchema) });
-  const [isLoading, setIsLoading] = useState(false);
   const avatarRegister = register("avatar");
+  const [doRegister, registerIsLoading] = useApi(submitRegister, () =>
+    router.push("/")
+  );
   const router = useRouter();
 
   return (
     <div className="auth-page">
       <AuthForm
         id="register-form"
-        title="Inscription"
-        comment="Bienvenue sur Otapix"
-        isLoading={isLoading}
-        subComment="Veuillez remplir les champs ci-dessous pour creer un compte"
-        alternative={["Vous avez deja un compte?", "Connectez-vous!", "/auth/login"]}
-        onSubmit={handleSubmit(async (data: FieldValues) => {
-          submitRegister(
-            {
-              avatar: data.avatar[0],
-              username: data.username,
-              email: data.email,
-              password: data.password,
-            },
-            setIsLoading,
-            router,
-          );
-        })}
+        title="Registration"
+        comment="Welcome to otapix 🥳"
+        isLoading={registerIsLoading}
+        subComment="Please, fill those fields to create an account"
+        alternative={["Already have an account?", "Login!", "/auth/login"]}
+        onSubmit={handleSubmit(
+          async (data: FieldValues) => await doRegister(data)
+        )}
       >
-        <CircularDropzone label="Photo de profil" {...avatarRegister} />
+        <CircularDropzone label="Avatar" {...avatarRegister} />
         {registerFormFields.map((field: FormField, key: number) => (
-          <AuthFormField key={key} register={register} errors={errors} {...field} />
+          <AuthFormField
+            key={key}
+            register={register}
+            errors={errors}
+            {...field}
+          />
         ))}
       </AuthForm>
     </div>

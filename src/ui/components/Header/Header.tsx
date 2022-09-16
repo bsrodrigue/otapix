@@ -30,7 +30,12 @@ export default function Header() {
             ))}
             {user ? (
               <>
-                <Avatar src={user.photoURL} width={50} height={50} onClick={() => setModalIsOpen(true)} />
+                <Avatar
+                  src={user.photoURL}
+                  width={50}
+                  height={50}
+                  onClick={() => setModalIsOpen(true)}
+                />
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={() => setModalIsOpen(false)}
@@ -56,11 +61,15 @@ export default function Header() {
                   </div>
 
                   <div style={{ width: "100%" }}>
-                    <SpinnerButton text="Modifier mon profil" />
+                    <SpinnerButton text="Edit my profile" />
                     <div className={style.modal_actions}>
-                      <SpinnerButton type="error" onClick={() => signOut(auth)} text="Deconnexion" />
+                      <SpinnerButton
+                        type="error"
+                        onClick={() => signOut(auth)}
+                        text="Logout"
+                      />
                       <Link href="/profile/dashboard">
-                        <SpinnerButton text="Tableau de bord" />
+                        <SpinnerButton text="Dashboard" />
                       </Link>
                     </div>
                   </div>

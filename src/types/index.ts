@@ -11,8 +11,9 @@ export type PacksSetter = Setter<Packs>;
 
 export type Packs = Array<Pack>;
 export type Puzzles = Array<Puzzle>;
-export interface Pack {
-  id: string;
+
+export type HasId = { id: string };
+export interface Pack extends HasId {
   authorId: string;
   title: string;
   cover: string;
@@ -20,8 +21,7 @@ export interface Pack {
   online?: boolean;
   puzzles?: Puzzles;
 }
-export interface Puzzle {
-  id: string;
+export interface Puzzle extends HasId {
   packId: string;
   word: string;
   pictures: Array<string>;

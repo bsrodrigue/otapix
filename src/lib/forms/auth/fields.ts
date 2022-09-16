@@ -1,37 +1,35 @@
 import { FormField } from "../../../types";
 
+const emailFormField: FormField = {
+  label: "Email address",
+  placeholder: "Enter your email address",
+  type: "mail",
+  name: "email",
+};
+
+const passwordFormField: FormField = {
+  label: "Password",
+  placeholder: "Enter your password",
+  type: "password",
+  name: "password",
+};
+
+const usernameFormField: FormField = {
+  label: "Username",
+  placeholder: "Enter your username",
+  type: "text",
+  name: "username",
+};
+
 export const loginFormFields: Array<FormField> = [
-  {
-    label: "Adresse mail",
-    placeholder: "Entrez votre adresse mail",
-    type: "mail",
-    name: "email",
-  },
-  {
-    label: "Mot de passe",
-    placeholder: "Entrez votre mot de passe",
-    type: "password",
-    name: "password",
-  },
+  emailFormField,
+  passwordFormField,
 ];
 
 export const registerFormFields: Array<FormField> = [
-  {
-    label: "Nom d'utilisateur",
-    placeholder: "Entrez votre nom d'utilisateur",
-    type: "text",
-    name: "username",
-  },
-  {
-    label: "Adresse mail",
-    placeholder: "Entrez votre adresse mail",
-    type: "email",
-    name: "email",
-  },
-  {
-    label: "Mot de passe",
-    placeholder: "Entrez votre mot de passe",
-    type: "password",
-    name: "password",
-  },
+  usernameFormField,
+  emailFormField,
+  passwordFormField,
 ];
+
+export const passwordForgotFormFields: Array<FormField> = [emailFormField];

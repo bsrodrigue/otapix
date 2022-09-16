@@ -4,6 +4,7 @@ import { BooleanSetter, NumberSetter, Packs, PacksSetter } from "../../../types"
 import style from "./Accordion.module.css";
 
 export interface AccordionProps {
+  label: string;
   packs: Packs;
   currentPackIndex: number;
   loading: boolean;
@@ -14,6 +15,7 @@ export interface AccordionProps {
 }
 
 export default function Accordion({
+  label,
   packs,
   loading,
   currentPackIndex,
@@ -26,7 +28,7 @@ export default function Accordion({
     <div className={style.accordion}>
       <div className={style.accordion_menu}>
         <div className={style.accordion_header}>
-          <p className={style.accordion_title}>Mes creations</p>
+          <p className={style.accordion_title}>{label}</p>
           <div className={style.accordion_actions}>
             <div className={`${style.accordion_action}`} onClick={onCreatePackClick}>
               <BsPlusCircleFill />
@@ -40,7 +42,7 @@ export default function Accordion({
         <div className={`${style.accordion_content} ${isClosed && style.accordion_closed}`}>
           {loading ? (
             <div className={`${style.accordion_item} ${style.selected}`}>
-              <p>Packs en cours de chargement...</p>
+              <p>Packs loading...</p>
             </div>
           ) : (
             <>
@@ -60,8 +62,8 @@ export default function Accordion({
                 })
               ) : (
                 <div className={`${style.accordion_item} ${style.selected}`} onClick={onCreatePackClick}>
-                  <p>Pas de packs...</p>
-                  <small>Cliquez ici pour ajouter un pack</small>
+                  <p>No packs...</p>
+                  <small>Touch here to create a pack</small>
                 </div>
               )}
             </>

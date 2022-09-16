@@ -11,27 +11,29 @@ export default function Welcome() {
       <div className="wrapper">
         <h1 className={`${style.welcome}`}>Otapix</h1>
         <h3>
-          Inspiré du célèbre jeu mobile{" "}
+          Inpired from the famous &nbsp;
           <Link href="https://play.google.com/store/apps/details?id=de.lotum.whatsinthefoto.us&hl=en&gl=US">
-            <a className={style.span}>4 Images 1 Mot</a>
+            <a className={style.span}>4 Pictures 1 Word</a>
           </Link>{" "}
         </h3>
         <div className={style.description}>
           <div className={style.description_left}>
-            <h1>Les règles du jeu sont simples 😄</h1>
-            <h1>Devine le bon mot ou le nom du personnage!</h1>
-            <h1>Crée et partage tes propres niveaux!</h1>
+            <h1>The rules are simple 😄</h1>
+            <h1>You just have to guess the correct word or name</h1>
+            <h1>
+              Or, create your own levels and share them with the community
+            </h1>
             <div className={style.call_to_action}>
               <Link href="#recommendations">
                 <SpinnerButton
                   type="error"
-                  text="Jouer à un pack"
+                  text="Play a pack"
                   style={{ height: "5em" }}
                 />
               </Link>
               <Link href={user ? "/profile/dashboard" : "/auth/login"}>
                 <SpinnerButton
-                  text="Créer mon propre pack"
+                  text="Create my own pack"
                   style={{ height: "5em" }}
                 />
               </Link>
@@ -56,7 +58,7 @@ export default function Welcome() {
           </div>
         </div>
         <h1>
-          Fait avec 🔥 par{" "}
+          Built with 🔥 by{" "}
           <Link href="https://github.com/bsrodrigue">
             <a className="primary">Miyamoto Moosashee</a>
           </Link>
