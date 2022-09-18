@@ -9,7 +9,6 @@ import { Footer } from "../ui/components/Footer";
 import { Section } from "../ui/components/Section";
 import { Welcome } from "../ui/components/Welcome";
 
-
 export default function Home() {
   const [doGetAllPacks, getAllPacksIsLoading, packs] = useApi<
     typeof getAllPacks,
@@ -40,6 +39,7 @@ export default function Home() {
           )}
         </div>
       </Section>
+
       <Section title="Why building this project?">
         <div style={{ display: "flex", flexWrap: "wrap", gap: "3em" }}>
           <div style={{ color: "white", flex: "1", fontSize: "1.3em" }}>
@@ -66,6 +66,7 @@ export default function Home() {
               </a>{" "}
             </p>
           </div>
+
           <img
             style={{
               width: "100%",

@@ -30,6 +30,7 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
     setValue("puzzles", [...values.puzzles, puzzle]);
     onSuccess();
   });
+
   const [doEditPuzzle, editPuzzleIsLoading] = useApi<typeof editPuzzle, Puzzle>(
     submitEditPuzzle,
     (puzzle) => {
@@ -91,16 +92,17 @@ export default function PuzzleEditor({ isOpen, setIsOpen }: PuzzleEditorProps) {
       {isOpen && (
         <div className={style.container}>
           <p>Clue images</p>
-          <div className={style.picture_fields}>
+          <label className={style.picture_fields}>
             {[1, 2, 3, 4].map((value, key) => (
               <RectangularDropzone
                 key={key}
                 src={values[`puzzle-pic-${value}`]}
                 {...register(`puzzle-pic-${value}`)}
                 isSquare
+                multiple
               />
             ))}
-          </div>
+          </label>
 
           <p>Word or name to guess</p>
           <input
