@@ -8,3 +8,7 @@ export function getPuzzleIsFromPackQuery(packId: string) {
 export function getUserIsAuthorQuery(uid: string) {
   return query(collection(db, "packs"), where("authorId", "==", uid));
 }
+
+export function getUserOwnsProfileQuery(uid: string) {
+  return query(collection(db, "user_profiles"), where("userId", "==", uid));
+}

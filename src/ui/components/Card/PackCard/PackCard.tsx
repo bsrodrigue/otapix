@@ -8,7 +8,7 @@ interface PackCardProps {
 }
 
 export default function PackCard({ pack }: PackCardProps) {
-  const { id, title, cover, puzzles, difficulty } = pack;
+  const { id, title, cover, puzzles, difficulty, packAuthor } = pack;
   return (
     <div className={`${style.packcard_container} material-shadow`}>
       <img className={`${style.packcard_cover}`} src={cover} alt="Pack cover" />
@@ -18,7 +18,7 @@ export default function PackCard({ pack }: PackCardProps) {
             <p className={style.packcard_title}>{title}</p>
             <small className={style.packcard_author}>
               by &nbsp;
-              <span>doomer_coder</span>
+              <span>{packAuthor || "Anonymous"}</span>
             </small>
             <p className={style.packcard_puzzle_count}>
               {puzzles?.length}

@@ -31,7 +31,8 @@ import {
 } from "../../lib/utils";
 import { Pack, Packs, Puzzle, Puzzles } from "../../types";
 import { hydratePack, hydratePuzzle } from "./hydrators";
-import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery } from "./queries";
+import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery, getUserOwnsProfileQuery } from "./queries";
+import { UserProfile } from '../../types/index';
 
 const PACKS = "packs";
 
@@ -101,6 +102,29 @@ export async function createDocument({ document, path }: CreateDocumentParams) {
 export async function deleteDocument(docRef: DocumentReference) {
   await deleteDoc(docRef);
 }
+
+export async function createUserProfile(userProfile: UserProfile) {
+  return await createDocument({ document: userProfile, path: "user_profiles" })
+}
+
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const q = getUserOwnsProfileQuery(uid);
+  const profileDoc = await getDocs(q);
+  if (profileDoc.empty) {
+    return null;
+  } else {
+    const data = profileDoc.docs[0].data();
+    const ref = profileDoc.docs[0];
+    return {
+      id: ref.id,
+      userId: data.userId,
+      email: data.email,
+      avatar: data.avatar,
+      username: data.username,
+    };
+  }
+}
+
 
 interface UploadPuzzlePictureParams {
   packTitle: string;
@@ -296,7 +320,7 @@ interface CreatePackParams {
 export async function createPack({
   pack,
   cover,
-}: CreatePackParams): Promise<Required<Pack>> {
+}: CreatePackParams): Promise<Pack> {
   const { title, difficulty, authorId } = pack;
 
   const packRef = await createDocument({
@@ -359,12 +383,22 @@ function extractDocs(docs: QuerySnapshot<DocumentData>) {
   return temp;
 }
 
+async function getAuthorNameById(userId: string): Promise<string | null> {
+  const userProfile = await getUserProfile(userId);
+  return userProfile?.username || null;
+}
+
 async function packDocsToPacks(packsDocs: QuerySnapshot<DocumentData>) {
   const result: Packs = [];
   for (const doc of extractDocs(packsDocs)) {
     const pack = hydratePack(doc, []);
     const q = getPuzzleIsFromPackQuery(doc.id);
     const puzzlesDocs = await getDocs(q);
+    const authorName = await getAuthorNameById(pack.authorId);
+
+    if (authorName) {
+      pack.packAuthor = authorName;
+    }
 
     puzzlesDocs.forEach((doc) => {
       pack.puzzles?.push(hydratePuzzle(doc));

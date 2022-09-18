@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
 import { submitGetUserPacks } from "../../api/app";
-import { getPacksFromUser } from "../../api/firebase";
+import { getPacksFromUser, getUserProfile } from "../../api/firebase";
 import PuzzleEditorProvider from "../../context/providers/editor/PuzzleEditorProvider";
 import { useAuth } from "../../hooks";
 import { useApi } from "../../hooks/useApi";
@@ -37,7 +37,9 @@ export default function DashboardPage() {
   }, [userPacks]);
 
   useEffect(() => {
-    user && doGetUserPacks(user.uid);
+    if (user) {
+      doGetUserPacks(user.uid);
+    }
   }, [user, doGetUserPacks]);
 
   return (
