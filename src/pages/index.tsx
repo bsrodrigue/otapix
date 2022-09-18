@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Skeleton from "react-loading-skeleton";
 import { submitGetAllPacks } from "../api/app";
 import { getAllPacks } from "../api/firebase";
 import { useApi } from "../hooks/useApi";
@@ -7,6 +8,7 @@ import { Header, PackCard } from "../ui/components";
 import { Footer } from "../ui/components/Footer";
 import { Section } from "../ui/components/Section";
 import { Welcome } from "../ui/components/Welcome";
+
 
 export default function Home() {
   const [doGetAllPacks, getAllPacksIsLoading, packs] = useApi<
@@ -28,7 +30,7 @@ export default function Home() {
         <div id="recommendations"></div>
         <div className="packcard-grid">
           {getAllPacksIsLoading ? (
-            <p>Packs are loading...</p>
+            <Skeleton height={300} baseColor="#d61c4e" highlightColor="white" />
           ) : (
             <>
               {packs?.map((pack, key) => (
