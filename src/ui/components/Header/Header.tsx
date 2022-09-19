@@ -10,9 +10,12 @@ import { Avatar } from "../Avatar";
 import { IconButton } from "../IconButton";
 import { SpinnerButton } from "../Button/SpinnerButton";
 import { headerLinks } from "../../../config/site";
+import FullScreenModal from "../FullScreenModal/FullScreenModal";
+import { UserProfileView } from "../../Views/UserProfileView";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const { user } = useAuth();
 
   return (
@@ -36,44 +39,17 @@ export default function Header() {
                   height={50}
                   onClick={() => setModalIsOpen(true)}
                 />
-                <Modal
-                  isOpen={modalIsOpen}
-                  onRequestClose={() => setModalIsOpen(false)}
-                  ariaHideApp={false}
-                  style={{
-                    content: {
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "10em 1.5em 1.5em 1.5em",
-                      margin: "-3em",
-                      borderRadius: "2em",
-                      textAlign: "center",
-                    },
-                  }}
-                >
-                  <div style={{ position: "relative", width: "100%" }}>
-                    <IconButton onClick={() => setModalIsOpen(false)} />
-                    <Avatar width={150} height={150} src={user.photoURL} />
-                    <p className={style.modal_username}>{user.displayName}</p>
-                    <small className={style.modal_email}>{user.email}</small>
-                  </div>
-
-                  <div style={{ width: "100%" }}>
-                    <SpinnerButton text="Edit my profile" />
-                    <div className={style.modal_actions}>
-                      <SpinnerButton
-                        type="error"
-                        onClick={() => signOut(auth)}
-                        text="Logout"
-                      />
-                      <Link href="/profile/dashboard">
-                        <SpinnerButton text="Dashboard" />
-                      </Link>
-                    </div>
-                  </div>
-                </Modal>
+                {
+                  isEditMode ? (
+                    <FullScreenModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} >
+                      <UserProfileView user={user} onCloseButtonClick={() => setModalIsOpen(false)} />
+                    </FullScreenModal>
+                  ) : (
+                    <FullScreenModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} >
+                      <UserProfileView user={user} onCloseButtonClick={() => setModalIsOpen(false)} />
+                    </FullScreenModal>
+                  )
+                }
               </>
             ) : (
               user !== undefined && (
