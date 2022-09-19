@@ -1,17 +1,13 @@
-import style from "./Header.module.css";
-import { BsSearch } from "react-icons/bs";
 import Link from "next/link";
-import Modal from "react-modal";
-import { useAuth } from "../../../hooks/index";
 import { useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../../../config/firebase";
-import { Avatar } from "../Avatar";
-import { IconButton } from "../IconButton";
-import { SpinnerButton } from "../Button/SpinnerButton";
+import { BsSearch } from "react-icons/bs";
 import { headerLinks } from "../../../config/site";
-import FullScreenModal from "../FullScreenModal/FullScreenModal";
+import { useAuth } from "../../../hooks/index";
+import EditUserProfileView from "../../Views/EditUserProfileView/EditUserProfileView";
 import { UserProfileView } from "../../Views/UserProfileView";
+import { Avatar } from "../Avatar";
+import FullScreenModal from "../FullScreenModal/FullScreenModal";
+import style from "./Header.module.css";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -42,11 +38,18 @@ export default function Header() {
                 {
                   isEditMode ? (
                     <FullScreenModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} >
-                      <UserProfileView user={user} onCloseButtonClick={() => setModalIsOpen(false)} />
+                      <EditUserProfileView
+                        user={user}
+                        onCancelEditClick={() => setIsEditMode(false)}
+                        onCloseButtonClick={() => setModalIsOpen(false)}
+                      />
                     </FullScreenModal>
                   ) : (
                     <FullScreenModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} >
-                      <UserProfileView user={user} onCloseButtonClick={() => setModalIsOpen(false)} />
+                      <UserProfileView
+                        user={user}
+                        onEditProfileClick={() => setIsEditMode(true)}
+                        onCloseButtonClick={() => setModalIsOpen(false)} />
                     </FullScreenModal>
                   )
                 }

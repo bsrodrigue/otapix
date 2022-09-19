@@ -1,18 +1,17 @@
 import { signOut, User } from "firebase/auth";
-import Link from "next/link";
 import { auth } from "../../../config/firebase";
 import { Avatar } from "../../components/Avatar";
 import { SpinnerButton } from "../../components/Button/SpinnerButton";
 import { IconButton } from "../../components/IconButton";
-import style from "./UserProfileView.module.css";
+import style from "./EditUserProfileView.module.css";
 
 interface UserProfileViewProps {
     user: User;
     onCloseButtonClick: () => void;
-    onEditProfileClick: () => void;
+    onCancelEditClick: () => void;
 }
 
-export default function UserProfileView({ user, onCloseButtonClick, onEditProfileClick }: UserProfileViewProps) {
+export default function EditUserProfileView({ user, onCloseButtonClick, onCancelEditClick }: UserProfileViewProps) {
     return (
         <>
             <div style={{ position: "relative", width: "100%" }}>
@@ -23,16 +22,13 @@ export default function UserProfileView({ user, onCloseButtonClick, onEditProfil
             </div>
 
             <div style={{ width: "100%" }}>
-                <SpinnerButton onClick={onEditProfileClick} text="Edit my profile" />
                 <div className={style.actions}>
                     <SpinnerButton
                         type="error"
-                        onClick={() => signOut(auth)}
-                        text="Logout"
+                        onClick={onCancelEditClick}
+                        text="Cancel"
                     />
-                    <Link href="/profile/dashboard">
-                        <SpinnerButton text="Dashboard" />
-                    </Link>
+                    <SpinnerButton text="Confirm" />
                 </div>
             </div>
         </>

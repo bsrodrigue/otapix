@@ -1,0 +1,22 @@
+.username {
+    font-weight: bold;
+    font-size: 2em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+}
+
+.email {
+    font-weight: bold;
+}
+
+.bio {
+    font-weight: lighter;
+    font-size: 0.9em;
+    padding: 1em;
+}
+
+.actions {
+    display: flex;
+    gap: 1em;
+    width: 100%;
+}
