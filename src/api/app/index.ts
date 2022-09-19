@@ -10,6 +10,7 @@ import { Difficulty } from "../../enums";
 import { OtapixErrorCodes, RequestNames } from "../../lib/errors";
 import {
   PackCreationError,
+  ProfileEditError,
   PuzzleCreationError,
   PuzzleEditError,
 } from "../../lib/errors/classes";
@@ -22,10 +23,12 @@ import {
   deletePuzzle,
   editPackFields,
   editPuzzle,
+  editUserProfile,
   getAllPacks,
   getPacksFromUser,
   signIn,
   signUp,
+  updateUserProfile,
   uploadProfilePicture,
 } from "../firebase";
 interface SubmitCreatePackParams {
@@ -182,3 +185,14 @@ export const submitEditPuzzle: APICall<typeof editPuzzle> = {
   },
   requestName: RequestNames.EDIT_PUZZLE,
 };
+
+export const submitEditUserProfile: APICall<typeof updateUserProfile> = {
+  call: async (...params: Parameters<typeof updateUserProfile>) => {
+    const { username, avatar } = params[1];
+    if (!username && !avatar) throw new ProfileEditError(OtapixErrorCodes.NO_USER_INFORMATION_PROVIDED);
+    await updateUserProfile(...params);
+    editUserProfile({ username, avatar }, params[0].uid);
+  },
+
+  requestName: RequestNames.UPDATE_USER_PROFILE,
+}

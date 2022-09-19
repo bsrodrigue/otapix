@@ -24,3 +24,10 @@ export class PuzzleEditError extends OtapixError {
     super("An error occured while editing a puzzle", code);
   }
 }
+
+
+export class ProfileEditError extends OtapixError {
+  constructor(code: string) {
+    super("An error occured while editing user profile", code);
+  }
+}

@@ -1,7 +1,11 @@
-import { signOut, User } from "firebase/auth";
-import { auth } from "../../../config/firebase";
-import { Avatar } from "../../components/Avatar";
+import { User } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from 'react-hook-form';
+import { submitEditUserProfile } from "../../../api/app";
+import { uploadProfilePicture } from "../../../api/firebase";
+import { useApi } from "../../../hooks/useApi";
 import { SpinnerButton } from "../../components/Button/SpinnerButton";
+import { RectangularDropzone } from "../../components/Dropzone";
 import { IconButton } from "../../components/IconButton";
 import style from "./EditUserProfileView.module.css";
 
@@ -12,12 +16,30 @@ interface UserProfileViewProps {
 }
 
 export default function EditUserProfileView({ user, onCloseButtonClick, onCancelEditClick }: UserProfileViewProps) {
+    const methods = useForm();
+    const { register, setValue, handleSubmit } = methods;
+    const [isLoading, setIsLoading] = useState(false);
+    const [doEditUserProfile] = useApi(submitEditUserProfile);
+
+    useEffect(() => {
+        if (user) {
+            setValue("avatar", user.photoURL || "");
+            setValue("username", user.displayName || "");
+        }
+
+    }, [user, setValue]);
+
     return (
-        <>
+        <FormProvider {...methods}>
             <div style={{ position: "relative", width: "100%" }}>
                 <IconButton onClick={onCloseButtonClick} />
-                <Avatar width={150} height={150} src={user.photoURL} />
-                <p className={style.username}>{user.displayName}</p>
+                <RectangularDropzone className={style.avatar} isSquare src={user.photoURL || ""} {...register("avatar")} />
+                <input
+                    type="text"
+                    placeholder="Please enter your username"
+                    className={style.username}
+                    {...register("username")}
+                />
                 <small className={style.email}>{user.email}</small>
             </div>
 
@@ -27,10 +49,24 @@ export default function EditUserProfileView({ user, onCloseButtonClick, onCancel
                         type="error"
                         onClick={onCancelEditClick}
                         text="Cancel"
+                        disabled={isLoading}
                     />
-                    <SpinnerButton text="Confirm" />
+                    <SpinnerButton
+                        onClick={handleSubmit(async (data) => {
+                            let { username, avatar } = data;
+                            setIsLoading(true);
+                            if (avatar instanceof FileList) {
+                                const file = avatar[0];
+                                avatar = await uploadProfilePicture(file, user);
+                            }
+                            await doEditUserProfile(user, { username, avatar })
+                            setIsLoading(false);
+                        })}
+                        buttonType="submit"
+                        isLoading={isLoading}
+                        text="Confirm" />
                 </div>
             </div>
-        </>
+        </FormProvider>
     )
 }

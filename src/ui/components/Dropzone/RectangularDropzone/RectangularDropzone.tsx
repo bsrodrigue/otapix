@@ -14,13 +14,13 @@ interface CircularDropzoneProps {
   isSquare?: boolean;
   multiple?: boolean;
   disabled?: boolean;
+  className?: string;
 }
 
 const CircularDropzone = React.forwardRef(
-  ({ name, label, onChange, src, isSquare, ...rest }: CircularDropzoneProps, ref: any) => {
+  ({ name, label, onChange, src, isSquare, className, ...rest }: CircularDropzoneProps, ref: any) => {
     const [imageSrc, setImageSrc] = useState<string>("");
-    const { setValue, watch } = useFormContext();
-    const values = watch();
+    const { setValue } = useFormContext();
     const previewRef = useRef<any>();
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const CircularDropzone = React.forwardRef(
     }, [name, src]);
 
     return (
-      <label className={`${style.circular_dropzone} ${isSquare && style.is_square}`} htmlFor={`dropzone-${name}`}>
+      <label className={`${style.circular_dropzone} ${isSquare && style.is_square} ${className}`} htmlFor={`dropzone-${name}`}>
         {label}
         {imageSrc ? (
           <img ref={previewRef} className={`${style.image_preview} ${isSquare && style.is_square}`} src={imageSrc} />

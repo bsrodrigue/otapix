@@ -60,6 +60,13 @@ export async function signIn({ email, password }: LoginParams) {
   return userCredentials;
 }
 
+export async function updateUserProfile(user: User, { username, avatar }: { username: string; avatar: string }) {
+  await updateProfile(user, {
+    displayName: username,
+    photoURL: avatar,
+  });
+}
+
 // Storage
 export async function uploadFile(path: string, file: Blob) {
   const fileRef = ref(storage, path);
@@ -105,6 +112,13 @@ export async function deleteDocument(docRef: DocumentReference) {
 
 export async function createUserProfile(userProfile: UserProfile) {
   return await createDocument({ document: userProfile, path: "user_profiles" })
+}
+
+export async function editUserProfile(userProfile: Partial<UserProfile>, uid: string) {
+  const q = getUserOwnsProfileQuery(uid);
+  const profileDoc = await getDocs(q);
+  const ref = profileDoc.docs[0];
+  return await updateDoc(ref.ref, { ...userProfile });
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
