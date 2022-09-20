@@ -22,11 +22,7 @@ export default function Header() {
             <a className={style.header_logo}>Otapix</a>
           </Link>
           <div className={style.auth_links}>
-            {headerLinks.map((link, key) => (
-              <Link key={key} href={link.url}>
-                {link.label}
-              </Link>
-            ))}
+
             {user ? (
               <>
                 <Avatar
@@ -67,20 +63,13 @@ export default function Header() {
       </div>
 
       <div className="wrapper">
-        <div className={style.search_form}>
-          <div className={style.search_form_content}>
-            <input
-              className={style.search_form_input}
-              type="text"
-              name="search"
-              id=""
-              placeholder="Search for an otapix pack..."
-            />
-            <div className={`${style.search_form_button} material-shadow`}>
-              <BsSearch />
-            </div>
-          </div>
-        </div>
+        {headerLinks.map((link, key) => (
+          <Link key={key} href={link.url}>
+            <a className={style.header_link}>
+              {link.label}
+            </a>
+          </Link>
+        ))}
       </div>
     </header>
   );

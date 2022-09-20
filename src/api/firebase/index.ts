@@ -14,8 +14,12 @@ import {
   DocumentSnapshot,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
+  query,
   QuerySnapshot,
   setDoc,
+  startAfter,
   updateDoc,
   WithFieldValue,
 } from "firebase/firestore";
@@ -441,9 +445,25 @@ export async function getPack(packId: string) {
   return await packDocToPacks(packDoc);
 }
 
+export async function firstBatch() {
+  const firstBatch = query(collection(db, "packs"), orderBy("title", "desc"), limit(3))
+  const packDocs = await getDocs(firstBatch);
+  const packs = await packDocsToPacks(packDocs);
+  const lastKey = packs[packs.length - 1].title;
+  return { packs, lastKey };
+}
+
+export async function nextBatch(lastDocTitle: string) {
+  const next = query(collection(db, "packs"), orderBy("title", "desc"), startAfter(lastDocTitle), limit(3))
+  const packDocs = await getDocs(next);
+  const packs = await packDocsToPacks(packDocs);
+  const lastKey = packs[packs.length - 1]?.title || "";
+  return { packs, lastKey };
+}
+
 export async function getAllPacks() {
-  const packsRef = getRef(PACKS);
-  const packsDocs = await getDocs(packsRef);
+  const starterPacks = query(collection(db, "packs"), orderBy("title", "desc"), limit(4))
+  const packsDocs = await getDocs(starterPacks);
   return await packDocsToPacks(packsDocs);
 }
 
