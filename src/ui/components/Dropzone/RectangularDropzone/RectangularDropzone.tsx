@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import { readFileAsDataURL, setImagePreviewFromInput } from "../../../../lib/utils";
 import style from "./RectangularDropzone.module.css";
 
@@ -12,11 +13,14 @@ interface CircularDropzoneProps {
   src?: string | File;
   isSquare?: boolean;
   multiple?: boolean;
+  disabled?: boolean;
+  className?: string;
 }
 
 const CircularDropzone = React.forwardRef(
-  ({ name, label, onChange, src, isSquare, ...rest }: CircularDropzoneProps, ref: any) => {
+  ({ name, label, onChange, src, isSquare, className, ...rest }: CircularDropzoneProps, ref: any) => {
     const [imageSrc, setImageSrc] = useState<string>("");
+    const { setValue } = useFormContext();
     const previewRef = useRef<any>();
 
     useEffect(() => {
@@ -30,8 +34,6 @@ const CircularDropzone = React.forwardRef(
           if (src.length === 0) {
             setImageSrc("");
             return;
-          } else if (src.length > 1) {
-            console.log("Aye");
           }
           src = src[0];
           const dataURL = (await readFileAsDataURL(src)) as string;
@@ -42,7 +44,7 @@ const CircularDropzone = React.forwardRef(
     }, [name, src]);
 
     return (
-      <label className={`${style.circular_dropzone} ${isSquare && style.is_square}`} htmlFor={`dropzone-${name}`}>
+      <label className={`${style.circular_dropzone} ${isSquare && style.is_square} ${className}`} htmlFor={`dropzone-${name}`}>
         {label}
         {imageSrc ? (
           <img ref={previewRef} className={`${style.image_preview} ${isSquare && style.is_square}`} src={imageSrc} />
@@ -57,6 +59,18 @@ const CircularDropzone = React.forwardRef(
           hidden
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setImagePreviewFromInput(e.target, previewRef.current);
+
+            const pictures = Array.from(e.target.files || []);
+            if (pictures?.length && pictures.length > 1) {
+              for (let j = 0; j < pictures.length; j++) {
+                const dT = new DataTransfer();
+                dT.items.add(new File([pictures[j]], `puzzle-pic-${j}`));
+                setValue(`puzzle-pic-${j + 1}`, dT.files);
+              }
+              if (!(pictures?.length && pictures.length < 4))
+                return;
+            }
+
             onChange?.(e);
           }}
           ref={ref}

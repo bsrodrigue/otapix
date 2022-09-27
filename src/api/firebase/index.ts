@@ -14,8 +14,12 @@ import {
   DocumentSnapshot,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
+  query,
   QuerySnapshot,
   setDoc,
+  startAfter,
   updateDoc,
   WithFieldValue,
 } from "firebase/firestore";
@@ -31,7 +35,8 @@ import {
 } from "../../lib/utils";
 import { Pack, Packs, Puzzle, Puzzles } from "../../types";
 import { hydratePack, hydratePuzzle } from "./hydrators";
-import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery } from "./queries";
+import { getPuzzleIsFromPackQuery, getUserIsAuthorQuery, getUserOwnsProfileQuery } from "./queries";
+import { UserProfile } from '../../types/index';
 
 const PACKS = "packs";
 
@@ -57,6 +62,13 @@ export async function signIn({ email, password }: LoginParams) {
     password
   );
   return userCredentials;
+}
+
+export async function updateUserProfile(user: User, { username, avatar }: { username: string; avatar: string }) {
+  await updateProfile(user, {
+    displayName: username,
+    photoURL: avatar,
+  });
 }
 
 // Storage
@@ -101,6 +113,36 @@ export async function createDocument({ document, path }: CreateDocumentParams) {
 export async function deleteDocument(docRef: DocumentReference) {
   await deleteDoc(docRef);
 }
+
+export async function createUserProfile(userProfile: UserProfile) {
+  return await createDocument({ document: userProfile, path: "user_profiles" })
+}
+
+export async function editUserProfile(userProfile: Partial<UserProfile>, uid: string) {
+  const q = getUserOwnsProfileQuery(uid);
+  const profileDoc = await getDocs(q);
+  const ref = profileDoc.docs[0];
+  return await updateDoc(ref.ref, { ...userProfile });
+}
+
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const q = getUserOwnsProfileQuery(uid);
+  const profileDoc = await getDocs(q);
+  if (profileDoc.empty) {
+    return null;
+  } else {
+    const data = profileDoc.docs[0].data();
+    const ref = profileDoc.docs[0];
+    return {
+      id: ref.id,
+      userId: data.userId,
+      email: data.email,
+      avatar: data.avatar,
+      username: data.username,
+    };
+  }
+}
+
 
 interface UploadPuzzlePictureParams {
   packTitle: string;
@@ -296,7 +338,7 @@ interface CreatePackParams {
 export async function createPack({
   pack,
   cover,
-}: CreatePackParams): Promise<Required<Pack>> {
+}: CreatePackParams): Promise<Pack> {
   const { title, difficulty, authorId } = pack;
 
   const packRef = await createDocument({
@@ -359,12 +401,22 @@ function extractDocs(docs: QuerySnapshot<DocumentData>) {
   return temp;
 }
 
+async function getAuthorNameById(userId: string): Promise<string | null> {
+  const userProfile = await getUserProfile(userId);
+  return userProfile?.username || null;
+}
+
 async function packDocsToPacks(packsDocs: QuerySnapshot<DocumentData>) {
   const result: Packs = [];
   for (const doc of extractDocs(packsDocs)) {
     const pack = hydratePack(doc, []);
     const q = getPuzzleIsFromPackQuery(doc.id);
     const puzzlesDocs = await getDocs(q);
+    const authorName = await getAuthorNameById(pack.authorId);
+
+    if (authorName) {
+      pack.packAuthor = authorName;
+    }
 
     puzzlesDocs.forEach((doc) => {
       pack.puzzles?.push(hydratePuzzle(doc));
@@ -393,9 +445,25 @@ export async function getPack(packId: string) {
   return await packDocToPacks(packDoc);
 }
 
+export async function firstBatch() {
+  const firstBatch = query(collection(db, "packs"), orderBy("title", "desc"), limit(3))
+  const packDocs = await getDocs(firstBatch);
+  const packs = await packDocsToPacks(packDocs);
+  const lastKey = packs[packs.length - 1].title;
+  return { packs, lastKey };
+}
+
+export async function nextBatch(lastDocTitle: string) {
+  const next = query(collection(db, "packs"), orderBy("title", "desc"), startAfter(lastDocTitle), limit(3))
+  const packDocs = await getDocs(next);
+  const packs = await packDocsToPacks(packDocs);
+  const lastKey = packs[packs.length - 1]?.title || "";
+  return { packs, lastKey };
+}
+
 export async function getAllPacks() {
-  const packsRef = getRef(PACKS);
-  const packsDocs = await getDocs(packsRef);
+  const starterPacks = query(collection(db, "packs"), orderBy("title", "desc"), limit(4))
+  const packsDocs = await getDocs(starterPacks);
   return await packDocsToPacks(packsDocs);
 }
 

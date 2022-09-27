@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { CgMenuRound } from "react-icons/cg";
+import { AiOutlineHome } from "react-icons/ai";
 import { submitGetUserPacks } from "../../api/app";
 import { getPacksFromUser } from "../../api/firebase";
 import PuzzleEditorProvider from "../../context/providers/editor/PuzzleEditorProvider";
@@ -11,6 +12,7 @@ import { Fab } from "../../ui/components/Button/Fab";
 import { PackEditor } from "../../ui/components/Editor/PackEditor";
 import { EmptyPacks } from "../../ui/components/Misc/EmptyPacks";
 import { DashboardSidePanel } from "../../ui/components/SidePanel/DashboardSidePanel";
+import { useRouter } from "next/router";
 
 export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
@@ -21,6 +23,7 @@ export default function DashboardPage() {
     Packs
   >(submitGetUserPacks);
   const { user } = useAuth();
+  const router = useRouter();
 
   function addPuzzlePack() {
     if (!user) return;
@@ -37,7 +40,9 @@ export default function DashboardPage() {
   }, [userPacks]);
 
   useEffect(() => {
-    user && doGetUserPacks(user.uid);
+    if (user) {
+      doGetUserPacks(user.uid);
+    }
   }, [user, doGetUserPacks]);
 
   return (
@@ -64,6 +69,9 @@ export default function DashboardPage() {
       )}
 
       {packs.length === 0 && <EmptyPacks />}
+      <Fab style={{ zIndex: "5", bottom: "3.5em" }} onClick={() => router.push("/")}>
+        <AiOutlineHome />
+      </Fab>
       <Fab onClick={() => setIsOpen(!isOpen)}>
         <CgMenuRound />
       </Fab>

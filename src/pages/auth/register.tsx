@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { FieldValues, useForm } from "react-hook-form";
 import { submitRegister } from "../../api/app";
 import { useApi } from "../../hooks/useApi";
-import { RequestNames } from "../../lib/errors";
 import { registerFormFields } from "../../lib/forms/auth/fields";
 import { registerSchema } from "../../lib/forms/auth/validationSchemas";
 import { FormField } from "../../types";

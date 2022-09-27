@@ -1,6 +1,8 @@
 /* Puzzle Editor */
+
 .picture_fields {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 1em;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1em;
 }

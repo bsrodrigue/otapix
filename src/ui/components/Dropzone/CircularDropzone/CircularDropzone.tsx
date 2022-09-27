@@ -1,9 +1,6 @@
-import React, { useEffect } from "react";
-import { ChangeEvent, useRef } from "react";
-import { UseFormRegister, FieldValues } from "react-hook-form";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { setImagePreviewFromInput } from "../../../../lib/utils";
 import style from "./CircularDropzone.module.css";
-import { useState } from "react";
 
 interface CircularDropzoneProps {
   name?: string;

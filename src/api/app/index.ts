@@ -10,21 +10,25 @@ import { Difficulty } from "../../enums";
 import { OtapixErrorCodes, RequestNames } from "../../lib/errors";
 import {
   PackCreationError,
+  ProfileEditError,
   PuzzleCreationError,
   PuzzleEditError,
 } from "../../lib/errors/classes";
-import { LoginParams, Pack, Puzzle } from "../../types";
+import { LoginParams, Pack, Puzzle, UserProfile } from "../../types";
 import {
   addPuzzle,
   createPack,
+  createUserProfile,
   deletePack,
   deletePuzzle,
   editPackFields,
   editPuzzle,
+  editUserProfile,
   getAllPacks,
   getPacksFromUser,
   signIn,
   signUp,
+  updateUserProfile,
   uploadProfilePicture,
 } from "../firebase";
 interface SubmitCreatePackParams {
@@ -58,12 +62,12 @@ export const submitGetUserPacks: APICall<typeof getPacksFromUser> = {
 };
 
 export const submitSendVerificationMail: APICall<typeof sendEmailVerification> =
-  {
-    call: async (user: User) => {
-      await sendEmailVerification(user);
-    },
-    requestName: RequestNames.SEND_EMAIL_VERIFICATION,
-  };
+{
+  call: async (user: User) => {
+    await sendEmailVerification(user);
+  },
+  requestName: RequestNames.SEND_EMAIL_VERIFICATION,
+};
 
 export const submitRegister: APICall<(data: FieldValues) => void> = {
   call: async (data: FieldValues) => {
@@ -77,7 +81,19 @@ export const submitRegister: APICall<(data: FieldValues) => void> = {
     if (avatar instanceof FileList && avatar.length !== 0) {
       tasks.push(uploadProfilePicture(avatar[0], user));
     }
-    await Promise.all(tasks);
+
+    const tasksResults = await Promise.all(tasks);
+
+    const profile: UserProfile = {
+      userId: user.uid,
+      username, email,
+    };
+
+    if (tasksResults.length === 3 && typeof tasksResults[2] === "string") {
+      profile.avatar = tasksResults[2];
+    }
+
+    createUserProfile(profile);
   },
 
   requestName: RequestNames.REGISTER,
@@ -169,3 +185,14 @@ export const submitEditPuzzle: APICall<typeof editPuzzle> = {
   },
   requestName: RequestNames.EDIT_PUZZLE,
 };
+
+export const submitEditUserProfile: APICall<typeof updateUserProfile> = {
+  call: async (...params: Parameters<typeof updateUserProfile>) => {
+    const { username, avatar } = params[1];
+    if (!username && !avatar) throw new ProfileEditError(OtapixErrorCodes.NO_USER_INFORMATION_PROVIDED);
+    await updateUserProfile(...params);
+    editUserProfile({ username, avatar }, params[0].uid);
+  },
+
+  requestName: RequestNames.UPDATE_USER_PROFILE,
+}

@@ -30,6 +30,19 @@
     gap: 0.5em;
 }
 
+.header_link {
+    color: var(--primary-color);
+    background-color: white;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    margin-right: 1em;
+}
+
+.header_link:hover {
+    background-color: black;
+    color: white;
+}
+
 .search_form {
     width: 100%;
     /* position: absolute; */
@@ -71,35 +84,6 @@
     color: var(--background-color);
 }
 
-
-/* .search_form_input::placeholder {} */
-
-
-/*  */
-
 .search_form_input:focus {
     outline: none;
-}
-
-.modal_username {
-    font-weight: bold;
-    font-size: 2em;
-    text-transform: uppercase;
-    color: var(--primary-color);
-}
-
-.modal_email {
-    font-weight: bold;
-}
-
-.modal_bio {
-    font-weight: lighter;
-    font-size: 0.9em;
-    padding: 1em;
-}
-
-.modal_actions {
-    display: flex;
-    gap: 1em;
-    width: 100%;
 }

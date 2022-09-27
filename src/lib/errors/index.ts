@@ -2,6 +2,7 @@ import { FirebaseError } from "firebase/app";
 import { successEmoji } from "../../config/site";
 import { notifyError, notifySuccess } from "../notifications";
 import { OtapixError } from "./classes";
+import { log } from '../logging/index';
 
 export enum OtapixErrorCodes {
   NO_PUZZLE_CREATED = "pack-creation/no-puzzle-created",
@@ -11,6 +12,7 @@ export enum OtapixErrorCodes {
   NO_PACK_DIFFICULTY_PROVIDED = "pack-creation/no-pack-difficulty-provided",
   NO_PUZZLE_PICTURES_PROVIDED = "puzzle-creation/no-puzzle-pictures-provided",
   NO_PUZZLE_WORD_PROVIDED = "puzzle-creation/no-puzzle-word-provided",
+  NO_USER_INFORMATION_PROVIDED = "profile-edit/no-user-information-provided",
 }
 
 export enum RequestNames {
@@ -26,19 +28,21 @@ export enum RequestNames {
   DELETE_PUZZLE = "delete_puzzle",
   SEND_EMAIL_VERIFICATION = "send_email_verification",
   SEND_PASSWORD_RESET_MAIL = "send_password_reset_mail",
+  UPDATE_USER_PROFILE = "update_user_profile",
 }
 
 export const SuccessMessages: Record<string, string> = {
-  login: "Welcome back to otapix " + successEmoji,
-  register: "Welcome to otapix " + successEmoji,
-  delete_pack: "Pack deleted with success " + successEmoji,
-  delete_puzzle: "Puzzle deleted with success " + successEmoji,
-  create_pack: "Pack created with success " + successEmoji,
-  create_puzzle: "Puzzle created with success " + successEmoji,
+  login: "Welcome back to otapix ",
+  register: "Welcome to otapix ",
+  delete_pack: "Pack deleted with success ",
+  delete_puzzle: "Puzzle deleted with success ",
+  create_pack: "Pack created with success ",
+  create_puzzle: "Puzzle created with success ",
   send_password_reset_mail:
-    "A password reset link has been sent to mail, please check",
-  edit_pack: "Pack edited with success " + successEmoji,
-  edit_puzzle: "Puzzle edited with success " + successEmoji,
+    "A password reset link has been sent to your mail, please check your inbox ",
+  edit_pack: "Pack edited with success ",
+  edit_puzzle: "Puzzle edited with success ",
+  update_user_profile: "Profile edited with success ",
 };
 
 export const FirebaseErrorMessages: Record<string, string> = {
@@ -61,6 +65,7 @@ export const OtapixErrorMessages: Record<OtapixErrorCodes, string> = {
     "Please, select four pictures for your puzzle",
   "puzzle-creation/no-puzzle-word-provided":
     "Please, enter the word or name to guess",
+  "profile-edit/no-user-information-provided": "Please, enter at lease one information"
 };
 
 export function handleError(error: unknown, operationName: RequestNames) {
@@ -71,10 +76,11 @@ export function handleError(error: unknown, operationName: RequestNames) {
     notifyError(OtapixErrorMessages[code] || error.message);
   } else {
     notifyError("An error occured");
-    console.error(operationName, "===>", error);
+    log(operationName, "===> " + error);
   }
 }
 
 export function handleSuccess(operationName: RequestNames) {
-  notifySuccess(SuccessMessages[operationName]!);
+  const message = SuccessMessages[operationName];
+  message && notifySuccess(message + successEmoji);
 }

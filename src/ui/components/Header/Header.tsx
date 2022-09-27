@@ -1,18 +1,17 @@
-import style from "./Header.module.css";
-import { BsSearch } from "react-icons/bs";
 import Link from "next/link";
-import Modal from "react-modal";
-import { useAuth } from "../../../hooks/index";
 import { useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../../../config/firebase";
-import { Avatar } from "../Avatar";
-import { IconButton } from "../IconButton";
-import { SpinnerButton } from "../Button/SpinnerButton";
+import { BsSearch } from "react-icons/bs";
 import { headerLinks } from "../../../config/site";
+import { useAuth } from "../../../hooks/index";
+import EditUserProfileView from "../../Views/EditUserProfileView/EditUserProfileView";
+import { UserProfileView } from "../../Views/UserProfileView";
+import { Avatar } from "../Avatar";
+import FullScreenModal from "../FullScreenModal/FullScreenModal";
+import style from "./Header.module.css";
 
 export default function Header() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const { user } = useAuth();
 
   return (
@@ -23,11 +22,7 @@ export default function Header() {
             <a className={style.header_logo}>Otapix</a>
           </Link>
           <div className={style.auth_links}>
-            {headerLinks.map((link, key) => (
-              <Link key={key} href={link.url}>
-                {link.label}
-              </Link>
-            ))}
+
             {user ? (
               <>
                 <Avatar
@@ -36,44 +31,24 @@ export default function Header() {
                   height={50}
                   onClick={() => setModalIsOpen(true)}
                 />
-                <Modal
-                  isOpen={modalIsOpen}
-                  onRequestClose={() => setModalIsOpen(false)}
-                  ariaHideApp={false}
-                  style={{
-                    content: {
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "10em 1.5em 1.5em 1.5em",
-                      margin: "-3em",
-                      borderRadius: "2em",
-                      textAlign: "center",
-                    },
-                  }}
-                >
-                  <div style={{ position: "relative", width: "100%" }}>
-                    <IconButton onClick={() => setModalIsOpen(false)} />
-                    <Avatar width={150} height={150} src={user.photoURL} />
-                    <p className={style.modal_username}>{user.displayName}</p>
-                    <small className={style.modal_email}>{user.email}</small>
-                  </div>
-
-                  <div style={{ width: "100%" }}>
-                    <SpinnerButton text="Edit my profile" />
-                    <div className={style.modal_actions}>
-                      <SpinnerButton
-                        type="error"
-                        onClick={() => signOut(auth)}
-                        text="Logout"
+                {
+                  isEditMode ? (
+                    <FullScreenModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} >
+                      <EditUserProfileView
+                        user={user}
+                        onCancelEditClick={() => setIsEditMode(false)}
+                        onCloseButtonClick={() => setModalIsOpen(false)}
                       />
-                      <Link href="/profile/dashboard">
-                        <SpinnerButton text="Dashboard" />
-                      </Link>
-                    </div>
-                  </div>
-                </Modal>
+                    </FullScreenModal>
+                  ) : (
+                    <FullScreenModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} >
+                      <UserProfileView
+                        user={user}
+                        onEditProfileClick={() => setIsEditMode(true)}
+                        onCloseButtonClick={() => setModalIsOpen(false)} />
+                    </FullScreenModal>
+                  )
+                }
               </>
             ) : (
               user !== undefined && (
@@ -88,20 +63,13 @@ export default function Header() {
       </div>
 
       <div className="wrapper">
-        <div className={style.search_form}>
-          <div className={style.search_form_content}>
-            <input
-              className={style.search_form_input}
-              type="text"
-              name="search"
-              id=""
-              placeholder="Search for an otapix pack..."
-            />
-            <div className={`${style.search_form_button} material-shadow`}>
-              <BsSearch />
-            </div>
-          </div>
-        </div>
+        {headerLinks.map((link, key) => (
+          <Link key={key} href={link.url}>
+            <a className={style.header_link}>
+              {link.label}
+            </a>
+          </Link>
+        ))}
       </div>
     </header>
   );

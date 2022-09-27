@@ -69,6 +69,7 @@ export function createPuzzlePackDraft(uid: string): Required<Pack> {
     id: uuidv4(),
     title: "New pack",
     difficulty: Difficulty.D,
+    packAuthor: "",
     authorId: uid,
     cover: "",
     online: false,

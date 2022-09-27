@@ -20,6 +20,7 @@ export interface Pack extends HasId {
   difficulty: Difficulty;
   online?: boolean;
   puzzles?: Puzzles;
+  packAuthor?: string;
 }
 export interface Puzzle extends HasId {
   packId: string;
@@ -65,4 +66,11 @@ export interface RegisterParams {
 export interface UrlLink {
   label: string;
   url: string;
+}
+
+export interface UserProfile extends Partial<HasId> {
+  userId: string;
+  username: string;
+  email: string;
+  avatar?: string;
 }
