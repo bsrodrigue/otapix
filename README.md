@@ -18,10 +18,10 @@ npm run dev
 yarn dev
 ```
 
-## 🕹️ Official game clients
+## 🕹️ Official game website
 
-- [Otapic](https://otapic.netlify.app) - Github: https://github.com/bsrodrigue/four-pics
+- [Otapix](https://dev-otapix.netlify.app) - Create an account and have fun
 
-## 🕹️ Non-official game clients
+## 🕹️ Non-official game content
 
 - Contribute ;')
